@@ -316,7 +316,7 @@
   <div id="painel-entrada">
     <div class="form-card">
       <h3>📥 ENTRADA</h3>
-      <p style="font-size:0.82rem;color:#888;margin-bottom:14px;">Escaneie ou procure o produto. A quantidade é <b style="color:#2ecc71;">somada</b> ao estoque.</p>
+      <p style="font-size:0.82rem;color:#888;margin-bottom:14px;">Escaneie ou procure. Os itens ficam na fila — confirme tudo de uma vez com seu nome.</p>
       <div class="row1 fg">
         <label>Escanear código de barras</label>
         <div class="inp-scan">
@@ -331,19 +331,24 @@
       </div>
       <div id="ent-lista-sugestoes" style="margin-top:4px;display:flex;flex-direction:column;gap:4px;max-height:160px;overflow-y:auto;"></div>
     </div>
-    <div id="ent-resultado" style="display:none;">
-      <div class="mov-card">
-        <div class="mov-nome" id="ent-nome"></div>
-        <div class="mov-cod" id="ent-cod-info"></div>
-        <div class="mov-saldo-wrap">
-          <div class="mov-saldo-box"><div class="mov-saldo-val" id="ent-saldo">—</div><div class="mov-saldo-lbl">Estoque Atual</div></div>
-          <div class="mov-saldo-box"><div class="mov-saldo-val" style="color:#3498db" id="ent-entradas-hoje">—</div><div class="mov-saldo-lbl">Entradas Hoje</div></div>
+
+    <!-- FILA PENDENTE ENTRADA -->
+    <div id="ent-fila-wrap" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:#2ecc71;letter-spacing:2px;">
+          PENDENTES <span id="ent-fila-count" style="background:#2ecc71;color:#111;border-radius:50%;padding:1px 7px;font-size:0.85rem;">0</span>
+          <span style="font-size:0.65rem;color:#555;font-family:'Rajdhani',sans-serif;"> / 10</span>
         </div>
-        <div class="row2">
-          <div class="fg"><label>Quantidade *</label><input type="number" id="ent-qtd" min="0" step="0.001" placeholder="0"></div>
-          <div class="fg"><label>Observação</label><input type="text" id="ent-obs" placeholder="Ex: NF 1234..."></div>
+        <button class="btn-g btn-gray" style="font-size:0.75rem;padding:5px 10px;" onclick="limparFila('ent')">🗑️ Limpar fila</button>
+      </div>
+      <div id="ent-fila-lista" style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;"></div>
+      <div class="form-card" style="margin-bottom:0;">
+        <div class="fg" style="margin-bottom:10px;">
+          <label>✍️ Nome de quem está lançando *</label>
+          <input type="text" id="ent-responsavel" placeholder="Ex: João, Maria..." autocomplete="off"
+            style="padding:10px 13px;border:2px solid #2ecc71;border-radius:5px;background:#1a1a1a;color:#f0f0f0;font-size:1rem;font-family:'Rajdhani',sans-serif;outline:none;width:100%;">
         </div>
-        <button class="btn-g btn-green btn-full" style="margin-top:6px;" onclick="confirmarModo('entrada')">📥 CONFIRMAR ENTRADA</button>
+        <button class="btn-g btn-green btn-full" onclick="confirmarFila('entrada')">✅ CONFIRMAR ENTRADA</button>
       </div>
     </div>
   </div>
@@ -352,7 +357,7 @@
   <div id="painel-contagem" style="display:none;">
     <div class="form-card">
       <h3>📋 CONTAGEM</h3>
-      <p style="font-size:0.82rem;color:#888;margin-bottom:14px;">Escaneie ou procure o produto. A quantidade <b style="color:#3498db;">substitui</b> o estoque atual.</p>
+      <p style="font-size:0.82rem;color:#888;margin-bottom:14px;">Escaneie ou procure. Os itens ficam na fila — confirme tudo de uma vez com seu nome.</p>
       <div class="row1 fg">
         <label>Escanear código de barras</label>
         <div class="inp-scan">
@@ -366,19 +371,24 @@
       </div>
       <div id="cont-lista-sugestoes" style="margin-top:4px;display:flex;flex-direction:column;gap:4px;max-height:160px;overflow-y:auto;"></div>
     </div>
-    <div id="cont-resultado" style="display:none;">
-      <div class="mov-card">
-        <div class="mov-nome" id="cont-nome"></div>
-        <div class="mov-cod" id="cont-cod-info"></div>
-        <div class="mov-saldo-wrap">
-          <div class="mov-saldo-box"><div class="mov-saldo-val" id="cont-saldo">—</div><div class="mov-saldo-lbl">Estoque Atual</div></div>
-          <div class="mov-saldo-box"><div class="mov-saldo-val" style="color:#f39c12" id="cont-ult-cont">—</div><div class="mov-saldo-lbl">Última Contagem</div></div>
+
+    <!-- FILA PENDENTE CONTAGEM -->
+    <div id="cont-fila-wrap" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:#3498db;letter-spacing:2px;">
+          PENDENTES <span id="cont-fila-count" style="background:#3498db;color:#111;border-radius:50%;padding:1px 7px;font-size:0.85rem;">0</span>
+          <span style="font-size:0.65rem;color:#555;font-family:'Rajdhani',sans-serif;"> / 10</span>
         </div>
-        <div class="row2">
-          <div class="fg"><label>Nova Contagem *</label><input type="number" id="cont-qtd" min="0" step="0.001" placeholder="0"></div>
-          <div class="fg"><label>Observação</label><input type="text" id="cont-obs" placeholder="Opcional..."></div>
+        <button class="btn-g btn-gray" style="font-size:0.75rem;padding:5px 10px;" onclick="limparFila('cont')">🗑️ Limpar fila</button>
+      </div>
+      <div id="cont-fila-lista" style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;"></div>
+      <div class="form-card" style="margin-bottom:0;">
+        <div class="fg" style="margin-bottom:10px;">
+          <label>✍️ Nome de quem está lançando *</label>
+          <input type="text" id="cont-responsavel" placeholder="Ex: João, Maria..." autocomplete="off"
+            style="padding:10px 13px;border:2px solid #3498db;border-radius:5px;background:#1a1a1a;color:#f0f0f0;font-size:1rem;font-family:'Rajdhani',sans-serif;outline:none;width:100%;">
         </div>
-        <button class="btn-g btn-full" style="margin-top:6px;background:#1a3d6e;color:#3498db;" onclick="confirmarModo('contagem')">📋 CONFIRMAR CONTAGEM</button>
+        <button class="btn-g btn-full" style="background:#1a3d6e;color:#3498db;" onclick="confirmarFila('contagem')">✅ CONFIRMAR CONTAGEM</button>
       </div>
     </div>
   </div>
@@ -782,8 +792,9 @@ function setFil(f, btn) {
 
 // ── MOVIMENTAR — MODO ─────────────────────────────
 let _modoAtivo = 'entrada'; // 'entrada' | 'contagem' | 'lote'
-let _prodEntrada  = null;
-let _prodContagem = null;
+const MAX_FILA = 10;
+let _filaEnt  = []; // [{pid, pnome, pcod, und, qtd, codOriginal}]
+let _filaCont = [];
 
 function setModo(modo) {
   _modoAtivo = modo;
@@ -803,17 +814,16 @@ function irMov(id) {
   document.getElementById('tab-movimentar').classList.add('active');
   document.querySelectorAll('.tab-btn')[1].classList.add('active');
   setModo('entrada');
-  selecionarProdModo('ent', p);
-  document.getElementById('ent-qtd').focus();
 }
 
-// ── BUSCA POR CÓDIGO ──
+// ── BUSCA POR CÓDIGO (digitação manual → adiciona à fila) ──
 function buscarProdModo(pfx) {
   const cod = document.getElementById(pfx+'-cod').value.trim();
   if (!cod) { toast('Digite ou escaneie um código','err'); return; }
   const p = Object.values(getProd()).find(x=>x.cod===cod||x.id===cod);
   if (!p) { toast('Produto não encontrado: '+cod,'err'); return; }
-  selecionarProdModo(pfx, p);
+  document.getElementById(pfx+'-cod').value = '';
+  adicionarFila(pfx, p, extrairQtdDoCodigo(cod, p.und), cod);
 }
 
 // ── BUSCA POR NOME (sugestões) ──
@@ -824,76 +834,137 @@ function filtrarListaModo(pfx) {
   const prods = Object.values(getProd()).filter(p=>p.nome?.toLowerCase().includes(busca)||p.cod?.toLowerCase().includes(busca)).slice(0,8);
   if (!prods.length) { lista.innerHTML='<div style="padding:8px;color:#555;font-size:0.82rem;">Nenhum produto encontrado.</div>'; return; }
   lista.innerHTML = prods.map(p=>`
-    <div class="sug-item" onclick="selecionarProdModo('${pfx}',null,'${p.id}')">
+    <div class="sug-item" onclick="addFilaNome('${pfx}','${p.id}')">
       <div><div class="sug-nome">${p.nome}</div><div class="sug-sub">🔑 ${p.cod}${p.cat?' · '+p.cat:''}</div></div>
       <div class="sug-qty">${fmtQ(p.estoque,p.und)}</div>
     </div>`).join('');
 }
 
-function selecionarProdModo(pfx, p, idFallback) {
-  if (!p && idFallback) p = getProd()[idFallback];
+function addFilaNome(pfx, id) {
+  const p = getProd()[id];
   if (!p) return;
-
-  // limpar sugestoes e busca nome
   const listaSug = document.getElementById(pfx+'-lista-sugestoes');
   if (listaSug) listaSug.innerHTML = '';
   const buscaNome = document.getElementById(pfx+'-busca-nome');
   if (buscaNome) buscaNome.value = '';
-
-  const hoje = dataHoje();
-  const hist = getHist();
-
-  if (pfx==='ent') {
-    _prodEntrada = p;
-    const entradasHoje = hist.filter(h=>h.pid===p.id&&h.tipo==='entrada'&&h.ts?.startsWith(hoje)).reduce((s,h)=>s+(parseFloat(h.qtd)||0),0);
-    document.getElementById('ent-resultado').style.display = 'block';
-    document.getElementById('ent-nome').textContent        = p.nome;
-    document.getElementById('ent-cod-info').textContent    = '🔑 '+p.cod+(p.cat?' · 📂 '+p.cat:'');
-    document.getElementById('ent-saldo').textContent       = fmtQ(p.estoque, p.und);
-    document.getElementById('ent-entradas-hoje').textContent = entradasHoje>0 ? fmtQ(entradasHoje,p.und) : '—';
-    document.getElementById('ent-qtd').value = '';
-    setTimeout(()=>document.getElementById('ent-qtd').focus(), 80);
-  } else {
-    _prodContagem = p;
-    const ultCont = hist.find(h=>h.pid===p.id&&h.tipo==='contagem');
-    document.getElementById('cont-resultado').style.display = 'block';
-    document.getElementById('cont-nome').textContent        = p.nome;
-    document.getElementById('cont-cod-info').textContent    = '🔑 '+p.cod+(p.cat?' · 📂 '+p.cat:'');
-    document.getElementById('cont-saldo').textContent       = fmtQ(p.estoque, p.und);
-    document.getElementById('cont-ult-cont').textContent    = ultCont ? fmtQ(ultCont.qtd,p.und)+' ('+ultCont.ts?.slice(0,10)+')' : '—';
-    document.getElementById('cont-qtd').value = '';
-    setTimeout(()=>document.getElementById('cont-qtd').focus(), 80);
-  }
+  adicionarFila(pfx, p, 1, p.cod);
 }
 
-// ── CONFIRMAR (entrada ou contagem individual) ──
-function confirmarModo(tipo) {
-  const pfx  = tipo==='entrada' ? 'ent' : 'cont';
-  const prod = tipo==='entrada' ? _prodEntrada : _prodContagem;
-  if (!prod) { toast('Nenhum produto selecionado','err'); return; }
+// ── FILA ──
+function adicionarFila(pfx, p, qtd, codOriginal) {
+  const fila = pfx==='ent' ? _filaEnt : _filaCont;
 
-  const qtd = parseFloat(document.getElementById(pfx+'-qtd').value);
-  if (isNaN(qtd)||qtd<0) { toast('Quantidade inválida','err'); return; }
-  const obs = document.getElementById(pfx+'-obs').value.trim();
+  if (fila.length >= MAX_FILA) {
+    toast(`⛔ Limite de ${MAX_FILA} itens atingido! Confirme a fila antes de continuar.`, 'err');
+    return;
+  }
+
+  // Se produto já está na fila, soma a quantidade
+  const existente = fila.find(i => i.pid === p.id);
+  if (existente) {
+    existente.qtd += qtd;
+    toast(`➕ ${p.nome}: agora ${fmtQ(existente.qtd, p.und)}`, 'ok');
+  } else {
+    fila.push({ pid: p.id, pnome: p.nome, pcod: p.cod, und: p.und, qtd, codOriginal });
+    toast(`📋 ${p.nome}: ${fmtQ(qtd, p.und)} adicionado`, 'ok');
+  }
+
+  renderFila(pfx);
+}
+
+function removerFila(pfx, idx) {
+  if (pfx==='ent') _filaEnt.splice(idx,1);
+  else             _filaCont.splice(idx,1);
+  renderFila(pfx);
+}
+
+function limparFila(pfx) {
+  if (pfx==='ent') _filaEnt=[];
+  else             _filaCont=[];
+  renderFila(pfx);
+}
+
+function renderFila(pfx) {
+  const fila  = pfx==='ent' ? _filaEnt : _filaCont;
+  const wrap  = document.getElementById(pfx+'-fila-wrap');
+  const lista = document.getElementById(pfx+'-fila-lista');
+  const count = document.getElementById(pfx+'-fila-count');
+
+  count.textContent = fila.length;
+
+  if (!fila.length) {
+    wrap.style.display = 'none';
+    lista.innerHTML = '';
+    return;
+  }
+
+  wrap.style.display = 'block';
+  const cor = pfx==='ent' ? '#2ecc71' : '#3498db';
+
+  lista.innerHTML = fila.map((item, idx) => `
+    <div class="lote-item" style="border-left:3px solid ${cor};">
+      <div class="lote-item-info">
+        <div class="lote-item-nome">${item.pnome}</div>
+        <div class="lote-item-sub">🔑 ${item.pcod}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <input type="number" value="${item.qtd}" min="0.001" step="0.001"
+          style="width:80px;padding:6px 8px;border:2px solid #333;border-radius:4px;background:#1a1a1a;color:${cor};font-family:'Bebas Neue',sans-serif;font-size:1rem;outline:none;text-align:center;"
+          onchange="editarQtdFila('${pfx}',${idx},this.value)">
+        <span style="font-size:0.72rem;color:#555;">${item.und}</span>
+        <button onclick="removerFila('${pfx}',${idx})" style="background:none;border:none;color:#555;cursor:pointer;font-size:1rem;padding:4px;" title="Remover">✕</button>
+      </div>
+    </div>`).join('');
+
+  // Alerta visual quando fila cheia
+  count.style.background = fila.length >= MAX_FILA ? '#e74c3c' : cor;
+}
+
+function editarQtdFila(pfx, idx, val) {
+  const fila = pfx==='ent' ? _filaEnt : _filaCont;
+  const qtd  = parseFloat(val);
+  if (!isNaN(qtd) && qtd > 0) fila[idx].qtd = qtd;
+}
+
+// ── CONFIRMAR FILA ──
+function confirmarFila(tipo) {
+  const pfx  = tipo==='entrada' ? 'ent' : 'cont';
+  const fila = pfx==='ent' ? _filaEnt : _filaCont;
+
+  if (!fila.length) { toast('Fila vazia — escaneie produtos primeiro','err'); return; }
+
+  const resp = (document.getElementById(pfx+'-responsavel')?.value||'').trim();
+  if (!resp) {
+    toast('⚠️ Informe o nome de quem está lançando','err');
+    document.getElementById(pfx+'-responsavel').focus();
+    return;
+  }
 
   const prods = getProd();
-  const p = prods[prod.id];
-  if (!p) { toast('Produto não encontrado','err'); return; }
+  let ok = 0;
 
-  const antes  = parseFloat(p.estoque)||0;
-  const depois = tipo==='entrada' ? antes+qtd : qtd;
-  p.estoque = depois;
-  prods[p.id] = p;
+  fila.forEach(item => {
+    const p = prods[item.pid];
+    if (!p) return;
+    const antes  = parseFloat(p.estoque)||0;
+    const depois = tipo==='entrada' ? antes + item.qtd : item.qtd;
+    p.estoque = depois;
+    prods[p.id] = p;
+    pushHist({ id:uid(), tipo, pid:p.id, pnome:p.nome, pcod:p.cod, und:p.und, qtd:item.qtd, antes, depois, obs:'Por: '+resp, ts:ts() });
+    ok++;
+  });
+
   setProd(prods);
   _cache = prods;
 
-  pushHist({ id:uid(), tipo, pid:p.id, pnome:p.nome, pcod:p.cod, und:p.und, qtd, antes, depois, obs, ts:ts() });
-
   const lbl = tipo==='entrada' ? '📥 Entrada' : '📋 Contagem';
-  toast(`${lbl}: ${fmtQ(qtd,p.und)} — ${p.nome}`, 'ok');
+  toast(`${lbl} confirmada! ${ok} produto(s) por ${resp}`, 'ok');
 
-  // Atualizar display
-  selecionarProdModo(pfx, prods[prod.id]);
+  // Limpar fila e campo
+  if (pfx==='ent') _filaEnt=[];
+  else             _filaCont=[];
+  document.getElementById(pfx+'-responsavel').value = '';
+  renderFila(pfx);
 }
 
 // ── CONTAGEM EM LOTE ──
@@ -1364,33 +1435,18 @@ function usarCodigo(cod, autoLancar) {
   }
 
   if (autoLancar) {
-    // LANÇAMENTO DIRETO — sem precisar confirmar
+    // LANÇAMENTO NA FILA — sem precisar confirmar individualmente
     const qtd = extrairQtdDoCodigo(cod, p.und);
-    const prods = getProd();
-    const pp = prods[p.id];
-    const antes  = parseFloat(pp.estoque) || 0;
-    const depois = tipo === 'entrada' ? antes + qtd : qtd;
-    pp.estoque = depois;
-    prods[p.id] = pp;
-    setProd(prods);
-    _cache = prods;
-
-    pushHist({ id: uid(), tipo, pid: pp.id, pnome: pp.nome, pcod: pp.cod, und: pp.und, qtd, antes, depois, obs: 'Scanner automático', ts: ts() });
-
-    const lbl = tipo === 'entrada' ? '📥' : '📋';
-    toast(`${lbl} ${pp.nome}: +${fmtQ(qtd, pp.und)}`, 'ok');
-
-    // Atualizar card se visível
-    selecionarProdModo(pfx, prods[p.id]);
+    adicionarFila(pfx, p, qtd, cod);
 
     // Manter scanner pronto para próxima leitura
     setTimeout(() => {
       if (_scanAlvo) abrirScan(_scanAlvo);
-    }, 800);
+    }, 600);
   } else {
-    // MODO MANUAL — mostra card para confirmar
-    document.getElementById(pfx + '-cod').value = cod;
-    selecionarProdModo(pfx, p);
+    // MODO MANUAL — adiciona à fila também
+    const qtd = extrairQtdDoCodigo(cod, p.und);
+    adicionarFila(pfx, p, qtd, cod);
   }
 }
 
