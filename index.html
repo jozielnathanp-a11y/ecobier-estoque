@@ -10,411 +10,341 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Rajdhani', sans-serif; background: #0a0a0a; min-height: 100vh; color: #f0f0f0; letter-spacing: 0.02em; }
 
-    /* ── HEADER ── */
+    /* ── TOPBAR ── */
     #topbar {
       background: #111; border-bottom: 2px solid #1a6e3c; padding: 12px 20px;
-      display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
     }
     #topbar h1 { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: #2ecc71; letter-spacing: 3px; }
-    #topbar-badge { font-size: 0.72rem; color: #888; }
-    #btn-sair { background: none; border: 1px solid #333; color: #888; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-family: 'Rajdhani', sans-serif; font-size: 0.8rem; transition: all 0.2s; }
-    #btn-sair:hover { border-color: #e74c3c; color: #e74c3c; }
+    #topbar-sub { font-size: 0.72rem; color: #555; }
 
     /* ── TABS ── */
     .tabs { display: flex; background: #111; border-bottom: 1px solid #1a1a1a; overflow-x: auto; }
     .tab-btn {
       padding: 12px 18px; border: none; background: none; color: #666; cursor: pointer;
-      font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; font-weight: 600; white-space: nowrap;
-      border-bottom: 3px solid transparent; transition: all 0.2s; letter-spacing: 0.05em;
+      font-family: 'Rajdhani', sans-serif; font-size: 0.88rem; font-weight: 700;
+      white-space: nowrap; border-bottom: 3px solid transparent; transition: all 0.2s; letter-spacing: 0.05em;
     }
     .tab-btn.active { color: #2ecc71; border-bottom-color: #2ecc71; }
     .tab-btn:hover { color: #2ecc71; }
 
-    .tab-content { display: none; padding: 16px; max-width: 900px; margin: 0 auto; }
-    .tab-content.active { display: block; }
+    .tab-pane { display: none; padding: 16px; max-width: 860px; margin: 0 auto; }
+    .tab-pane.active { display: block; }
 
-    /* ── CARDS ── */
-    .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
-    .stat-card { background: #111; border-radius: 6px; padding: 14px; text-align: center; border: 1px solid #1a1a1a; }
-    .stat-num { font-size: 1.8rem; font-weight: 700; color: #2ecc71; font-family: 'Bebas Neue', sans-serif; }
-    .stat-label { font-size: 0.7rem; color: #555; margin-top: 2px; letter-spacing: 1px; text-transform: uppercase; }
+    /* ── STATS ── */
+    .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 14px; }
+    .stat-card { background: #111; border-radius: 6px; padding: 12px; text-align: center; border: 1px solid #1a1a1a; }
+    .stat-num { font-size: 1.6rem; font-weight: 700; color: #2ecc71; font-family: 'Bebas Neue', sans-serif; }
+    .stat-label { font-size: 0.68rem; color: #555; margin-top: 2px; text-transform: uppercase; letter-spacing: 1px; }
 
     /* ── SEARCH ── */
-    .search-wrap { position: relative; margin-bottom: 14px; }
+    .search-wrap { position: relative; margin-bottom: 12px; }
     .search-wrap input {
-      width: 100%; padding: 12px 16px 12px 40px; border: 2px solid #222; border-radius: 6px;
-      background: #111; color: #f0f0f0; font-size: 1rem; font-family: 'Rajdhani', sans-serif; outline: none; transition: border 0.2s;
+      width: 100%; padding: 11px 16px 11px 38px; border: 2px solid #222; border-radius: 6px;
+      background: #111; color: #f0f0f0; font-size: 0.95rem; font-family: 'Rajdhani', sans-serif; outline: none; transition: border 0.2s;
     }
     .search-wrap input:focus { border-color: #2ecc71; }
-    .search-wrap::before { content: '🔍'; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 0.9rem; }
-
-    /* ── PRODUTO LIST ── */
-    #lista-produtos { display: flex; flex-direction: column; gap: 8px; }
-    .prod-item {
-      background: #111; border-radius: 6px; padding: 12px 14px; border-left: 4px solid #333;
-      display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.15s;
-    }
-    .prod-item:hover { border-left-color: #2ecc71; background: #141414; }
-    .prod-item.ok { border-left-color: #2e7d32; }
-    .prod-item.baixo { border-left-color: #f39c12; }
-    .prod-item.zerado { border-left-color: #e74c3c; }
-    .prod-info { flex: 1; }
-    .prod-nome { font-weight: 700; font-size: 0.92rem; color: #f0f0f0; }
-    .prod-cod { font-size: 0.72rem; color: #555; margin-top: 2px; }
-    .prod-cat { font-size: 0.7rem; color: #3498db; margin-top: 2px; }
-    .prod-right { text-align: right; }
-    .prod-qty { font-size: 1.2rem; font-weight: 700; color: #2ecc71; font-family: 'Bebas Neue', sans-serif; }
-    .prod-qty.baixo { color: #f39c12; }
-    .prod-qty.zerado { color: #e74c3c; }
-    .prod-unit { font-size: 0.7rem; color: #666; }
-    .prod-acoes { display: flex; gap: 6px; margin-top: 8px; }
-    .btn-entrada, .btn-saida {
-      flex: 1; padding: 7px; border: none; border-radius: 4px; font-family: 'Rajdhani', sans-serif;
-      font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.15s;
-    }
-    .btn-entrada { background: #1a6e3c; color: #2ecc71; }
-    .btn-entrada:hover { background: #2ecc71; color: #111; }
-    .btn-saida { background: #6e1a1a; color: #e74c3c; }
-    .btn-saida:hover { background: #e74c3c; color: #fff; }
-    .btn-edit { background: #1a3d6e; color: #3498db; }
-    .btn-edit:hover { background: #3498db; color: #fff; }
-
-    /* ── FORM PRODUTO ── */
-    .form-card {
-      background: #111; border-radius: 8px; padding: 20px; border: 1px solid #1a6e3c33;
-      margin-bottom: 16px;
-    }
-    .form-card h3 { font-family: 'Bebas Neue', sans-serif; color: #2ecc71; font-size: 1.2rem; margin-bottom: 16px; letter-spacing: 2px; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-    .form-row.full { grid-template-columns: 1fr; }
-    .form-group { display: flex; flex-direction: column; gap: 5px; }
-    .form-group label { font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
-    .form-group input, .form-group select {
-      padding: 10px 12px; border: 2px solid #222; border-radius: 4px; background: #1a1a1a;
-      color: #f0f0f0; font-size: 0.95rem; font-family: 'Rajdhani', sans-serif; outline: none; transition: border 0.2s;
-    }
-    .form-group input:focus, .form-group select:focus { border-color: #2ecc71; }
-    .form-group select option { background: #1a1a1a; }
-
-    /* Scan button */
-    .scan-group { position: relative; }
-    .scan-group input { padding-right: 50px; }
-    .btn-scan {
-      position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-      background: #1a6e3c; border: none; color: #2ecc71; padding: 5px 10px; border-radius: 4px;
-      cursor: pointer; font-size: 1rem; transition: all 0.15s;
-    }
-    .btn-scan:hover { background: #2ecc71; color: #111; }
-
-    .form-actions { display: flex; gap: 10px; margin-top: 4px; }
-    .btn-primary {
-      background: #1a6e3c; color: #2ecc71; border: none; padding: 11px 24px; border-radius: 4px;
-      font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; letter-spacing: 1px;
-    }
-    .btn-primary:hover { background: #2ecc71; color: #111; }
-    .btn-secondary {
-      background: none; color: #666; border: 1px solid #333; padding: 11px 20px; border-radius: 4px;
-      font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s;
-    }
-    .btn-secondary:hover { border-color: #666; color: #f0f0f0; }
-    .btn-danger {
-      background: #6e1a1a; color: #e74c3c; border: none; padding: 11px 20px; border-radius: 4px;
-      font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s;
-    }
-    .btn-danger:hover { background: #e74c3c; color: #fff; }
-
-    .btn-add-novo {
-      width: 100%; padding: 14px; background: #111; border: 2px dashed #1a6e3c; color: #2ecc71;
-      border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1rem;
-      cursor: pointer; transition: all 0.2s; margin-bottom: 16px; letter-spacing: 1px;
-    }
-    .btn-add-novo:hover { background: #1a6e3c22; }
-
-    /* ── MODAL MOVIMENTAÇÃO ── */
-    .modal-overlay {
-      position: fixed; inset: 0; background: #000a; z-index: 1000;
-      display: none; align-items: center; justify-content: center;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal-box {
-      background: #111; border-radius: 8px; padding: 24px; width: 90%; max-width: 400px;
-      border: 1px solid #1a6e3c55;
-    }
-    .modal-box h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; margin-bottom: 6px; letter-spacing: 2px; }
-    .modal-box h3.entrada { color: #2ecc71; }
-    .modal-box h3.saida { color: #e74c3c; }
-    .modal-box h3.scan { color: #3498db; }
-    .modal-sub { font-size: 0.82rem; color: #888; margin-bottom: 18px; }
-    .modal-input {
-      width: 100%; padding: 14px; border: 2px solid #333; border-radius: 4px; background: #1a1a1a;
-      color: #f0f0f0; font-size: 1.5rem; font-family: 'Bebas Neue', sans-serif;
-      text-align: center; outline: none; transition: border 0.2s; margin-bottom: 6px;
-    }
-    .modal-input:focus { border-color: #2ecc71; }
-    .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
-    .modal-actions button { flex: 1; }
-
-    /* ── SCANNER MODAL ── */
-    #scan-overlay {
-      position: fixed; inset: 0; background: #000; z-index: 2000;
-      display: none; flex-direction: column; align-items: center; justify-content: center;
-    }
-    #scan-overlay.open { display: flex; }
-    #scan-video { width: 100%; max-width: 480px; border-radius: 8px; }
-    #scan-line {
-      position: absolute; width: 60%; max-width: 280px; height: 3px;
-      background: #2ecc71; box-shadow: 0 0 8px #2ecc71; animation: scanAnim 1.5s infinite alternate;
-    }
-    @keyframes scanAnim { from { top: 30%; } to { top: 65%; } }
-    #scan-status { color: #2ecc71; font-size: 1rem; margin-top: 16px; font-family: 'Rajdhani', sans-serif; }
-    #scan-manual { margin-top: 12px; display: flex; gap: 8px; }
-    #scan-manual input {
-      padding: 10px 14px; border: 2px solid #333; border-radius: 4px; background: #1a1a1a;
-      color: #f0f0f0; font-size: 1rem; font-family: 'Rajdhani', sans-serif; outline: none; flex: 1;
-    }
-    #scan-manual input:focus { border-color: #2ecc71; }
-    #btn-fechar-scan {
-      position: absolute; top: 20px; right: 20px; background: #333; border: none;
-      color: #fff; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-size: 0.9rem;
-    }
-
-    /* ── HISTÓRICO ── */
-    #lista-historico { display: flex; flex-direction: column; gap: 8px; }
-    .hist-item {
-      background: #111; border-radius: 6px; padding: 10px 14px; border-left: 4px solid #333;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .hist-item.entrada { border-left-color: #2ecc71; }
-    .hist-item.saida { border-left-color: #e74c3c; }
-    .hist-item.ajuste { border-left-color: #f39c12; }
-    .hist-nome { font-weight: 700; font-size: 0.88rem; }
-    .hist-meta { font-size: 0.72rem; color: #666; margin-top: 2px; }
-    .hist-qty { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; }
-    .hist-qty.entrada { color: #2ecc71; }
-    .hist-qty.saida { color: #e74c3c; }
-    .hist-qty.ajuste { color: #f39c12; }
+    .search-wrap::before { content: '🔍'; position: absolute; left: 11px; top: 50%; transform: translateY(-50%); font-size: 0.85rem; }
 
     /* ── FILTROS ── */
-    .filtros { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
-    .filtro-btn {
-      padding: 6px 14px; border-radius: 20px; border: 1px solid #333; background: none;
-      color: #666; font-family: 'Rajdhani', sans-serif; font-size: 0.82rem; cursor: pointer; transition: all 0.2s;
-    }
-    .filtro-btn.active { background: #1a6e3c; color: #2ecc71; border-color: #1a6e3c; }
-    .filtro-btn:hover { border-color: #2ecc71; color: #2ecc71; }
+    .filtros { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+    .fil-btn { padding: 5px 12px; border-radius: 20px; border: 1px solid #2a2a2a; background: none; color: #666; font-family: 'Rajdhani', sans-serif; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
+    .fil-btn.active { background: #1a6e3c; color: #2ecc71; border-color: #1a6e3c; }
+    .fil-btn:hover { border-color: #2ecc71; color: #2ecc71; }
 
-    /* ── SCAN ESTOQUE (movimentação rápida) ── */
-    #scan-mov-overlay {
-      position: fixed; inset: 0; background: #000; z-index: 2000;
+    /* ── LISTA PRODUTOS ── */
+    #lista-estoque { display: flex; flex-direction: column; gap: 7px; }
+    .prod-row {
+      background: #111; border-radius: 6px; padding: 11px 14px;
+      border-left: 4px solid #2a2a2a; cursor: pointer; transition: all 0.15s;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .prod-row:hover { background: #141414; }
+    .prod-row.ok     { border-left-color: #2e7d32; }
+    .prod-row.baixo  { border-left-color: #f39c12; }
+    .prod-row.acima  { border-left-color: #9b59b6; }
+    .prod-row.zerado { border-left-color: #e74c3c; }
+    .prod-info { flex: 1; min-width: 0; }
+    .prod-nome { font-weight: 700; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .prod-sub  { font-size: 0.7rem; color: #555; margin-top: 1px; }
+    .prod-qty-wrap { text-align: right; flex-shrink: 0; }
+    .prod-qty { font-family: 'Bebas Neue', sans-serif; font-size: 1.25rem; }
+    .prod-qty.ok     { color: #2ecc71; }
+    .prod-qty.baixo  { color: #f39c12; }
+    .prod-qty.acima  { color: #9b59b6; }
+    .prod-qty.zerado { color: #e74c3c; }
+    .prod-minmax { font-size: 0.68rem; color: #555; }
+
+    /* ── FORM CARD ── */
+    .form-card { background: #111; border-radius: 8px; padding: 18px; border: 1px solid #1a6e3c22; margin-bottom: 14px; }
+    .form-card h3 { font-family: 'Bebas Neue', sans-serif; color: #2ecc71; font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 14px; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .row1 { margin-bottom: 10px; }
+    .fg { display: flex; flex-direction: column; gap: 4px; }
+    .fg label { font-size: 0.72rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+    .fg input, .fg select {
+      padding: 9px 11px; border: 2px solid #222; border-radius: 4px;
+      background: #1a1a1a; color: #f0f0f0; font-size: 0.92rem;
+      font-family: 'Rajdhani', sans-serif; outline: none; transition: border 0.2s; width: 100%;
+    }
+    .fg input:focus, .fg select:focus { border-color: #2ecc71; }
+    .fg select option { background: #1a1a1a; }
+
+    /* scan btn inside input */
+    .inp-scan { position: relative; }
+    .inp-scan input { padding-right: 46px; }
+    .btn-cam {
+      position: absolute; right: 7px; top: 50%; transform: translateY(-50%);
+      background: #1a6e3c; border: none; color: #2ecc71; padding: 4px 9px; border-radius: 3px;
+      cursor: pointer; font-size: 0.95rem;
+    }
+    .btn-cam:hover { background: #2ecc71; color: #111; }
+
+    .form-btns { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+    .btn-g { padding: 10px 20px; border: none; border-radius: 4px; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px; }
+    .btn-green  { background: #1a6e3c; color: #2ecc71; }
+    .btn-green:hover  { background: #2ecc71; color: #111; }
+    .btn-blue   { background: #1a3d6e; color: #3498db; }
+    .btn-blue:hover   { background: #3498db; color: #fff; }
+    .btn-gray   { background: none; color: #666; border: 1px solid #333; }
+    .btn-gray:hover   { border-color: #888; color: #f0f0f0; }
+    .btn-red    { background: #5a1010; color: #e74c3c; }
+    .btn-red:hover    { background: #e74c3c; color: #fff; }
+    .btn-full { width: 100%; }
+
+    /* ── MOVIMENTAÇÃO RÁPIDA ── */
+    #mov-resultado { display: none; }
+    .mov-card { background: #141414; border-radius: 8px; padding: 16px; border: 1px solid #1a6e3c33; margin-bottom: 12px; }
+    .mov-nome { font-size: 1.05rem; font-weight: 700; margin-bottom: 2px; }
+    .mov-cod  { font-size: 0.75rem; color: #555; margin-bottom: 10px; }
+    .mov-saldo-wrap { display: flex; gap: 14px; margin-bottom: 14px; }
+    .mov-saldo-box { flex: 1; background: #111; border-radius: 5px; padding: 10px; text-align: center; border: 1px solid #1a1a1a; }
+    .mov-saldo-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: #2ecc71; }
+    .mov-saldo-lbl { font-size: 0.68rem; color: #555; text-transform: uppercase; }
+    .mov-tipo-btns { display: flex; gap: 8px; margin-bottom: 12px; }
+    .mov-tipo-btn {
+      flex: 1; padding: 9px; border: 2px solid #2a2a2a; background: none;
+      color: #666; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.85rem;
+      border-radius: 5px; cursor: pointer; transition: all 0.2s;
+    }
+    .mov-tipo-btn.sel-entrada { border-color: #2ecc71; color: #2ecc71; background: #1a6e3c22; }
+    .mov-tipo-btn.sel-contagem { border-color: #3498db; color: #3498db; background: #1a3d6e22; }
+    .mov-tipo-btn:hover { border-color: #888; color: #f0f0f0; }
+
+    /* ── HISTÓRICO ── */
+    .hist-item { background: #111; border-radius: 5px; padding: 10px 13px; border-left: 4px solid #2a2a2a; display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .hist-item.entrada  { border-left-color: #2ecc71; }
+    .hist-item.contagem { border-left-color: #3498db; }
+    .hist-nome { font-weight: 700; font-size: 0.87rem; }
+    .hist-meta { font-size: 0.7rem; color: #666; margin-top: 2px; }
+    .hist-qty { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; text-align: right; flex-shrink: 0; }
+    .hist-qty.entrada  { color: #2ecc71; }
+    .hist-qty.contagem { color: #3498db; }
+
+    /* ── RELATÓRIO ── */
+    .rel-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+    .rel-table th { background: #1a1a1a; color: #888; padding: 8px 10px; text-align: left; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #222; }
+    .rel-table td { padding: 8px 10px; border-bottom: 1px solid #181818; vertical-align: middle; }
+    .rel-table tr:hover td { background: #141414; }
+    .tag-ok     { color: #2ecc71; font-weight: 700; }
+    .tag-baixo  { color: #f39c12; font-weight: 700; }
+    .tag-acima  { color: #9b59b6; font-weight: 700; }
+    .tag-zerado { color: #e74c3c; font-weight: 700; }
+
+    /* ── SCANNER ── */
+    .scan-ov {
+      position: fixed; inset: 0; background: #000; z-index: 3000;
       display: none; flex-direction: column; align-items: center; justify-content: flex-start;
-      padding-top: 60px;
+      padding-top: 56px;
     }
-    #scan-mov-overlay.open { display: flex; }
-    #scan-mov-video { width: 100%; max-width: 480px; border-radius: 8px; position: relative; }
-    #scan-mov-line {
-      position: absolute; width: 60%; max-width: 280px; height: 3px;
-      background: #f39c12; box-shadow: 0 0 8px #f39c12; animation: scanAnim 1.5s infinite alternate;
-      top: 48%;
+    .scan-ov.open { display: flex; }
+    .scan-vid-wrap { position: relative; width: 100%; max-width: 480px; }
+    .scan-vid-wrap video { width: 100%; border-radius: 8px; display: block; }
+    .scan-crosshair {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 200px; height: 80px; border: 2px solid #2ecc71;
+      box-shadow: 0 0 0 999px rgba(0,0,0,0.45);
+      border-radius: 4px;
     }
-    #scan-mov-status { color: #f39c12; font-size: 1rem; margin-top: 16px; font-family: 'Rajdhani', sans-serif; text-align: center; padding: 0 20px; }
-    #btn-fechar-scan-mov { position: absolute; top: 20px; right: 20px; background: #333; border: none; color: #fff; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; }
+    .scan-status { color: #2ecc71; font-size: 0.9rem; margin-top: 14px; font-family: 'Rajdhani', sans-serif; text-align: center; padding: 0 20px; }
+    .scan-manual-wrap { display: flex; gap: 8px; margin-top: 14px; padding: 0 20px; width: 100%; max-width: 480px; }
+    .scan-manual-wrap input { flex: 1; padding: 10px 13px; border: 2px solid #333; border-radius: 4px; background: #1a1a1a; color: #f0f0f0; font-size: 0.95rem; font-family: 'Rajdhani', sans-serif; outline: none; }
+    .scan-manual-wrap input:focus { border-color: #2ecc71; }
+    .btn-fechar-scan { position: absolute; top: 14px; right: 16px; background: #333; border: none; color: #fff; padding: 6px 13px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-family: 'Rajdhani', sans-serif; }
+
+    /* ── FAB ── */
+    #fab {
+      position: fixed; bottom: 22px; right: 22px; width: 54px; height: 54px;
+      background: #1a6e3c; border: none; border-radius: 50%; color: #2ecc71;
+      font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 14px #2ecc7144;
+      z-index: 500; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+    }
+    #fab:hover { background: #2ecc71; color: #111; transform: scale(1.08); }
 
     /* ── TOAST ── */
     #toast {
-      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-      background: #333; color: #fff; padding: 12px 22px; border-radius: 20px;
-      font-size: 0.9rem; opacity: 0; transition: opacity 0.3s; z-index: 9999;
-      pointer-events: none; max-width: 90%; text-align: center;
+      position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+      background: #2a2a2a; color: #fff; padding: 11px 20px; border-radius: 20px;
+      font-size: 0.88rem; opacity: 0; transition: opacity 0.3s; z-index: 9999;
+      pointer-events: none; max-width: 90%; text-align: center; white-space: pre-line;
     }
-    #toast.show { opacity: 1; }
-    #toast.success { background: #1a6e3c; }
-    #toast.error { background: #6e1a1a; }
+    #toast.show   { opacity: 1; }
+    #toast.ok     { background: #1a6e3c; }
+    #toast.err    { background: #6e1a1a; }
+    #toast.info   { background: #1a3d6e; }
 
-    /* ── EMPTY ── */
-    .empty-state { text-align: center; padding: 40px 20px; color: #444; }
-    .empty-state div { font-size: 2.5rem; margin-bottom: 12px; }
-    .empty-state p { font-size: 0.9rem; }
+    /* ── MISC ── */
+    .section-hd { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; color: #2ecc71; letter-spacing: 2px; margin: 14px 0 10px; border-bottom: 1px solid #1a1a1a; padding-bottom: 5px; }
+    .empty { text-align: center; padding: 36px 20px; color: #444; }
+    .empty span { font-size: 2rem; display: block; margin-bottom: 10px; }
+    .chip { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 0.68rem; font-weight: 700; }
+    .chip-ok     { background: #1a6e3c33; color: #2ecc71; }
+    .chip-baixo  { background: #f39c1233; color: #f39c12; }
+    .chip-acima  { background: #9b59b633; color: #9b59b6; }
+    .chip-zerado { background: #e74c3c33; color: #e74c3c; }
 
-    /* ── BADGES ── */
-    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; margin-left: 6px; }
-    .badge-ok { background: #1a6e3c33; color: #2ecc71; }
-    .badge-baixo { background: #f39c1233; color: #f39c12; }
-    .badge-zerado { background: #e74c3c33; color: #e74c3c; }
-
-    /* ── SEÇÕES ── */
-    .section-title {
-      font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: #2ecc71;
-      letter-spacing: 2px; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid #1a1a1a;
-    }
-
-    /* ── RESPONSIVO ── */
-    @media (max-width: 480px) {
-      .stat-grid { grid-template-columns: 1fr 1fr; }
-      .form-row { grid-template-columns: 1fr; }
-      .tab-btn { font-size: 0.8rem; padding: 10px 12px; }
+    @media (max-width:480px) {
+      .stat-grid { grid-template-columns: repeat(2,1fr); }
+      .row3 { grid-template-columns: 1fr 1fr; }
+      .tab-btn { font-size: 0.78rem; padding: 10px 11px; }
     }
 
-    /* ── FAB SCAN ── */
-    #fab-scan {
-      position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px;
-      background: #1a6e3c; border: none; border-radius: 50%; color: #2ecc71;
-      font-size: 1.6rem; cursor: pointer; box-shadow: 0 4px 16px #2ecc7155;
-      z-index: 500; transition: all 0.2s; display: flex; align-items: center; justify-content: center;
-    }
-    #fab-scan:hover { background: #2ecc71; color: #111; transform: scale(1.08); }
+    /* ── CAD LISTA ── */
+    .cad-item { background: #111; border-radius: 5px; padding: 9px 13px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #1a1a1a; margin-bottom: 6px; }
+    .cad-nome { font-weight: 700; font-size: 0.87rem; }
+    .cad-sub  { font-size: 0.7rem; color: #555; margin-top: 1px; }
 
-    /* ── LOADING ── */
-    .loading { text-align: center; padding: 30px; color: #555; font-size: 0.9rem; }
-
-    /* DELETAR produto */
-    .btn-del { background: #3a1010; color: #e74c3c; border: 1px solid #e74c3c33; }
-    .btn-del:hover { background: #e74c3c; color: #fff; }
-
-    /* Ajuste manual */
-    .ajuste-wrap { display: flex; gap: 6px; align-items: center; margin-top: 6px; }
-    .ajuste-wrap input { flex: 1; }
-
-    /* ── CATEGORIAS TAG ── */
-    .cat-tag {
-      display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem;
-      background: #1a2a3a; color: #3498db; margin-right: 4px;
-    }
+    /* ── EXPORT ── */
+    .rel-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .rel-filtros { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   </style>
 </head>
 <body>
 
 <!-- TOPBAR -->
 <div id="topbar">
-  <h1>🍺 ECOBIER</h1>
-  <span id="topbar-badge">ESTOQUE ADM</span>
-  <button id="btn-sair" onclick="sair()">Sair</button>
+  <div>
+    <h1>🍺 ECOBIER</h1>
+    <div id="topbar-sub">ESTOQUE ADM</div>
+  </div>
 </div>
 
 <!-- TABS -->
-<div class="tabs" id="app-tabs">
-  <button class="tab-btn active" onclick="showTab('estoque')">📦 Estoque</button>
-  <button class="tab-btn" onclick="showTab('movimentar')">⚡ Movimentar</button>
-  <button class="tab-btn" onclick="showTab('cadastro')">➕ Cadastrar</button>
-  <button class="tab-btn" onclick="showTab('historico')">📋 Histórico</button>
+<div class="tabs">
+  <button class="tab-btn active"  onclick="goTab('estoque',this)">📦 Estoque</button>
+  <button class="tab-btn"         onclick="goTab('movimentar',this)">⚡ Movimentar</button>
+  <button class="tab-btn"         onclick="goTab('cadastro',this)">➕ Cadastro</button>
+  <button class="tab-btn"         onclick="goTab('historico',this)">📋 Histórico</button>
+  <button class="tab-btn"         onclick="goTab('relatorio',this)">📊 Relatório</button>
 </div>
 
-<!-- ============================================================ -->
-<!-- TAB: ESTOQUE -->
-<!-- ============================================================ -->
-<div id="tab-estoque" class="tab-content active">
+<!-- ═══════════════════════════════════════════════════════ TAB ESTOQUE -->
+<div id="tab-estoque" class="tab-pane active">
   <div class="stat-grid">
-    <div class="stat-card">
-      <div class="stat-num" id="stat-total">0</div>
-      <div class="stat-label">Produtos</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num" style="color:#f39c12" id="stat-baixo">0</div>
-      <div class="stat-label">Estoque Baixo</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num" style="color:#e74c3c" id="stat-zerado">0</div>
-      <div class="stat-label">Zerados</div>
-    </div>
+    <div class="stat-card"><div class="stat-num" id="s-total">0</div><div class="stat-label">Produtos</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#f39c12" id="s-baixo">0</div><div class="stat-label">Baixo</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#e74c3c" id="s-zerado">0</div><div class="stat-label">Zerado</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#9b59b6" id="s-acima">0</div><div class="stat-label">Acima Máx</div></div>
   </div>
-
-  <div class="search-wrap">
-    <input type="text" id="busca-estoque" placeholder="Buscar produto ou código..." oninput="filtrarEstoque()" />
-  </div>
-
+  <div class="search-wrap"><input type="text" id="est-busca" placeholder="Buscar por nome, código ou categoria..." oninput="renderEstoque()"></div>
   <div class="filtros">
-    <button class="filtro-btn active" onclick="setFiltro('todos', this)">Todos</button>
-    <button class="filtro-btn" onclick="setFiltro('ok', this)">✅ OK</button>
-    <button class="filtro-btn" onclick="setFiltro('baixo', this)">⚠️ Baixo</button>
-    <button class="filtro-btn" onclick="setFiltro('zerado', this)">🔴 Zerado</button>
+    <button class="fil-btn active" onclick="setFil('todos',this)">Todos</button>
+    <button class="fil-btn" onclick="setFil('ok',this)">✅ OK</button>
+    <button class="fil-btn" onclick="setFil('baixo',this)">⚠️ Baixo</button>
+    <button class="fil-btn" onclick="setFil('zerado',this)">🔴 Zerado</button>
+    <button class="fil-btn" onclick="setFil('acima',this)">🟣 Acima Máx</button>
   </div>
-
-  <div id="lista-produtos">
-    <div class="loading">Carregando produtos...</div>
-  </div>
+  <div id="lista-estoque"></div>
 </div>
 
-<!-- ============================================================ -->
-<!-- TAB: MOVIMENTAR (scan / código) -->
-<!-- ============================================================ -->
-<div id="tab-movimentar" class="tab-content">
+<!-- ═══════════════════════════════════════════════════════ TAB MOVIMENTAR -->
+<div id="tab-movimentar" class="tab-pane">
   <div class="form-card">
     <h3>⚡ MOVIMENTAÇÃO RÁPIDA</h3>
-    <p style="font-size:0.82rem;color:#888;margin-bottom:16px;">Escaneie ou digite o código do produto para registrar entrada ou saída.</p>
-
-    <div class="form-group scan-group" style="margin-bottom:14px;">
-      <label>Código de Barras / Chave</label>
-      <div style="position:relative;">
-        <input type="text" id="mov-codigo" placeholder="Digite ou escaneie..." 
-          style="width:100%;padding:12px 50px 12px 14px;border:2px solid #222;border-radius:4px;background:#1a1a1a;color:#f0f0f0;font-size:1rem;font-family:'Rajdhani',sans-serif;outline:none;"
-          onkeydown="if(event.key==='Enter') buscarParaMov()"
-        />
-        <button class="btn-scan" onclick="abrirScanMov()" title="Câmera">📷</button>
+    <p style="font-size:0.82rem;color:#888;margin-bottom:14px;">Escaneie ou digite o código do produto para registrar entrada ou contagem.</p>
+    <div class="row1 fg">
+      <label>Código / Chave</label>
+      <div class="inp-scan">
+        <input type="text" id="mov-cod-input" placeholder="Digite ou escaneie..." onkeydown="if(event.key==='Enter')buscarMov()">
+        <button class="btn-cam" onclick="abrirScan('mov')">📷</button>
       </div>
     </div>
-
-    <button class="btn-primary" style="width:100%;margin-bottom:8px;" onclick="buscarParaMov()">🔍 Buscar Produto</button>
+    <button class="btn-g btn-full" style="margin-top:4px;" onclick="buscarMov()">🔍 Buscar</button>
   </div>
 
-  <div id="mov-resultado" style="display:none;">
-    <div class="form-card" id="mov-produto-card">
-      <h3 id="mov-nome-prod" style="color:#f0f0f0;font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;"></h3>
-      <p id="mov-cod-prod" style="font-size:0.78rem;color:#555;margin-bottom:4px;"></p>
-      <p style="margin-bottom:16px;">
-        Saldo atual: <span id="mov-saldo" style="font-size:1.3rem;font-weight:700;color:#2ecc71;font-family:'Bebas Neue',sans-serif;"></span>
-      </p>
+  <div id="mov-resultado">
+    <div class="mov-card">
+      <div class="mov-nome" id="mov-nome"></div>
+      <div class="mov-cod" id="mov-cod-info"></div>
+      <div class="mov-saldo-wrap">
+        <div class="mov-saldo-box">
+          <div class="mov-saldo-val" id="mov-saldo-atual">—</div>
+          <div class="mov-saldo-lbl">Estoque Atual</div>
+        </div>
+        <div class="mov-saldo-box">
+          <div class="mov-saldo-val" style="color:#f39c12" id="mov-ult-contagem">—</div>
+          <div class="mov-saldo-lbl">Última Contagem</div>
+        </div>
+        <div class="mov-saldo-box">
+          <div class="mov-saldo-val" style="color:#3498db" id="mov-total-entradas">—</div>
+          <div class="mov-saldo-lbl">Entradas Hoje</div>
+        </div>
+      </div>
 
-      <div class="form-row">
-        <div class="form-group">
+      <!-- Tipo -->
+      <div style="font-size:0.72rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Tipo de movimentação</div>
+      <div class="mov-tipo-btns">
+        <button class="mov-tipo-btn sel-entrada" id="btn-tipo-entrada" onclick="selTipo('entrada')">📥 ENTRADA<br><span style="font-size:0.68rem;font-weight:400;">(soma ao estoque)</span></button>
+        <button class="mov-tipo-btn" id="btn-tipo-contagem" onclick="selTipo('contagem')">📋 CONTAGEM<br><span style="font-size:0.68rem;font-weight:400;">(substitui estoque)</span></button>
+      </div>
+
+      <div class="row2">
+        <div class="fg">
           <label>Quantidade</label>
-          <input type="number" id="mov-qtd" min="0.001" step="any" placeholder="0" />
+          <input type="number" id="mov-qtd" min="0" step="any" placeholder="0">
         </div>
-        <div class="form-group">
-          <label>Observação (opcional)</label>
-          <input type="text" id="mov-obs" placeholder="Ex: NF 1234" />
+        <div class="fg">
+          <label>Observação</label>
+          <input type="text" id="mov-obs" placeholder="Opcional...">
         </div>
       </div>
 
-      <div class="form-actions">
-        <button class="btn-primary" onclick="registrarMov('entrada')" style="flex:1;">✅ ENTRADA</button>
-        <button class="btn-danger" onclick="registrarMov('saida')" style="flex:1;">❌ SAÍDA</button>
-      </div>
+      <button class="btn-g btn-full" style="margin-top:4px;" onclick="registrarMov()">✅ CONFIRMAR</button>
     </div>
   </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- TAB: CADASTRAR PRODUTO -->
-<!-- ============================================================ -->
-<div id="tab-cadastro" class="tab-content">
+<!-- ═══════════════════════════════════════════════════════ TAB CADASTRO -->
+<div id="tab-cadastro" class="tab-pane">
   <div class="form-card">
-    <h3 id="form-titulo">➕ NOVO PRODUTO</h3>
-    <input type="hidden" id="prod-id" />
+    <h3 id="cad-titulo">➕ NOVO PRODUTO</h3>
+    <input type="hidden" id="cad-id">
 
-    <div class="form-row">
-      <div class="form-group">
+    <div class="row2">
+      <div class="fg">
         <label>Nome do Produto *</label>
-        <input type="text" id="prod-nome" placeholder="Ex: Chopp Pilsen 30L" />
+        <input type="text" id="cad-nome" placeholder="Ex: Chopp Pilsen 30L">
       </div>
-      <div class="form-group">
+      <div class="fg">
         <label>Categoria</label>
-        <input type="text" id="prod-cat" placeholder="Ex: Chopp, Embalagem..." list="cat-lista" />
-        <datalist id="cat-lista"></datalist>
+        <input type="text" id="cad-cat" placeholder="Ex: Chopp, Embalagem..." list="dl-cat">
+        <datalist id="dl-cat"></datalist>
       </div>
     </div>
 
-    <div class="form-row">
-      <div class="form-group">
+    <div class="row2">
+      <div class="fg">
         <label>Código / Chave *</label>
-        <div style="position:relative;">
-          <input type="text" id="prod-codigo" placeholder="Cód. de barras ou chave" 
-            style="width:100%;padding:10px 50px 10px 12px;border:2px solid #222;border-radius:4px;background:#1a1a1a;color:#f0f0f0;font-size:0.95rem;font-family:'Rajdhani',sans-serif;outline:none;"
-          />
-          <button class="btn-scan" onclick="abrirScanCadastro()" title="Escanear código">📷</button>
+        <div class="inp-scan">
+          <input type="text" id="cad-cod" placeholder="Cód. de barras ou chave">
+          <button class="btn-cam" onclick="abrirScan('cad')">📷</button>
         </div>
       </div>
-      <div class="form-group">
-        <label>Unidade de Medida *</label>
-        <select id="prod-unidade">
+      <div class="fg">
+        <label>Unidade *</label>
+        <select id="cad-und">
           <option value="">Selecione...</option>
           <option value="UND">UND — Unidade</option>
           <option value="kg">kg — Quilograma</option>
@@ -428,626 +358,574 @@
       </div>
     </div>
 
-    <div class="form-row">
-      <div class="form-group">
-        <label>Estoque Mínimo (alerta)</label>
-        <input type="number" id="prod-min" min="0" step="any" placeholder="0" />
+    <div class="row3">
+      <div class="fg">
+        <label>Estoque Mínimo</label>
+        <input type="number" id="cad-min" min="0" step="any" placeholder="0">
       </div>
-      <div class="form-group">
-        <label>Estoque Inicial</label>
-        <input type="number" id="prod-estoque-ini" min="0" step="any" placeholder="0" />
+      <div class="fg">
+        <label>Estoque Máximo</label>
+        <input type="number" id="cad-max" min="0" step="any" placeholder="0">
+      </div>
+      <div class="fg">
+        <label id="lbl-ini">Estoque Inicial</label>
+        <input type="number" id="cad-ini" min="0" step="any" placeholder="0">
       </div>
     </div>
 
-    <div class="form-actions">
-      <button class="btn-primary" onclick="salvarProduto()">💾 Salvar</button>
-      <button class="btn-secondary" onclick="limparForm()">Limpar</button>
-      <button class="btn-danger" id="btn-del-prod" onclick="deletarProduto()" style="display:none;">🗑️ Excluir</button>
+    <div class="form-btns">
+      <button class="btn-g btn-g btn-green" onclick="salvarProd()">💾 Salvar</button>
+      <button class="btn-g btn-gray" onclick="limparCad()">Limpar</button>
+      <button class="btn-g btn-red" id="btn-del" onclick="deletarProd()" style="display:none;">🗑️ Excluir</button>
     </div>
   </div>
 
-  <!-- Lista resumida de produtos para edição -->
-  <div class="section-title">PRODUTOS CADASTRADOS</div>
-  <div class="search-wrap" style="margin-bottom:10px;">
-    <input type="text" id="busca-cad" placeholder="Buscar para editar..." oninput="renderCadLista()" />
-  </div>
-  <div id="cad-lista" style="display:flex;flex-direction:column;gap:6px;"></div>
+  <div class="section-hd">PRODUTOS CADASTRADOS</div>
+  <div class="search-wrap"><input type="text" id="cad-busca" placeholder="Buscar..." oninput="renderCadLista()"></div>
+  <div id="cad-lista"></div>
 </div>
 
-<!-- ============================================================ -->
-<!-- TAB: HISTÓRICO -->
-<!-- ============================================================ -->
-<div id="tab-historico" class="tab-content">
-  <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">
-    <div class="form-group" style="flex:1;min-width:160px;">
-      <label style="font-size:0.72rem;color:#666;text-transform:uppercase;">Data</label>
-      <input type="date" id="hist-data" style="padding:8px 12px;border:2px solid #222;border-radius:4px;background:#1a1a1a;color:#f0f0f0;font-family:'Rajdhani',sans-serif;font-size:0.9rem;outline:none;" onchange="carregarHistorico()" />
+<!-- ═══════════════════════════════════════════════════════ TAB HISTÓRICO -->
+<div id="tab-historico" class="tab-pane">
+  <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:flex-end;">
+    <div class="fg" style="flex:1;min-width:150px;">
+      <label>Data</label>
+      <input type="date" id="hist-data" style="padding:8px 11px;border:2px solid #222;border-radius:4px;background:#1a1a1a;color:#f0f0f0;font-family:'Rajdhani',sans-serif;font-size:0.9rem;outline:none;" onchange="renderHistorico()">
     </div>
-    <button class="btn-secondary" onclick="document.getElementById('hist-data').value=dataHoje();carregarHistorico()">Hoje</button>
-    <button class="btn-secondary" onclick="exportarHistorico()">📤 Exportar</button>
+    <button class="btn-g btn-gray" onclick="document.getElementById('hist-data').value=dataHoje();renderHistorico()">Hoje</button>
+    <button class="btn-g btn-blue" onclick="exportCSV()">📤 CSV</button>
   </div>
-
-  <div id="hist-stats" style="margin-bottom:14px;"></div>
-  <div id="lista-historico"><div class="loading">Selecione uma data para ver o histórico.</div></div>
+  <div id="hist-stats" style="margin-bottom:10px;"></div>
+  <div id="lista-hist" style="display:flex;flex-direction:column;gap:6px;"></div>
 </div>
 
-<!-- ============================================================ -->
-<!-- MODAL: MOVIMENTAÇÃO RÁPIDA DO ESTOQUE -->
-<!-- ============================================================ -->
-<div class="modal-overlay" id="modal-mov">
-  <div class="modal-box">
-    <h3 id="modal-titulo" class="entrada">ENTRADA</h3>
-    <div class="modal-sub" id="modal-produto-nome"></div>
-    <p style="font-size:0.82rem;color:#555;margin-bottom:10px;">Saldo atual: <span id="modal-saldo" style="color:#2ecc71;font-weight:700;"></span></p>
-    <input type="number" class="modal-input" id="modal-qtd" min="0.001" step="any" placeholder="0" />
-    <div class="form-group" style="margin-top:8px;">
-      <label>Observação (opcional)</label>
-      <input type="text" id="modal-obs" placeholder="Ex: nota fiscal, motivo..." style="padding:9px 12px;border:2px solid #222;border-radius:4px;background:#1a1a1a;color:#f0f0f0;font-family:'Rajdhani',sans-serif;font-size:0.9rem;outline:none;width:100%;" />
+<!-- ═══════════════════════════════════════════════════════ TAB RELATÓRIO -->
+<div id="tab-relatorio" class="tab-pane">
+  <div class="rel-header">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:#2ecc71;letter-spacing:2px;">RELATÓRIO DE ESTOQUE</div>
+    <div class="rel-filtros">
+      <input type="text" id="rel-busca" placeholder="Filtrar..." oninput="renderRelatorio()"
+        style="padding:7px 11px;border:2px solid #222;border-radius:4px;background:#1a1a1a;color:#f0f0f0;font-size:0.85rem;font-family:'Rajdhani',sans-serif;outline:none;">
+      <select id="rel-cat" onchange="renderRelatorio()"
+        style="padding:7px 11px;border:2px solid #222;border-radius:4px;background:#1a1a1a;color:#f0f0f0;font-size:0.85rem;font-family:'Rajdhani',sans-serif;outline:none;">
+        <option value="">Todas categorias</option>
+      </select>
+      <button class="btn-g btn-blue" onclick="exportRelCSV()">📤 CSV</button>
     </div>
-    <div class="modal-actions">
-      <button class="btn-primary" id="modal-confirmar" onclick="confirmarMov()">✅ Confirmar</button>
-      <button class="btn-secondary" onclick="fecharModal()">Cancelar</button>
-    </div>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="rel-table" id="rel-tabela">
+      <thead>
+        <tr>
+          <th>Produto</th>
+          <th>Cód.</th>
+          <th>Cat.</th>
+          <th>Und.</th>
+          <th>Últ. Contagem</th>
+          <th>Entradas</th>
+          <th>Estoque</th>
+          <th>Mín</th>
+          <th>Máx</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="rel-body"></tbody>
+    </table>
   </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- SCANNER: CADASTRO -->
-<!-- ============================================================ -->
-<div id="scan-overlay">
-  <button id="btn-fechar-scan" onclick="fecharScanCadastro()">✕ Fechar</button>
-  <div style="position:relative;width:100%;max-width:480px;">
+<!-- ═══════════════ SCANNER OVERLAY ═══════════════ -->
+<div class="scan-ov" id="scan-overlay">
+  <button class="btn-fechar-scan" onclick="fecharScan()">✕ Fechar</button>
+  <div class="scan-vid-wrap">
     <video id="scan-video" autoplay playsinline></video>
-    <div id="scan-line"></div>
+    <div class="scan-crosshair"></div>
   </div>
-  <div id="scan-status">Aponte a câmera para o código de barras</div>
-  <div id="scan-manual">
-    <input type="text" id="scan-input-manual" placeholder="Ou digite o código..." onkeydown="if(event.key==='Enter')usarCodigoManualCad()" />
-    <button class="btn-primary" onclick="usarCodigoManualCad()">OK</button>
-  </div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SCANNER: MOVIMENTAÇÃO -->
-<!-- ============================================================ -->
-<div id="scan-mov-overlay">
-  <button id="btn-fechar-scan-mov" onclick="fecharScanMov()">✕ Fechar</button>
-  <div style="position:relative;width:100%;max-width:480px;">
-    <video id="scan-mov-video" autoplay playsinline></video>
-    <div id="scan-mov-line"></div>
-  </div>
-  <div id="scan-mov-status">Aponte para o código de barras</div>
-  <div id="scan-manual" style="margin-top:12px;display:flex;gap:8px;padding:0 20px;width:100%;max-width:480px;">
-    <input type="text" id="scan-mov-input-manual" placeholder="Ou digite o código..." 
-      style="flex:1;padding:10px 14px;border:2px solid #333;border-radius:4px;background:#1a1a1a;color:#f0f0f0;font-size:1rem;font-family:'Rajdhani',sans-serif;outline:none;"
-      onkeydown="if(event.key==='Enter')usarCodigoManualMov()" />
-    <button class="btn-primary" onclick="usarCodigoManualMov()">OK</button>
+  <div class="scan-status" id="scan-status">Aponte a câmera para o código de barras</div>
+  <div class="scan-manual-wrap">
+    <input type="text" id="scan-manual-input" placeholder="Ou digite o código..." onkeydown="if(event.key==='Enter')usarManual()">
+    <button class="btn-g btn-green" onclick="usarManual()">OK</button>
   </div>
 </div>
 
-<!-- FAB SCAN -->
-<button id="fab-scan" onclick="abrirScanMov()" title="Escanear produto">📷</button>
+<!-- FAB -->
+<button id="fab" onclick="abrirScan('mov')" title="Escanear">📷</button>
 
 <div id="toast"></div>
 
-<!-- ZXing para leitura de código de barras -->
 <script src="https://unpkg.com/@zxing/library@latest/umd/index.min.js"></script>
-
 <script>
-// ════════════════════════════════════════════════════════════════
-// ECOBIER — Sistema de Estoque ADM
-// Armazenamento: localStorage (ecobier_*)
-// ════════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════
+// ECOBIER — v2 — localStorage
+// ════════════════════════════════════════════
+const K_PROD = 'ecobier_produtos';
+const K_HIST = 'ecobier_historico';
 
-const DB_PRODUTOS  = 'ecobier_produtos';
-const DB_HISTORICO = 'ecobier_historico';
-const DB_CONFIG    = 'ecobier_config';
+let _cache   = {};   // produtos
+let _filAtivo = 'todos';
+let _movProd  = null;
+let _movTipo  = 'entrada';
+let _scanAlvo = null; // 'cad' | 'mov'
+let _scanner  = null;
+let _toastT   = null;
 
-let produtosCache = {};
-let filtroAtivo   = 'todos';
-let _toastTimer   = null;
-let prodMovAtual  = null;  // produto selecionado para movimentação
-let scannerCad    = null;
-let scannerMov    = null;
+// ── STORAGE ──────────────────────────────────
+function dbGet(k, def) { try { return JSON.parse(localStorage.getItem(k)) ?? def; } catch { return def; } }
+function dbSet(k, v)   { localStorage.setItem(k, JSON.stringify(v)); }
+function getProd()     { return dbGet(K_PROD, {}); }
+function setProd(p)    { dbSet(K_PROD, p); _cache = p; }
+function getHist()     { return dbGet(K_HIST, []); }
+function pushHist(item){ const h = getHist(); h.unshift(item); dbSet(K_HIST, h.slice(0,3000)); }
 
-// ── UTILS ────────────────────────────────────────────────────────
-function showToast(msg, tipo='') {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'show ' + tipo;
-  if (_toastTimer) clearTimeout(_toastTimer);
-  const dur = tipo === 'error' ? 5000 : 2800;
-  _toastTimer = setTimeout(() => t.className = '', dur);
-}
-
-function dataHoje() {
-  const d = new Date();
-  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
-}
-
-function tsAgora() { return new Date().toISOString(); }
-
+// ── UTILS ─────────────────────────────────────
+function uid() { return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function dataHoje() { const d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function pad(n) { return String(n).padStart(2,'0'); }
+function ts()   { return new Date().toISOString(); }
 function fmtQ(v, u) {
-  if (v === null || v === undefined || v === '') return '—';
+  if (v===null||v===undefined||v==='') return '—';
   const n = parseFloat(v);
   if (isNaN(n)) return '—';
-  return u === 'kg' ? n.toFixed(3) + ' kg'
-       : u === 'ml' ? n + ' ml'
-       : u === 'g'  ? n + ' g'
-       : n + ' ' + (u || 'UND');
+  if (u==='kg') return n.toFixed(3)+' kg';
+  if (u==='g')  return n+' g';
+  if (u==='ml') return n+' ml';
+  return n+' '+(u||'UND');
 }
 
-function gerarId() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+function getStatus(p) {
+  const q = parseFloat(p.estoque)||0;
+  const mn = parseFloat(p.min)||0;
+  const mx = parseFloat(p.max)||0;
+  if (q <= 0) return 'zerado';
+  if (mx > 0 && q > mx) return 'acima';
+  if (mn > 0 && q <= mn) return 'baixo';
+  return 'ok';
 }
 
-// ── DB LOCAL ─────────────────────────────────────────────────────
-function dbGet(chave, def={}) {
-  try { return JSON.parse(localStorage.getItem(chave)) ?? def; } catch { return def; }
-}
-function dbSet(chave, val) {
-  localStorage.setItem(chave, JSON.stringify(val));
-}
-
-function getProdutos() { return dbGet(DB_PRODUTOS, {}); }
-function setProdutos(p) { dbSet(DB_PRODUTOS, p); }
-
-function getHistorico() { return dbGet(DB_HISTORICO, []); }
-function addHistorico(item) {
-  const h = getHistorico();
-  h.unshift(item);
-  // Manter apenas últimos 2000 registros
-  dbSet(DB_HISTORICO, h.slice(0, 2000));
+function toast(msg, tipo='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show '+(tipo==='ok'?'ok':tipo==='err'?'err':tipo==='info'?'info':'');
+  if (_toastT) clearTimeout(_toastT);
+  _toastT = setTimeout(()=>t.className='', tipo==='err'?5000:3000);
 }
 
-// ── INICIALIZAÇÃO ─────────────────────────────────────────────────
+// ── INIT ──────────────────────────────────────
 function init() {
-  produtosCache = getProdutos();
+  _cache = getProd();
   renderEstoque();
   renderCadLista();
-  atualizarCatLista();
-  const hoje = dataHoje();
-  document.getElementById('hist-data').value = hoje;
-  document.getElementById('hist-data').addEventListener('change', carregarHistorico);
-  carregarHistorico();
+  atualizarCatDL();
+  document.getElementById('hist-data').value = dataHoje();
+  renderHistorico();
+  renderRelatorio();
+  atualizarRelCats();
 }
 
-function sair() {
-  // No modo atual (sem login), apenas recarrega
-  showToast('Sistema Ecobier — Pronto!', 'success');
+// ── TABS ──────────────────────────────────────
+function goTab(name, btn) {
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+  if (name==='estoque') { _cache=getProd(); renderEstoque(); }
+  if (name==='cadastro') { renderCadLista(); atualizarCatDL(); }
+  if (name==='historico') renderHistorico();
+  if (name==='relatorio') { renderRelatorio(); atualizarRelCats(); }
 }
 
-// ── TABS ──────────────────────────────────────────────────────────
-function showTab(name) {
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  event.currentTarget.classList.add('active');
-  if (name === 'estoque') { produtosCache = getProdutos(); renderEstoque(); }
-  if (name === 'cadastro') { renderCadLista(); atualizarCatLista(); }
-  if (name === 'historico') carregarHistorico();
-}
-
-// ── RENDER ESTOQUE ────────────────────────────────────────────────
+// ── ESTOQUE ────────────────────────────────────
 function renderEstoque() {
-  const produtos = Object.values(produtosCache);
-  const busca = (document.getElementById('busca-estoque')?.value || '').toLowerCase();
+  const prods = Object.values(_cache);
+  const busca = (document.getElementById('est-busca')?.value||'').toLowerCase().trim();
 
-  const filtrado = produtos.filter(p => {
-    const matchBusca = !busca || p.nome?.toLowerCase().includes(busca) || p.codigo?.toLowerCase().includes(busca) || p.categoria?.toLowerCase().includes(busca);
-    if (!matchBusca) return false;
-    const status = getStatus(p);
-    if (filtroAtivo === 'todos') return true;
-    return status === filtroAtivo;
+  const fil = prods.filter(p => {
+    if (busca && !p.nome?.toLowerCase().includes(busca) && !p.cod?.toLowerCase().includes(busca) && !p.cat?.toLowerCase().includes(busca)) return false;
+    const st = getStatus(p);
+    if (_filAtivo==='todos') return true;
+    return st===_filAtivo;
+  }).sort((a,b)=>{
+    const ord={zerado:0,baixo:1,acima:2,ok:3};
+    const d=(ord[getStatus(a)]??3)-(ord[getStatus(b)]??3);
+    return d!==0?d:(a.nome||'').localeCompare(b.nome||'');
   });
 
   // Stats
-  document.getElementById('stat-total').textContent = produtos.length;
-  document.getElementById('stat-baixo').textContent = produtos.filter(p => getStatus(p) === 'baixo').length;
-  document.getElementById('stat-zerado').textContent = produtos.filter(p => getStatus(p) === 'zerado').length;
+  document.getElementById('s-total').textContent  = prods.length;
+  document.getElementById('s-baixo').textContent  = prods.filter(p=>getStatus(p)==='baixo').length;
+  document.getElementById('s-zerado').textContent = prods.filter(p=>getStatus(p)==='zerado').length;
+  document.getElementById('s-acima').textContent  = prods.filter(p=>getStatus(p)==='acima').length;
 
-  const lista = document.getElementById('lista-produtos');
-  if (filtrado.length === 0) {
-    lista.innerHTML = `<div class="empty-state"><div>${produtos.length === 0 ? '📦' : '🔍'}</div><p>${produtos.length === 0 ? 'Nenhum produto cadastrado ainda.<br>Vá em <b>Cadastrar</b> para adicionar.' : 'Nenhum produto encontrado.'}</p></div>`;
+  const el = document.getElementById('lista-estoque');
+  if (fil.length===0) {
+    el.innerHTML = `<div class="empty"><span>${prods.length===0?'📦':'🔍'}</span><p>${prods.length===0?'Nenhum produto. Vá em <b>Cadastro</b>.':'Nenhum resultado.'}</p></div>`;
     return;
   }
-
-  // Ordenar: zerado > baixo > ok, depois por nome
-  filtrado.sort((a, b) => {
-    const ord = { zerado: 0, baixo: 1, ok: 2 };
-    const sa = ord[getStatus(a)] ?? 2, sb = ord[getStatus(b)] ?? 2;
-    if (sa !== sb) return sa - sb;
-    return (a.nome || '').localeCompare(b.nome || '');
-  });
-
-  lista.innerHTML = filtrado.map(p => {
+  el.innerHTML = fil.map(p=>{
     const st = getStatus(p);
-    const qtdCls = st === 'zerado' ? 'zerado' : st === 'baixo' ? 'baixo' : '';
-    return `
-    <div class="prod-item ${st}" onclick="abrirMovItem('${p.id}')">
+    const cls = st;
+    return `<div class="prod-row ${cls}" onclick="irMov('${p.id}')">
       <div class="prod-info">
         <div class="prod-nome">${p.nome}</div>
-        <div class="prod-cod">🔑 ${p.codigo}</div>
-        ${p.categoria ? `<div class="prod-cat">📂 ${p.categoria}</div>` : ''}
+        <div class="prod-sub">🔑 ${p.cod}${p.cat?' · 📂 '+p.cat:''}</div>
       </div>
-      <div class="prod-right">
-        <div class="prod-qty ${qtdCls}">${fmtQ(p.estoque, p.unidade)}</div>
-        ${p.estoque_min > 0 ? `<div class="prod-unit">mín: ${fmtQ(p.estoque_min, p.unidade)}</div>` : ''}
+      <div class="prod-qty-wrap">
+        <div class="prod-qty ${cls}">${fmtQ(p.estoque,p.und)}</div>
+        <div class="prod-minmax">${p.min>0?'↓'+fmtQ(p.min,p.und):''}${p.min>0&&p.max>0?' ':''}${p.max>0?'↑'+fmtQ(p.max,p.und):''}</div>
       </div>
     </div>`;
   }).join('');
 }
 
-function getStatus(p) {
-  const q = parseFloat(p.estoque) || 0;
-  if (q <= 0) return 'zerado';
-  if (p.estoque_min > 0 && q <= p.estoque_min) return 'baixo';
-  return 'ok';
-}
-
-function setFiltro(f, btn) {
-  filtroAtivo = f;
-  document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
+function setFil(f, btn) {
+  _filAtivo = f;
+  document.querySelectorAll('.fil-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   renderEstoque();
 }
 
-function filtrarEstoque() { renderEstoque(); }
-
-// ── MOVIMENTAÇÃO PELO ESTOQUE ─────────────────────────────────────
-function abrirMovItem(id) {
-  const p = produtosCache[id];
+// Ir para movimentar a partir do estoque
+function irMov(id) {
+  const p = _cache[id];
   if (!p) return;
-  prodMovAtual = p;
-
-  // Preencher tab movimentar e ir para ela
-  document.getElementById('mov-codigo').value = p.codigo;
-  mostrarMovResultado(p);
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  _movProd = p;
+  document.getElementById('mov-cod-input').value = p.cod;
+  mostrarMovProd(p);
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(t=>t.classList.remove('active'));
   document.getElementById('tab-movimentar').classList.add('active');
   document.querySelectorAll('.tab-btn')[1].classList.add('active');
   document.getElementById('mov-qtd').focus();
 }
 
-// ── MOVIMENTAR TAB ────────────────────────────────────────────────
-function buscarParaMov() {
-  const cod = document.getElementById('mov-codigo').value.trim();
-  if (!cod) { showToast('Digite ou escaneie um código', 'error'); return; }
-  const produtos = getProdutos();
-  const p = Object.values(produtos).find(x => x.codigo === cod || x.id === cod);
-  if (!p) { showToast('Produto não encontrado: ' + cod, 'error'); return; }
-  prodMovAtual = p;
-  mostrarMovResultado(p);
+// ── MOVIMENTAR ─────────────────────────────────
+function buscarMov() {
+  const cod = document.getElementById('mov-cod-input').value.trim();
+  if (!cod) { toast('Digite ou escaneie um código', 'err'); return; }
+  const p = Object.values(getProd()).find(x=>x.cod===cod||x.id===cod);
+  if (!p) { toast('Produto não encontrado: '+cod, 'err'); return; }
+  _movProd = p;
+  mostrarMovProd(p);
 }
 
-function mostrarMovResultado(p) {
+function mostrarMovProd(p) {
+  // calcular entradas de hoje
+  const hoje = dataHoje();
+  const hist = getHist();
+  const entradasHoje = hist.filter(h=>h.pid===p.id&&h.tipo==='entrada'&&h.ts?.startsWith(hoje))
+                           .reduce((s,h)=>s+(parseFloat(h.qtd)||0),0);
+  const ultContagem = hist.find(h=>h.pid===p.id&&h.tipo==='contagem');
+
   document.getElementById('mov-resultado').style.display = 'block';
-  document.getElementById('mov-nome-prod').textContent = p.nome;
-  document.getElementById('mov-cod-prod').textContent = '🔑 ' + p.codigo + (p.categoria ? ' · 📂 ' + p.categoria : '');
-  document.getElementById('mov-saldo').textContent = fmtQ(p.estoque, p.unidade);
+  document.getElementById('mov-nome').textContent = p.nome;
+  document.getElementById('mov-cod-info').textContent = '🔑 '+p.cod+(p.cat?' · 📂 '+p.cat:'');
+  document.getElementById('mov-saldo-atual').textContent = fmtQ(p.estoque, p.und);
+  document.getElementById('mov-ult-contagem').textContent = ultContagem ? fmtQ(ultContagem.qtd, p.und)+'\n'+ultContagem.ts?.slice(0,10) : '—';
+  document.getElementById('mov-total-entradas').textContent = entradasHoje > 0 ? fmtQ(entradasHoje, p.und) : '—';
   document.getElementById('mov-qtd').value = '';
   document.getElementById('mov-obs').value = '';
 }
 
-function registrarMov(tipo) {
-  if (!prodMovAtual) { showToast('Nenhum produto selecionado', 'error'); return; }
+function selTipo(tipo) {
+  _movTipo = tipo;
+  document.getElementById('btn-tipo-entrada').className  = 'mov-tipo-btn'+(tipo==='entrada'?' sel-entrada':'');
+  document.getElementById('btn-tipo-contagem').className = 'mov-tipo-btn'+(tipo==='contagem'?' sel-contagem':'');
+}
+
+function registrarMov() {
+  if (!_movProd) { toast('Nenhum produto selecionado', 'err'); return; }
   const qtd = parseFloat(document.getElementById('mov-qtd').value);
-  if (!qtd || qtd <= 0) { showToast('Informe uma quantidade válida', 'error'); return; }
+  if (isNaN(qtd)||qtd<0) { toast('Quantidade inválida', 'err'); return; }
   const obs = document.getElementById('mov-obs').value.trim();
 
-  const produtos = getProdutos();
-  const p = produtos[prodMovAtual.id];
-  if (!p) { showToast('Produto não encontrado', 'error'); return; }
+  const prods = getProd();
+  const p = prods[_movProd.id];
+  if (!p) { toast('Produto não encontrado', 'err'); return; }
 
-  const antes = parseFloat(p.estoque) || 0;
-  const depois = tipo === 'entrada' ? antes + qtd : Math.max(0, antes - qtd);
+  const antes = parseFloat(p.estoque)||0;
+  let depois;
+  if (_movTipo==='entrada') {
+    depois = antes + qtd;
+  } else {
+    // contagem: substitui
+    depois = qtd;
+  }
   p.estoque = depois;
-  produtos[p.id] = p;
-  setProdutos(produtos);
-  produtosCache = produtos;
+  prods[p.id] = p;
+  setProd(prods);
 
-  addHistorico({
-    id: gerarId(), tipo, produto_id: p.id, produto_nome: p.nome,
-    produto_cod: p.codigo, quantidade: qtd, unidade: p.unidade,
-    saldo_antes: antes, saldo_depois: depois, obs, ts: tsAgora()
-  });
+  pushHist({ id:uid(), tipo:_movTipo, pid:p.id, pnome:p.nome, pcod:p.cod, und:p.und, qtd, antes, depois, obs, ts:ts() });
 
-  const emoji = tipo === 'entrada' ? '✅' : '❌';
-  showToast(`${emoji} ${tipo === 'entrada' ? 'Entrada' : 'Saída'}: ${fmtQ(qtd, p.unidade)} de ${p.nome}`, tipo === 'entrada' ? 'success' : '');
+  const lbl = _movTipo==='entrada' ? '✅ Entrada' : '📋 Contagem';
+  toast(`${lbl}: ${fmtQ(qtd,p.und)} — ${p.nome}`, 'ok');
 
-  // Atualizar display
-  prodMovAtual = p;
-  mostrarMovResultado(p);
+  _movProd = p;
+  mostrarMovProd(p);
+  document.getElementById('mov-qtd').value='';
   document.getElementById('mov-qtd').focus();
 }
 
-// ── CADASTRO ──────────────────────────────────────────────────────
-function salvarProduto() {
-  const id   = document.getElementById('prod-id').value.trim();
-  const nome = document.getElementById('prod-nome').value.trim();
-  const cod  = document.getElementById('prod-codigo').value.trim();
-  const cat  = document.getElementById('prod-cat').value.trim();
-  const und  = document.getElementById('prod-unidade').value;
-  const min  = parseFloat(document.getElementById('prod-min').value) || 0;
-  const ini  = parseFloat(document.getElementById('prod-estoque-ini').value) || 0;
+// ── CADASTRO ────────────────────────────────────
+function salvarProd() {
+  const id   = document.getElementById('cad-id').value.trim();
+  const nome = document.getElementById('cad-nome').value.trim();
+  const cod  = document.getElementById('cad-cod').value.trim();
+  const cat  = document.getElementById('cad-cat').value.trim();
+  const und  = document.getElementById('cad-und').value;
+  const min  = parseFloat(document.getElementById('cad-min').value)||0;
+  const max  = parseFloat(document.getElementById('cad-max').value)||0;
+  const ini  = parseFloat(document.getElementById('cad-ini').value)||0;
 
-  if (!nome) { showToast('Informe o nome do produto', 'error'); return; }
-  if (!cod)  { showToast('Informe o código do produto', 'error'); return; }
-  if (!und)  { showToast('Selecione a unidade de medida', 'error'); return; }
+  if (!nome) { toast('Informe o nome', 'err'); return; }
+  if (!cod)  { toast('Informe o código', 'err'); return; }
+  if (!und)  { toast('Selecione a unidade', 'err'); return; }
 
-  const produtos = getProdutos();
+  const prods = getProd();
+  const dup = Object.values(prods).find(p=>p.cod===cod&&p.id!==id);
+  if (dup) { toast('Código já existe em: '+dup.nome, 'err'); return; }
 
-  // Verificar duplicata de código (exceto se editando o mesmo)
-  const dup = Object.values(produtos).find(p => p.codigo === cod && p.id !== id);
-  if (dup) { showToast('Código já cadastrado em: ' + dup.nome, 'error'); return; }
-
-  if (id && produtos[id]) {
-    // Editar existente
-    produtos[id] = { ...produtos[id], nome, codigo: cod, categoria: cat, unidade: und, estoque_min: min };
-    showToast('✅ Produto atualizado!', 'success');
+  if (id && prods[id]) {
+    prods[id] = { ...prods[id], nome, cod, cat, und, min, max };
+    toast('✅ Produto atualizado!','ok');
   } else {
-    // Novo produto
-    const newId = gerarId();
-    produtos[newId] = { id: newId, nome, codigo: cod, categoria: cat, unidade: und, estoque_min: min, estoque: ini, criado_em: tsAgora() };
-    if (ini > 0) {
-      addHistorico({ id: gerarId(), tipo: 'entrada', produto_id: newId, produto_nome: nome, produto_cod: cod, quantidade: ini, unidade: und, saldo_antes: 0, saldo_depois: ini, obs: 'Estoque inicial', ts: tsAgora() });
-    }
-    showToast('✅ Produto cadastrado!', 'success');
+    const nid = uid();
+    prods[nid] = { id:nid, nome, cod, cat, und, min, max, estoque:ini, criado:ts() };
+    if (ini>0) pushHist({ id:uid(), tipo:'entrada', pid:nid, pnome:nome, pcod:cod, und, qtd:ini, antes:0, depois:ini, obs:'Estoque inicial', ts:ts() });
+    toast('✅ Produto cadastrado!','ok');
   }
 
-  setProdutos(produtos);
-  produtosCache = produtos;
-  limparForm();
+  setProd(prods);
+  limparCad();
   renderCadLista();
-  atualizarCatLista();
+  atualizarCatDL();
+  atualizarRelCats();
 }
 
-function editarProduto(id) {
-  const p = getProdutos()[id];
-  if (!p) return;
-  document.getElementById('prod-id').value = p.id;
-  document.getElementById('prod-nome').value = p.nome || '';
-  document.getElementById('prod-codigo').value = p.codigo || '';
-  document.getElementById('prod-cat').value = p.categoria || '';
-  document.getElementById('prod-unidade').value = p.unidade || '';
-  document.getElementById('prod-min').value = p.estoque_min || '';
-  document.getElementById('prod-estoque-ini').value = '';
-  document.getElementById('prod-estoque-ini').disabled = true;
-  document.getElementById('prod-estoque-ini').placeholder = 'N/A (edição)';
-  document.getElementById('form-titulo').textContent = '✏️ EDITAR PRODUTO';
-  document.getElementById('btn-del-prod').style.display = 'inline-block';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+function editarProd(id) {
+  const p = getProd()[id]; if(!p) return;
+  document.getElementById('cad-id').value   = p.id;
+  document.getElementById('cad-nome').value = p.nome||'';
+  document.getElementById('cad-cod').value  = p.cod||'';
+  document.getElementById('cad-cat').value  = p.cat||'';
+  document.getElementById('cad-und').value  = p.und||'';
+  document.getElementById('cad-min').value  = p.min||'';
+  document.getElementById('cad-max').value  = p.max||'';
+  document.getElementById('cad-ini').value  = '';
+  document.getElementById('cad-ini').disabled = true;
+  document.getElementById('lbl-ini').textContent = 'Estoque Inicial (bloq.)';
+  document.getElementById('cad-titulo').textContent = '✏️ EDITAR PRODUTO';
+  document.getElementById('btn-del').style.display = 'inline-block';
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function deletarProduto() {
-  const id = document.getElementById('prod-id').value;
-  if (!id) return;
-  const p = getProdutos()[id];
-  if (!p) return;
-  if (!confirm(`Excluir "${p.nome}"? Esta ação não pode ser desfeita.`)) return;
-  const produtos = getProdutos();
-  delete produtos[id];
-  setProdutos(produtos);
-  produtosCache = produtos;
-  limparForm();
-  renderCadLista();
-  showToast('🗑️ Produto excluído', '');
+function deletarProd() {
+  const id = document.getElementById('cad-id').value; if(!id) return;
+  const p = getProd()[id]; if(!p) return;
+  if (!confirm(`Excluir "${p.nome}"?`)) return;
+  const prods = getProd(); delete prods[id]; setProd(prods);
+  limparCad(); renderCadLista(); toast('🗑️ Excluído','');
 }
 
-function limparForm() {
-  ['prod-id','prod-nome','prod-codigo','prod-cat','prod-min','prod-estoque-ini'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) { el.value = ''; el.disabled = false; }
+function limparCad() {
+  ['cad-id','cad-nome','cad-cod','cad-cat','cad-min','cad-max','cad-ini'].forEach(id=>{
+    const el=document.getElementById(id); if(el){el.value='';el.disabled=false;}
   });
-  document.getElementById('prod-unidade').value = '';
-  document.getElementById('prod-estoque-ini').placeholder = '0';
-  document.getElementById('form-titulo').textContent = '➕ NOVO PRODUTO';
-  document.getElementById('btn-del-prod').style.display = 'none';
+  document.getElementById('cad-und').value='';
+  document.getElementById('lbl-ini').textContent='Estoque Inicial';
+  document.getElementById('cad-titulo').textContent='➕ NOVO PRODUTO';
+  document.getElementById('btn-del').style.display='none';
 }
 
 function renderCadLista() {
-  const busca = (document.getElementById('busca-cad')?.value || '').toLowerCase();
-  const produtos = Object.values(getProdutos()).filter(p =>
-    !busca || p.nome?.toLowerCase().includes(busca) || p.codigo?.toLowerCase().includes(busca)
-  ).sort((a,b) => (a.nome||'').localeCompare(b.nome||''));
-
-  const el = document.getElementById('cad-lista');
-  if (produtos.length === 0) {
-    el.innerHTML = `<div class="empty-state"><div>📭</div><p>Nenhum produto encontrado.</p></div>`;
-    return;
-  }
-  el.innerHTML = produtos.map(p => `
-    <div style="background:#111;border-radius:6px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border:1px solid #1a1a1a;">
+  const busca=(document.getElementById('cad-busca')?.value||'').toLowerCase();
+  const prods=Object.values(getProd()).filter(p=>!busca||p.nome?.toLowerCase().includes(busca)||p.cod?.toLowerCase().includes(busca))
+    .sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
+  const el=document.getElementById('cad-lista');
+  if(!prods.length){ el.innerHTML=`<div class="empty"><span>📭</span><p>Nenhum produto.</p></div>`; return; }
+  el.innerHTML=prods.map(p=>`
+    <div class="cad-item">
       <div>
-        <div style="font-weight:700;font-size:0.88rem;">${p.nome}</div>
-        <div style="font-size:0.72rem;color:#555;">🔑 ${p.codigo} · ${p.unidade}${p.categoria ? ' · 📂 '+p.categoria : ''}</div>
+        <div class="cad-nome">${p.nome}</div>
+        <div class="cad-sub">🔑 ${p.cod} · ${p.und}${p.cat?' · 📂 '+p.cat:''}${p.min>0?' · ↓'+p.min:''}${p.max>0?' · ↑'+p.max:''}</div>
       </div>
-      <div style="display:flex;gap:6px;align-items:center;">
-        <span style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:#2ecc71;">${fmtQ(p.estoque, p.unidade)}</span>
-        <button onclick="editarProduto('${p.id}')" style="background:#1a3d6e;color:#3498db;border:none;padding:5px 10px;border-radius:4px;cursor:pointer;font-size:0.78rem;font-family:'Rajdhani',sans-serif;">✏️ Editar</button>
-      </div>
+      <button onclick="editarProd('${p.id}')" style="background:#1a3d6e;color:#3498db;border:none;padding:5px 11px;border-radius:4px;cursor:pointer;font-size:0.78rem;font-family:'Rajdhani',sans-serif;font-weight:700;">✏️</button>
     </div>`).join('');
 }
 
-function atualizarCatLista() {
-  const cats = [...new Set(Object.values(getProdutos()).map(p => p.categoria).filter(Boolean))];
-  const dl = document.getElementById('cat-lista');
-  if (dl) dl.innerHTML = cats.map(c => `<option value="${c}">`).join('');
+function atualizarCatDL() {
+  const cats=[...new Set(Object.values(getProd()).map(p=>p.cat).filter(Boolean))];
+  const dl=document.getElementById('dl-cat'); if(dl) dl.innerHTML=cats.map(c=>`<option value="${c}">`).join('');
 }
 
-// ── HISTÓRICO ────────────────────────────────────────────────────
-function carregarHistorico() {
-  const data = document.getElementById('hist-data')?.value || dataHoje();
-  const hist = getHistorico().filter(h => h.ts && h.ts.startsWith(data));
+// ── HISTÓRICO ────────────────────────────────────
+function renderHistorico() {
+  const data=document.getElementById('hist-data')?.value||dataHoje();
+  const hist=getHist().filter(h=>h.ts?.startsWith(data));
+  const stats=document.getElementById('hist-stats');
+  const lista=document.getElementById('lista-hist');
 
-  const lista = document.getElementById('lista-historico');
-  const stats = document.getElementById('hist-stats');
-
-  if (hist.length === 0) {
-    lista.innerHTML = `<div class="empty-state"><div>📋</div><p>Nenhuma movimentação em ${data}.</p></div>`;
-    stats.innerHTML = '';
+  if(!hist.length){
+    stats.innerHTML='';
+    lista.innerHTML=`<div class="empty"><span>📋</span><p>Nenhuma movimentação em ${data}.</p></div>`;
     return;
   }
 
-  const entradas = hist.filter(h => h.tipo === 'entrada').reduce((s, h) => s + (parseFloat(h.quantidade)||0), 0);
-  const saidas   = hist.filter(h => h.tipo === 'saida').reduce((s, h) => s + (parseFloat(h.quantidade)||0), 0);
+  const nEnt=hist.filter(h=>h.tipo==='entrada').length;
+  const nCon=hist.filter(h=>h.tipo==='contagem').length;
+  stats.innerHTML=`<div class="stat-grid" style="grid-template-columns:1fr 1fr;margin-bottom:8px;">
+    <div class="stat-card"><div class="stat-num" style="color:#2ecc71;">${nEnt}</div><div class="stat-label">Entradas</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#3498db;">${nCon}</div><div class="stat-label">Contagens</div></div>
+  </div>`;
 
-  stats.innerHTML = `
-    <div class="stat-grid" style="grid-template-columns:1fr 1fr;margin-bottom:10px;">
-      <div class="stat-card"><div class="stat-num" style="color:#2ecc71;">${hist.filter(h=>h.tipo==='entrada').length}</div><div class="stat-label">Entradas</div></div>
-      <div class="stat-card"><div class="stat-num" style="color:#e74c3c;">${hist.filter(h=>h.tipo==='saida').length}</div><div class="stat-label">Saídas</div></div>
-    </div>`;
-
-  lista.innerHTML = hist.map(h => {
-    const hora = h.ts ? new Date(h.ts).toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}) : '';
-    const sinal = h.tipo === 'entrada' ? '+' : '-';
-    return `
-    <div class="hist-item ${h.tipo}">
+  lista.innerHTML=hist.map(h=>{
+    const hora=h.ts?new Date(h.ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'';
+    const sinal=h.tipo==='entrada'?'+':'≡';
+    return `<div class="hist-item ${h.tipo}">
       <div>
-        <div class="hist-nome">${h.produto_nome || '—'}</div>
-        <div class="hist-meta">🔑 ${h.produto_cod || '—'} · ${hora}${h.obs ? ' · ' + h.obs : ''}</div>
-        <div class="hist-meta">Saldo: ${fmtQ(h.saldo_antes, h.unidade)} → ${fmtQ(h.saldo_depois, h.unidade)}</div>
+        <div class="hist-nome">${h.pnome||'—'}</div>
+        <div class="hist-meta">🔑 ${h.pcod||'—'} · ${hora}${h.obs?' · '+h.obs:''}</div>
+        <div class="hist-meta">${h.tipo==='entrada'?'Antes: '+fmtQ(h.antes,h.und)+' → Depois: '+fmtQ(h.depois,h.und):'Contagem: '+fmtQ(h.qtd,h.und)}</div>
       </div>
-      <div class="hist-qty ${h.tipo}">${sinal}${fmtQ(h.quantidade, h.unidade)}</div>
+      <div class="hist-qty ${h.tipo}">${sinal}${fmtQ(h.qtd,h.und)}</div>
     </div>`;
   }).join('');
 }
 
-function exportarHistorico() {
-  const data = document.getElementById('hist-data')?.value || dataHoje();
-  const hist = getHistorico().filter(h => h.ts && h.ts.startsWith(data));
-  if (hist.length === 0) { showToast('Nenhum dado para exportar', 'error'); return; }
-
-  const csv = ['Data,Tipo,Produto,Código,Quantidade,Unidade,Saldo Antes,Saldo Depois,Observação']
-    .concat(hist.map(h => [
-      h.ts?.slice(0,10), h.tipo, h.produto_nome, h.produto_cod,
-      h.quantidade, h.unidade, h.saldo_antes, h.saldo_depois, h.obs || ''
-    ].map(v => `"${v}"`).join(',')))
+function exportCSV() {
+  const data=document.getElementById('hist-data')?.value||dataHoje();
+  const hist=getHist().filter(h=>h.ts?.startsWith(data));
+  if(!hist.length){toast('Sem dados para exportar','err');return;}
+  const csv=['Data,Tipo,Produto,Código,Quantidade,Unidade,Antes,Depois,Observação']
+    .concat(hist.map(h=>[h.ts?.slice(0,10),h.tipo,h.pnome,h.pcod,h.qtd,h.und,h.antes,h.depois,h.obs||''].map(v=>`"${v||''}"`).join(',')))
     .join('\n');
-
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url  = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = `ecobier-historico-${data}.csv`; a.click();
-  URL.revokeObjectURL(url);
-  showToast('📤 Exportado!', 'success');
+  baixarCSV(csv,'ecobier-historico-'+data+'.csv');
 }
 
-// ── SCANNER (ZXing) ───────────────────────────────────────────────
-function abrirScanCadastro() {
-  const overlay = document.getElementById('scan-overlay');
-  overlay.style.display = 'flex';
-  iniciarScanner('scan-video', (cod) => {
-    document.getElementById('prod-codigo').value = cod;
-    fecharScanCadastro();
-    showToast('📷 Código lido: ' + cod, 'success');
-  }, 'scannerCad');
+// ── RELATÓRIO ────────────────────────────────────
+function renderRelatorio() {
+  const busca=(document.getElementById('rel-busca')?.value||'').toLowerCase();
+  const catFil=document.getElementById('rel-cat')?.value||'';
+  const hist=getHist();
+  const hoje=dataHoje();
+
+  const prods=Object.values(getProd()).filter(p=>{
+    if(busca&&!p.nome?.toLowerCase().includes(busca)&&!p.cod?.toLowerCase().includes(busca)) return false;
+    if(catFil&&p.cat!==catFil) return false;
+    return true;
+  }).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
+
+  const tbody=document.getElementById('rel-body');
+  if(!prods.length){ tbody.innerHTML=`<tr><td colspan="10" style="text-align:center;color:#444;padding:24px;">Nenhum produto.</td></tr>`; return; }
+
+  tbody.innerHTML=prods.map(p=>{
+    // Última contagem
+    const ultCont=hist.find(h=>h.pid===p.id&&h.tipo==='contagem');
+    const ultContTxt=ultCont?fmtQ(ultCont.qtd,p.und)+' ('+ultCont.ts?.slice(0,10)+')':'—';
+    // Entradas totais (todo histórico)
+    const totalEnt=hist.filter(h=>h.pid===p.id&&h.tipo==='entrada').reduce((s,h)=>s+(parseFloat(h.qtd)||0),0);
+    const st=getStatus(p);
+    const stMap={ok:'tag-ok',baixo:'tag-baixo',acima:'tag-acima',zerado:'tag-zerado'};
+    const stLbl={ok:'✅ OK',baixo:'⚠️ Baixo',acima:'🟣 Acima Máx',zerado:'🔴 Zerado'};
+    return `<tr>
+      <td style="font-weight:700;">${p.nome}</td>
+      <td style="color:#666;font-size:0.78rem;">${p.cod}</td>
+      <td style="color:#3498db;font-size:0.78rem;">${p.cat||'—'}</td>
+      <td>${p.und}</td>
+      <td style="color:#f39c12;">${ultContTxt}</td>
+      <td style="color:#2ecc71;">${totalEnt>0?fmtQ(totalEnt,p.und):'—'}</td>
+      <td style="font-weight:700;font-family:'Bebas Neue',sans-serif;font-size:1.05rem;">${fmtQ(p.estoque,p.und)}</td>
+      <td style="color:#f39c12;">${p.min>0?fmtQ(p.min,p.und):'—'}</td>
+      <td style="color:#9b59b6;">${p.max>0?fmtQ(p.max,p.und):'—'}</td>
+      <td class="${stMap[st]}">${stLbl[st]}</td>
+    </tr>`;
+  }).join('');
 }
 
-function fecharScanCadastro() {
-  document.getElementById('scan-overlay').style.display = 'none';
-  pararScanner('scannerCad');
+function atualizarRelCats() {
+  const cats=[...new Set(Object.values(getProd()).map(p=>p.cat).filter(Boolean))].sort();
+  const sel=document.getElementById('rel-cat'); if(!sel) return;
+  const atual=sel.value;
+  sel.innerHTML='<option value="">Todas categorias</option>'+cats.map(c=>`<option value="${c}">${c}</option>`).join('');
+  sel.value=atual;
 }
 
-function usarCodigoManualCad() {
-  const cod = document.getElementById('scan-input-manual').value.trim();
-  if (!cod) return;
-  document.getElementById('prod-codigo').value = cod;
-  fecharScanCadastro();
-  showToast('✅ Código definido: ' + cod, 'success');
+function exportRelCSV() {
+  const prods=Object.values(getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
+  const hist=getHist();
+  if(!prods.length){toast('Sem dados','err');return;}
+  const csv=['Produto,Código,Categoria,Unidade,Últ. Contagem,Total Entradas,Estoque Atual,Mín,Máx,Status']
+    .concat(prods.map(p=>{
+      const uc=hist.find(h=>h.pid===p.id&&h.tipo==='contagem');
+      const te=hist.filter(h=>h.pid===p.id&&h.tipo==='entrada').reduce((s,h)=>s+(parseFloat(h.qtd)||0),0);
+      const st={ok:'OK',baixo:'Baixo',acima:'Acima Máx',zerado:'Zerado'}[getStatus(p)]||'';
+      return [p.nome,p.cod,p.cat||'',p.und,uc?fmtQ(uc.qtd,p.und)+' ('+uc.ts?.slice(0,10)+')':'',te>0?te:'',parseFloat(p.estoque)||0,p.min||'',p.max||'',st].map(v=>`"${v}"`).join(',');
+    })).join('\n');
+  baixarCSV(csv,'ecobier-relatorio-'+dataHoje()+'.csv');
 }
 
-function abrirScanMov() {
-  const overlay = document.getElementById('scan-mov-overlay');
-  overlay.style.display = 'flex';
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-movimentar').classList.add('active');
-  document.querySelectorAll('.tab-btn')[1].classList.add('active');
-
-  iniciarScanner('scan-mov-video', (cod) => {
-    document.getElementById('mov-codigo').value = cod;
-    fecharScanMov();
-    buscarParaMov();
-  }, 'scannerMov');
+function baixarCSV(csv, nome) {
+  const b=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const u=URL.createObjectURL(b);
+  const a=document.createElement('a'); a.href=u; a.download=nome; a.click();
+  URL.revokeObjectURL(u);
+  toast('📤 Exportado!','ok');
 }
 
-function fecharScanMov() {
-  document.getElementById('scan-mov-overlay').style.display = 'none';
-  pararScanner('scannerMov');
+// ── SCANNER ──────────────────────────────────────
+function abrirScan(alvo) {
+  _scanAlvo = alvo;
+  document.getElementById('scan-overlay').classList.add('open');
+  document.getElementById('scan-manual-input').value='';
+  document.getElementById('scan-status').textContent='Aponte a câmera para o código de barras';
+  iniciarScanner();
+  // Mudar para aba movimentar se alvo=mov
+  if(alvo==='mov'){
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(t=>t.classList.remove('active'));
+    document.getElementById('tab-movimentar').classList.add('active');
+    document.querySelectorAll('.tab-btn')[1].classList.add('active');
+  }
 }
 
-function usarCodigoManualMov() {
-  const cod = document.getElementById('scan-mov-input-manual').value.trim();
-  if (!cod) return;
-  document.getElementById('mov-codigo').value = cod;
-  fecharScanMov();
-  buscarParaMov();
+function fecharScan() {
+  document.getElementById('scan-overlay').classList.remove('open');
+  pararScanner();
 }
 
-// Instâncias de scanner
-const scanners = {};
+function usarManual() {
+  const cod=document.getElementById('scan-manual-input').value.trim();
+  if(!cod) return;
+  usarCodigo(cod);
+}
 
-function iniciarScanner(videoId, callback, nome) {
+function usarCodigo(cod) {
+  fecharScan();
+  if(_scanAlvo==='cad') {
+    document.getElementById('cad-cod').value=cod;
+    toast('📷 Código: '+cod,'info');
+  } else {
+    document.getElementById('mov-cod-input').value=cod;
+    buscarMov();
+  }
+}
+
+function iniciarScanner() {
+  if(typeof ZXing==='undefined') {
+    document.getElementById('scan-status').textContent='Biblioteca não carregada — use digitação manual.';
+    return;
+  }
   try {
-    if (typeof ZXing === 'undefined') {
-      document.getElementById('scan-status').textContent = 'Biblioteca de scanner não carregada. Use digitação manual.';
-      return;
-    }
-    const hints = new Map();
-    hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
-    const reader = new ZXing.BrowserMultiFormatReader(hints);
-    scanners[nome] = reader;
-    reader.decodeFromVideoDevice(null, videoId, (result, err) => {
-      if (result) {
-        callback(result.getText());
-      }
+    const hints=new Map(); hints.set(ZXing.DecodeHintType.TRY_HARDER,true);
+    _scanner = new ZXing.BrowserMultiFormatReader(hints);
+    _scanner.decodeFromVideoDevice(null,'scan-video',(result,err)=>{
+      if(result) usarCodigo(result.getText());
     });
-  } catch(e) {
-    console.warn('Scanner error:', e);
-  }
+  } catch(e) { console.warn('scanner:',e); }
 }
 
-function pararScanner(nome) {
-  if (scanners[nome]) {
-    try { scanners[nome].reset(); } catch(e) {}
-    delete scanners[nome];
-  }
+function pararScanner() {
+  if(_scanner){ try{_scanner.reset();}catch(e){} _scanner=null; }
 }
 
-// ── MODAL ─────────────────────────────────────────────────────────
-let modalMovTipo = null;
-let modalMovProd = null;
-
-function fecharModal() {
-  document.getElementById('modal-mov').classList.remove('open');
-  modalMovTipo = null; modalMovProd = null;
-}
-
-function confirmarMov() {
-  if (!modalMovTipo || !modalMovProd) return;
-  const qtd = parseFloat(document.getElementById('modal-qtd').value);
-  if (!qtd || qtd <= 0) { showToast('Quantidade inválida', 'error'); return; }
-  const obs = document.getElementById('modal-obs').value.trim();
-
-  const produtos = getProdutos();
-  const p = produtos[modalMovProd.id];
-  const antes = parseFloat(p.estoque) || 0;
-  const depois = modalMovTipo === 'entrada' ? antes + qtd : Math.max(0, antes - qtd);
-  p.estoque = depois;
-  produtos[p.id] = p;
-  setProdutos(produtos);
-  produtosCache = produtos;
-
-  addHistorico({ id: gerarId(), tipo: modalMovTipo, produto_id: p.id, produto_nome: p.nome, produto_cod: p.codigo, quantidade: qtd, unidade: p.unidade, saldo_antes: antes, saldo_depois: depois, obs, ts: tsAgora() });
-
-  fecharModal();
-  renderEstoque();
-  const emoji = modalMovTipo === 'entrada' ? '✅' : '❌';
-  showToast(`${emoji} ${modalMovTipo === 'entrada' ? 'Entrada' : 'Saída'} registrada: ${fmtQ(qtd, p.unidade)}`, modalMovTipo === 'entrada' ? 'success' : '');
-}
-
-// ── START ─────────────────────────────────────────────────────────
 window.addEventListener('load', init);
 </script>
 </body>
