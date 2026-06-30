@@ -257,100 +257,97 @@
     .rel-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
     .rel-filtros { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 
-    /* ══ TELA LOGIN ══ */
-    #tela-login {
-      position:fixed;inset:0;z-index:9999;
+    /* ── LOGIN ── */
+    #ecobier-login {
+      position:fixed; inset:0; z-index:9999;
       background:#0a0a0a;
-      display:none;align-items:center;justify-content:center;padding:24px;
+      display:flex; align-items:center; justify-content:center; padding:20px;
     }
-    #tela-login::before {
-      content:'';position:absolute;inset:0;pointer-events:none;
-      background:radial-gradient(ellipse 70% 50% at 50% -10%,rgba(46,204,113,0.13) 0%,transparent 70%),
-                 radial-gradient(ellipse 50% 40% at 90% 110%,rgba(26,110,60,0.08) 0%,transparent 60%);
+    #ecobier-login::before {
+      content:''; position:absolute; inset:0; pointer-events:none;
+      background: radial-gradient(ellipse 80% 50% at 50% -5%, rgba(46,204,113,0.13) 0%, transparent 70%);
     }
-    .lcard {
-      position:relative;z-index:1;
-      background:#111;border:1px solid rgba(46,204,113,0.18);border-radius:20px;
-      padding:40px 28px 32px;width:100%;max-width:380px;
-      box-shadow:0 24px 64px rgba(0,0,0,0.7),0 0 0 1px rgba(46,204,113,0.04);
+    .ecl-card {
+      position:relative; z-index:1;
+      background:#111; border:1px solid rgba(46,204,113,0.2);
+      border-radius:18px; padding:40px 28px 32px;
+      width:100%; max-width:370px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(46,204,113,0.05);
     }
-    .llogo { text-align:center;margin-bottom:32px; }
-    .llogo-icon { font-size:2.8rem;display:block;margin-bottom:6px; }
-    .llogo h1 {
-      font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:#2ecc71;
-      letter-spacing:7px;line-height:1;
-      text-shadow:0 0 40px rgba(46,204,113,0.35);
+    .ecl-logo { text-align:center; margin-bottom:30px; }
+    .ecl-logo-icon { font-size:3rem; display:block; margin-bottom:4px; }
+    .ecl-logo h1 {
+      font-family:'Bebas Neue',sans-serif; font-size:2.8rem;
+      color:#2ecc71; letter-spacing:7px; line-height:1;
+      text-shadow: 0 0 30px rgba(46,204,113,0.3);
     }
-    .llogo-sub { font-size:0.65rem;color:#333;letter-spacing:4px;text-transform:uppercase;margin-top:8px; }
-    .lsep { height:1px;background:linear-gradient(90deg,transparent,rgba(46,204,113,0.18),transparent);margin:0 0 26px; }
-    .lfield { margin-bottom:16px; }
-    .lfield label { display:block;font-size:0.65rem;color:#2ecc71;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;font-weight:700; }
-    .lfield-wrap { position:relative; }
-    .lfield-icon { position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:0.95rem;pointer-events:none;transition:opacity 0.2s;opacity:0.3; }
-    .lfield-wrap:focus-within .lfield-icon { opacity:0.9; }
-    .lfield input {
-      width:100%;padding:13px 14px 13px 42px;
-      background:#0d0d0d;border:1.5px solid #1c1c1c;border-radius:10px;
-      color:#f0f0f0;font-size:0.95rem;font-family:'Rajdhani',sans-serif;font-weight:600;
-      outline:none;transition:border-color 0.2s,box-shadow 0.2s;
+    .ecl-logo p { font-size:0.65rem; color:#333; letter-spacing:4px; text-transform:uppercase; margin-top:6px; }
+    .ecl-sep { height:1px; background:linear-gradient(90deg,transparent,rgba(46,204,113,0.2),transparent); margin:0 0 24px; }
+    .ecl-field { margin-bottom:14px; }
+    .ecl-field label { display:block; font-size:0.65rem; color:#2ecc71; text-transform:uppercase; letter-spacing:2px; margin-bottom:7px; font-weight:700; }
+    .ecl-field input {
+      width:100%; padding:13px 14px;
+      background:#0d0d0d; border:1.5px solid #1e1e1e; border-radius:9px;
+      color:#f0f0f0; font-size:1rem; font-family:'Rajdhani',sans-serif; font-weight:600;
+      outline:none; transition:border-color .2s;
     }
-    .lfield input::placeholder { color:#2a2a2a; }
-    .lfield input:focus { border-color:rgba(46,204,113,0.45);box-shadow:0 0 0 3px rgba(46,204,113,0.06); }
-    .btn-login {
-      width:100%;padding:15px;margin-top:8px;
-      background:linear-gradient(135deg,#17612f 0%,#27ae60 100%);
-      border:none;border-radius:10px;color:#fff;
-      font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:4px;
-      cursor:pointer;transition:all 0.25s;
-      box-shadow:0 4px 24px rgba(46,204,113,0.22);
+    .ecl-field input::placeholder { color:#2a2a2a; }
+    .ecl-field input:focus { border-color:rgba(46,204,113,0.5); }
+    .ecl-btn {
+      width:100%; padding:14px; margin-top:8px;
+      background:linear-gradient(135deg,#17612f,#27ae60);
+      border:none; border-radius:9px; color:#fff;
+      font-family:'Bebas Neue',sans-serif; font-size:1.15rem; letter-spacing:4px;
+      cursor:pointer; transition:all .2s;
+      box-shadow: 0 4px 20px rgba(46,204,113,0.2);
     }
-    .btn-login:hover { background:linear-gradient(135deg,#27ae60 0%,#2ecc71 100%);box-shadow:0 6px 32px rgba(46,204,113,0.38);transform:translateY(-1px); }
-    .btn-login:active { transform:scale(0.985); }
-    .btn-login.lbtn-loading { background:#161616;color:#2ecc71;pointer-events:none;letter-spacing:3px; }
-    .lerro {
-      background:rgba(231,76,60,0.07);color:#e74c3c;
-      border:1px solid rgba(231,76,60,0.18);border-radius:8px;
-      padding:10px 14px;font-size:0.85rem;margin-top:14px;text-align:center;display:none;
+    .ecl-btn:hover { background:linear-gradient(135deg,#27ae60,#2ecc71); transform:translateY(-1px); }
+    .ecl-btn:active { transform:scale(0.98); }
+    .ecl-btn:disabled { background:#1a1a1a; color:#2ecc71; cursor:default; transform:none; }
+    .ecl-erro {
+      background:rgba(231,76,60,0.08); color:#e74c3c;
+      border:1px solid rgba(231,76,60,0.2); border-radius:7px;
+      padding:9px 14px; font-size:0.85rem; margin-top:12px;
+      text-align:center; display:none;
     }
-    .lload { text-align:center;color:#2ecc71;font-size:0.78rem;margin-top:12px;display:none;letter-spacing:3px;opacity:0.7; }
-    .lfooter { text-align:center;margin-top:28px;font-size:0.6rem;color:#222;letter-spacing:2px; }
+    .ecl-footer { text-align:center; margin-top:26px; font-size:0.6rem; color:#222; letter-spacing:2px; }
+    /* botão sair no topbar */
+    #btn-logout {
+      background:none; border:1px solid #1a6e3c33; color:#555;
+      padding:4px 10px; border-radius:4px; cursor:pointer;
+      font-size:0.75rem; font-family:'Rajdhani',sans-serif; letter-spacing:1px; transition:all .2s;
+    }
+    #btn-logout:hover { border-color:#e74c3c; color:#e74c3c; }
 
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<div id="loading-overlay" style="display:none;"><div class="spinner"></div><div class="loading-txt">CARREGANDO...</div></div>
-<!-- LOGIN -->
-<div id="tela-login">
-  <div class="lcard">
-    <div class="llogo">
-      <span class="llogo-icon">🍺</span>
+<!-- ── TELA LOGIN ── -->
+<div id="ecobier-login">
+  <div class="ecl-card">
+    <div class="ecl-logo">
+      <span class="ecl-logo-icon">🍺</span>
       <h1>ECOBIER</h1>
-      <div class="llogo-sub">Sistema de Gestão de Estoque</div>
+      <p>Sistema de Gestão de Estoque</p>
     </div>
-    <div class="lsep"></div>
-    <div class="lfield">
+    <div class="ecl-sep"></div>
+    <div class="ecl-field">
       <label>Email</label>
-      <div class="lfield-wrap">
-        <input type="email" id="login-email" placeholder="seu@email.com" autocomplete="email">
-        <span class="lfield-icon">✉️</span>
-      </div>
+      <input type="email" id="ecl-email" placeholder="seu@email.com" autocomplete="email">
     </div>
-    <div class="lfield">
+    <div class="ecl-field">
       <label>Senha</label>
-      <div class="lfield-wrap">
-        <input type="password" id="login-senha" placeholder="••••••••" autocomplete="current-password">
-        <span class="lfield-icon">🔒</span>
-      </div>
+      <input type="password" id="ecl-senha" placeholder="••••••••" autocomplete="current-password" onkeypress="if(event.key==='Enter')eclLogin()">
     </div>
-    <button class="btn-login" id="btn-login-main" onclick="fazerLogin()">ENTRAR</button>
-    <div class="lerro" id="login-erro"></div>
-    <div class="lload" id="login-loading">● VERIFICANDO ACESSO...</div>
-    <div class="lfooter">ECOBIER © 2026 · POWERED BY BRAINLOGIC</div>
+    <button class="ecl-btn" id="ecl-btn" onclick="eclLogin()">ENTRAR</button>
+    <div class="ecl-erro" id="ecl-erro"></div>
+    <div class="ecl-footer">ECOBIER &copy; 2026</div>
   </div>
 </div>
-<!-- APP -->
-<div id="app-main" style="display:none">
+
+<!-- ── APP PRINCIPAL ── -->
+<div id="ecobier-app" style="display:none">
 
 <!-- TOPBAR -->
 <div id="topbar">
@@ -358,7 +355,8 @@
     <h1>🍺 ECOBIER</h1>
     <div id="topbar-sub">ESTOQUE ADM</div>
     <div style="display:flex;align-items:center;gap:8px;"><div id="badge-licenca" style="font-family:'Bebas Neue',sans-serif;font-size:0.8rem;padding:4px 10px;border-radius:4px;cursor:pointer;letter-spacing:1px;" onclick="mostrarModalLicenca('upgrade')">⏳ TRIAL</div>
-    <button id="btn-logout" onclick="fazerLogout()">🚪 SAIR</button></div>
+    <button id="btn-logout" onclick="eclLogout()">🚪 SAIR</button>
+    </div>
   </div>
 </div>
 
@@ -791,10 +789,8 @@
 const K_PROD    = 'ecobier_produtos';
 const K_HIST    = 'ecobier_historico';
 const K_DESC    = 'ecobier_descartes';
-const K_LIC      = 'ecobier_licenca';
+const K_LIC     = 'ecobier_licenca';
 const TRIAL_DIAS = 30;
-const MASTER_EMAIL = 'josiel@ecobier.app';
-let _currentUserEmail = ''; // preenchido no login
 
 // Códigos válidos — formato ECOBIER-XXXX-XXXX (gerados por você)
 // Adicione novos códigos aqui quando um cliente pagar
@@ -825,16 +821,15 @@ function diasRestantes() {
   return Math.max(0, TRIAL_DIAS - Math.floor(diff));
 }
 
-function isMaster() {
-  return _currentUserEmail === MASTER_EMAIL;
-}
+
+function isMaster() { return _currentUserEmail === MASTER_EMAIL; }
 
 function isPago() {
   return isMaster() || getLic().plano === 'pago';
 }
 
 function isAtivo() {
-  return isMaster() || isPago() || diasRestantes() > 0;
+  return isPago() || diasRestantes() > 0;
 }
 
 function ativarCodigo(cod) {
@@ -863,7 +858,6 @@ function atualizarBadgeLicenca() {
     badge.textContent = '👑 MASTER';
     badge.style.background = '#1a3d6e';
     badge.style.color = '#3498db';
-    badge.onclick = null;
     return;
   }
   if (isPago()) {
@@ -886,11 +880,11 @@ function atualizarBadgeLicenca() {
 
 // Verifica se feature está liberada
 function podeUsar(feature) {
-  if (isMaster()) return true; // Josiel: acesso total sempre
-  if (isPago()) return true;   // cliente com licença ativa
-  if (!isAtivo()) return false; // trial expirado
-  // trial ativo: tudo liberado por 30 dias
-  return true;
+  if (isPago()) return true;
+  if (!isAtivo()) return false; // trial expirado — bloqueia tudo
+  // trial ativo — features liberadas
+  const liberadas = ['estoque_basico','movimentar_simples','pedido_whatsapp','scanner'];
+  return liberadas.includes(feature);
 }
 
 function bloquearSeNecessario(feature, callback) {
@@ -925,173 +919,14 @@ let _scanner  = null;
 let _toastT   = null;
 
 // ── STORAGE ──────────────────────────────────
-// ── SUPABASE DB (sincronizado em todos os celulares) ─────────────
-const SB_URL  = 'https://njuztrlbdyfympmbfkup.supabase.co';
-const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qdXp0cmxiZHlmeW1wbWJma3VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MjQzNTgsImV4cCI6MjA5ODQwMDM1OH0.L606BfHv9kTbdAczZi4pzC8G_MBv_2fF5_jLwx5TrH4';
-let _empresaId = null; // preenchido após login
-let _cache     = {};   // cache local de produtos
-
-function sbHeaders(jwt) {
-  const h = { 'apikey': SB_ANON, 'Content-Type': 'application/json', 'Accept': 'application/json' };
-  if (jwt) h['Authorization'] = 'Bearer ' + jwt;
-  return h;
-}
-async function sbGet(table, params, jwt) {
-  const q = params ? '?' + params : '';
-  const r = await fetch(SB_URL + '/rest/v1/' + table + q, { headers: sbHeaders(jwt) });
-  return r.ok ? r.json() : [];
-}
-async function sbPost(table, body, jwt) {
-  const r = await fetch(SB_URL + '/rest/v1/' + table, {
-    method: 'POST', headers: { ...sbHeaders(jwt), 'Prefer': 'return=representation' },
-    body: JSON.stringify(body)
-  });
-  return r.ok ? r.json() : null;
-}
-async function sbPatch(table, filter, body, jwt) {
-  const r = await fetch(SB_URL + '/rest/v1/' + table + '?' + filter, {
-    method: 'PATCH', headers: { ...sbHeaders(jwt), 'Prefer': 'return=representation' },
-    body: JSON.stringify(body)
-  });
-  return r.ok ? r.json() : null;
-}
-async function sbDelete(table, filter, jwt) {
-  const r = await fetch(SB_URL + '/rest/v1/' + table + '?' + filter, {
-    method: 'DELETE', headers: sbHeaders(jwt)
-  });
-  return r.ok;
-}
-
-// Pega JWT da sessão atual
-async function getJwt() {
-  const { data: { session } } = await _SB.auth.getSession();
-  return session?.access_token || null;
-}
-
-// Carrega empresa_id do perfil do usuário logado
-async function carregarEmpresa() {
-  const jwt = await getJwt();
-  const { data: { user } } = await _SB.auth.getUser();
-  if (!user) return null;
-  const perfis = await sbGet('perfis', 'select=empresa_id&id=eq.' + user.id, jwt);
-  if (perfis && perfis[0]?.empresa_id) {
-    _empresaId = perfis[0].empresa_id;
-  } else {
-    // master sem empresa: usar primeira empresa
-    const emps = await sbGet('empresas', 'select=id&limit=1', jwt);
-    _empresaId = emps?.[0]?.id || null;
-  }
-  return _empresaId;
-}
-
-// ── PRODUTOS ─────────────────────────────────────────
-async function await getProd() {
-  if (!_empresaId) return {};
-  const jwt = await getJwt();
-  const rows = await sbGet('produtos', 'select=*&empresa_id=eq.' + _empresaId + '&order=nome', jwt);
-  const map = {};
-  (rows || []).forEach(r => {
-    map[r.id] = {
-      id: r.id, nome: r.nome, cod: r.codigo, cat: r.categoria,
-      und: r.unidade, min: r.estoque_min, max: r.estoque_max,
-      estoque: r.estoque, criado: r.created_at
-    };
-  });
-  _cache = map;
-  return map;
-}
-
-async function setProdItem(prod) {
-  // Upsert de um produto no Supabase
-  const jwt = await getJwt();
-  const body = {
-    empresa_id: _empresaId,
-    nome: prod.nome, codigo: prod.cod, categoria: prod.cat || 'Geral',
-    unidade: prod.und, estoque_min: prod.min || 0,
-    estoque_max: prod.max || 0, estoque: prod.estoque || 0
-  };
-  if (prod.id) {
-    // update
-    await sbPatch('produtos', 'id=eq.' + prod.id, body, jwt);
-    _cache[prod.id] = prod;
-  } else {
-    // insert
-    const res = await sbPost('produtos', body, jwt);
-    if (res && res[0]) {
-      const newId = res[0].id;
-      prod.id = newId;
-      _cache[newId] = prod;
-    }
-  }
-  return prod;
-}
-
-async function deleteProdItem(id) {
-  const jwt = await getJwt();
-  await sbDelete('produtos', 'id=eq.' + id, jwt);
-  delete _cache[id];
-}
-
-async function updateEstoque(id, novoEstoque) {
-  const jwt = await getJwt();
-  await sbPatch('produtos', 'id=eq.' + id, { estoque: novoEstoque }, jwt);
-  if (_cache[id]) _cache[id].estoque = novoEstoque;
-}
-
-// ── HISTÓRICO (movimentacoes) ─────────────────────────
-async function getHist() {
-  if (!_empresaId) return [];
-  const jwt = await getJwt();
-  const rows = await sbGet('movimentacoes', 'select=*&empresa_id=eq.' + _empresaId + '&order=created_at.desc&limit=500', jwt);
-  return (rows || []).map(r => ({
-    id: r.id, tipo: r.tipo, pid: r.produto_id,
-    pnome: r.observacao?.split('|')[0] || '', pcod: r.observacao?.split('|')[1] || '',
-    und: r.observacao?.split('|')[2] || 'un',
-    qtd: r.quantidade, antes: 0, depois: 0,
-    obs: r.responsavel, ts: r.created_at
-  }));
-}
-
-async function await pushHist(item) {
-  const jwt = await getJwt();
-  await sbPost('movimentacoes', {
-    empresa_id: _empresaId,
-    produto_id: item.pid,
-    tipo: item.tipo,
-    quantidade: item.qtd,
-    responsavel: item.obs || '',
-    observacao: [item.pnome, item.pcod, item.und].join('|')
-  }, jwt);
-}
-
-// ── DESCARTES ─────────────────────────────────────────
-async function getDesc() {
-  if (!_empresaId) return [];
-  const jwt = await getJwt();
-  const rows = await sbGet('descartes', 'select=*&empresa_id=eq.' + _empresaId + '&order=created_at.desc&limit=300', jwt);
-  return (rows || []).map(r => ({
-    id: r.id, pid: r.produto_id,
-    pnome: r.motivo?.split('|')[0] || '', pcod: r.motivo?.split('|')[1] || '',
-    und: r.motivo?.split('|')[2] || 'un',
-    qtd: r.quantidade, motivo: r.motivo?.split('|')[3] || '',
-    obs: r.responsavel, ts: r.created_at
-  }));
-}
-
-async function await pushDesc(item) {
-  const jwt = await getJwt();
-  await sbPost('descartes', {
-    empresa_id: _empresaId,
-    produto_id: item.pid,
-    quantidade: item.qtd,
-    motivo: [item.pnome, item.pcod, item.und, item.motivo || ''].join('|'),
-    responsavel: item.obs || ''
-  }, jwt);
-}
-
-// compat: localStorage só para licença
 function dbGet(k, def) { try { return JSON.parse(localStorage.getItem(k)) ?? def; } catch { return def; } }
 function dbSet(k, v)   { localStorage.setItem(k, JSON.stringify(v)); }
+function getProd()     { return dbGet(K_PROD, {}); }
+function setProd(p)    { dbSet(K_PROD, p); _cache = p; }
+function getHist()     { return dbGet(K_HIST, []); }
+function pushHist(item){ const h = getHist(); h.unshift(item); dbSet(K_HIST, h.slice(0,3000)); }
+function getDesc()     { return dbGet(K_DESC, []); }
+function pushDesc(item){ const d = getDesc(); d.unshift(item); dbSet(K_DESC, d.slice(0,2000)); }
 
 // ── UTILS ─────────────────────────────────────
 function uid() { return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
@@ -1126,20 +961,7 @@ function toast(msg, tipo='') {
 }
 
 // ── INIT ──────────────────────────────────────
-
-function showLoading(msg){
-  var o=document.getElementById('loading-overlay');
-  if(o){
-    var t=o.querySelector('.loading-txt');
-    if(t) t.textContent=msg||'CARREGANDO...';
-    o.style.display='flex';
-  }
-}
-function hideLoading(){
-  var o=document.getElementById('loading-overlay');
-  if(o) o.style.display='none';
-}
-async function init() {
+function init() {
   iniciarTrial();
   atualizarBadgeLicenca();
 
@@ -1147,24 +969,25 @@ async function init() {
   if (!isAtivo()) {
     mostrarModalLicenca('expirado');
     // Permite apenas ver estoque básico
-    _cache = await getProd();
+    _cache = getProd();
     renderEstoque();
     return;
   }
 
-  _cache = await getProd();
-  try { await renderEstoque(); } catch(e){}
-  try { renderCadLista(); } catch(e){}
-  try { atualizarCatDL(); } catch(e){}
-  try { popularSelectDescarte(); } catch(e){}
-  try { renderDescartes(); } catch(e){}
-  const hd = document.getElementById('hist-data');
-  if(hd) hd.value = dataHoje();
-  try { renderHistorico(); } catch(e){}
-  try { renderRelatorio(); } catch(e){}
-  try { renderRelDescartes(); } catch(e){}
-  try { atualizarRelCats(); } catch(e){}
-  try { aplicarBloqueiosTabs(); } catch(e){}
+  _cache = getProd();
+  renderEstoque();
+  renderCadLista();
+  atualizarCatDL();
+  popularSelectDescarte();
+  renderDescartes();
+  document.getElementById('hist-data').value = dataHoje();
+  renderHistorico();
+  renderRelatorio();
+  renderRelDescartes();
+  atualizarRelCats();
+
+  // Esconder tabs PRO se trial
+  aplicarBloqueiosTabs();
 }
 
 function aplicarBloqueiosTabs() {
@@ -1189,20 +1012,15 @@ function goTab(name, btn) {
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
   btn.classList.add('active');
-  if (name==='estoque') { _cache=await getProd(); renderEstoque(); }
+  if (name==='estoque') { _cache=getProd(); renderEstoque(); }
   if (name==='cadastro') { renderCadLista(); atualizarCatDL(); }
   if (name==='descarte') { popularSelectDescarte(); renderDescartes(); }
-  if (name==='historico') { await renderHistorico(); hideLoading(); return; }
-  if (name==='relatorio') { await renderRelatorio(); await renderRelDescartes(); await atualizarRelCats(); hideLoading(); }
+  if (name==='historico') renderHistorico();
+  if (name==='relatorio') { renderRelatorio(); renderRelDescartes(); atualizarRelCats(); }
 }
 
 // ── ESTOQUE ────────────────────────────────────
-
-// Atualiza cache local e Supabase por lote
-async function syncProd(prods) { _cache = prods; }
-// setProd legado mantém cache local
-function setProd(p) { _cache = p; }
-async function renderEstoque() {
+function renderEstoque() {
   const prods = Object.values(_cache);
   const busca = (document.getElementById('est-busca')?.value||'').toLowerCase().trim();
 
@@ -1281,7 +1099,7 @@ function irMov(id) {
 function buscarProdModo(pfx) {
   const cod = document.getElementById(pfx+'-cod').value.trim();
   if (!cod) { toast('Digite ou escaneie um código','err'); return; }
-  const p = Object.values(await getProd()).find(x=>x.cod===cod||x.id===cod);
+  const p = Object.values(getProd()).find(x=>x.cod===cod||x.id===cod);
   if (!p) { toast('Produto não encontrado: '+cod,'err'); return; }
   document.getElementById(pfx+'-cod').value = '';
   adicionarFila(pfx, p, extrairQtdDoCodigo(cod, p.und), cod);
@@ -1292,7 +1110,7 @@ function filtrarListaModo(pfx) {
   const busca = (document.getElementById(pfx+'-busca-nome')?.value||'').toLowerCase().trim();
   const lista = document.getElementById(pfx+'-lista-sugestoes');
   if (!busca || busca.length < 2) { lista.innerHTML=''; return; }
-  const prods = Object.values(await getProd()).filter(p=>p.nome?.toLowerCase().includes(busca)||p.cod?.toLowerCase().includes(busca)).slice(0,8);
+  const prods = Object.values(getProd()).filter(p=>p.nome?.toLowerCase().includes(busca)||p.cod?.toLowerCase().includes(busca)).slice(0,8);
   if (!prods.length) { lista.innerHTML='<div style="padding:8px;color:#555;font-size:0.82rem;">Nenhum produto encontrado.</div>'; return; }
   lista.innerHTML = prods.map(p=>`
     <div class="sug-item" onclick="addFilaNome('${pfx}','${p.id}')">
@@ -1302,7 +1120,7 @@ function filtrarListaModo(pfx) {
 }
 
 function addFilaNome(pfx, id) {
-  const p = await getProd()[id];
+  const p = getProd()[id];
   if (!p) return;
   const listaSug = document.getElementById(pfx+'-lista-sugestoes');
   if (listaSug) listaSug.innerHTML = '';
@@ -1388,7 +1206,7 @@ function editarQtdFila(pfx, idx, val) {
 }
 
 // ── CONFIRMAR FILA ──
-async function confirmarFila(tipo) {
+function confirmarFila(tipo) {
   // Fila de pendentes é PRO
   if (!podeUsar('cadastro_ilimitado')) { mostrarModalLicenca('upgrade'); return; }
   const pfx  = tipo==='entrada' ? 'ent' : 'cont';
@@ -1403,7 +1221,7 @@ async function confirmarFila(tipo) {
     return;
   }
 
-  const prods = await getProd();
+  const prods = getProd();
   let ok = 0;
 
   fila.forEach(item => {
@@ -1413,14 +1231,11 @@ async function confirmarFila(tipo) {
     const depois = tipo==='entrada' ? antes + item.qtd : item.qtd;
     p.estoque = depois;
     prods[p.id] = p;
-    await pushHist({ id:uid(), tipo, pid:p.id, pnome:p.nome, pcod:p.cod, und:p.und, qtd:item.qtd, antes, depois, obs:'Por: '+resp, ts:ts() });
+    pushHist({ id:uid(), tipo, pid:p.id, pnome:p.nome, pcod:p.cod, und:p.und, qtd:item.qtd, antes, depois, obs:'Por: '+resp, ts:ts() });
     ok++;
   });
 
-  // Atualizar estoques no Supabase
-  for (const [pid, prod] of Object.entries(prods)) {
-    await updateEstoque(pid, prod.estoque);
-  }
+  setProd(prods);
   _cache = prods;
 
   const lbl = tipo==='entrada' ? '📥 Entrada' : '📋 Contagem';
@@ -1434,14 +1249,14 @@ async function confirmarFila(tipo) {
 }
 
 // ── CONTAGEM EM LOTE ──
-async function carregarLote() {
+function carregarLote() {
   const cat   = document.getElementById('lote-cat').value;
   const lista = document.getElementById('lote-lista');
   const footer= document.getElementById('lote-footer');
 
   if (!cat) { lista.innerHTML=''; footer.style.display='none'; return; }
 
-  const prods = Object.values(await getProd()).filter(p=>p.cat===cat).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
+  const prods = Object.values(getProd()).filter(p=>p.cat===cat).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
   if (!prods.length) {
     lista.innerHTML=`<div class="empty"><span>📭</span><p>Nenhum produto nesta categoria.</p></div>`;
     footer.style.display='none'; return;
@@ -1459,12 +1274,12 @@ async function carregarLote() {
   footer.style.display = 'block';
 }
 
-async function confirmarLote() {
+function confirmarLote() {
   const cat  = document.getElementById('lote-cat').value;
   const obs  = document.getElementById('lote-obs').value.trim();
   if (!cat)  { toast('Selecione a categoria','err'); return; }
 
-  const prods = await getProd();
+  const prods = getProd();
   const catProds = Object.values(prods).filter(p=>p.cat===cat);
   let contador = 0;
 
@@ -1479,15 +1294,13 @@ async function confirmarLote() {
     const depois = qtd; // contagem substitui
     p.estoque = depois;
     prods[p.id] = p;
-    await pushHist({ id:uid(), tipo:'contagem', pid:p.id, pnome:p.nome, pcod:p.cod, und:p.und, qtd, antes, depois, obs:obs||'Lote: '+cat, ts:ts() });
+    pushHist({ id:uid(), tipo:'contagem', pid:p.id, pnome:p.nome, pcod:p.cod, und:p.und, qtd, antes, depois, obs:obs||'Lote: '+cat, ts:ts() });
     contador++;
   });
 
   if (!contador) { toast('Nenhum valor preenchido','err'); return; }
 
-  for (const [pid, prod] of Object.entries(prods)) {
-    if (prod._mudou) await updateEstoque(pid, prod.estoque);
-  }
+  setProd(prods);
   _cache = prods;
   toast(`📦 Lote confirmado! ${contador} produto(s) atualizados.`, 'ok');
 
@@ -1501,7 +1314,7 @@ async function confirmarLote() {
 }
 
 // ── CADASTRO ────────────────────────────────────
-async function salvarProd() {
+function salvarProd() {
   const id   = document.getElementById('cad-id').value.trim();
   const nome = document.getElementById('cad-nome').value.trim();
   const cod  = document.getElementById('cad-cod').value.trim();
@@ -1515,28 +1328,29 @@ async function salvarProd() {
   if (!cod)  { toast('Informe o código', 'err'); return; }
   if (!und)  { toast('Selecione a unidade', 'err'); return; }
 
-  const prods = await getProd();
+  const prods = getProd();
   const dup = Object.values(prods).find(p=>p.cod===cod&&p.id!==id);
   if (dup) { toast('Código já existe em: '+dup.nome, 'err'); return; }
 
   if (id && prods[id]) {
-    const updated = { ...prods[id], nome, cod, cat, und, min, max };
-    await setProdItem(updated);
+    prods[id] = { ...prods[id], nome, cod, cat, und, min, max };
     toast('✅ Produto atualizado!','ok');
   } else {
-    const newProd = { nome, cod, cat, und, min, max, estoque: ini };
-    const saved = await setProdItem(newProd);
-    if (ini > 0) await pushHist({ id:uid(), tipo:'entrada', pid:saved.id, pnome:nome, pcod:cod, und, qtd:ini, antes:0, depois:ini, obs:'Estoque inicial', ts:ts() });
+    const nid = uid();
+    prods[nid] = { id:nid, nome, cod, cat, und, min, max, estoque:ini, criado:ts() };
+    if (ini>0) pushHist({ id:uid(), tipo:'entrada', pid:nid, pnome:nome, pcod:cod, und, qtd:ini, antes:0, depois:ini, obs:'Estoque inicial', ts:ts() });
     toast('✅ Produto cadastrado!','ok');
   }
+
+  setProd(prods);
   limparCad();
-  await renderCadLista();
-  await atualizarCatDL();
-  await atualizarRelCats();
+  renderCadLista();
+  atualizarCatDL();
+  atualizarRelCats();
 }
 
-async function editarProd(id) {
-  const p = await getProd()[id]; if(!p) return;
+function editarProd(id) {
+  const p = getProd()[id]; if(!p) return;
   document.getElementById('cad-id').value   = p.id;
   document.getElementById('cad-nome').value = p.nome||'';
   document.getElementById('cad-cod').value  = p.cod||'';
@@ -1552,12 +1366,12 @@ async function editarProd(id) {
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-async function deletarProd() {
+function deletarProd() {
   const id = document.getElementById('cad-id').value; if(!id) return;
-  const p = await getProd()[id]; if(!p) return;
+  const p = getProd()[id]; if(!p) return;
   if (!confirm(`Excluir "${p.nome}"?`)) return;
-  await deleteProdItem(id);
-  limparCad(); await renderCadLista(); toast('🗑️ Excluído','');
+  const prods = getProd(); delete prods[id]; setProd(prods);
+  limparCad(); renderCadLista(); toast('🗑️ Excluído','');
 }
 
 function limparCad() {
@@ -1570,9 +1384,9 @@ function limparCad() {
   document.getElementById('btn-del').style.display='none';
 }
 
-async function renderCadLista() {
+function renderCadLista() {
   const busca=(document.getElementById('cad-busca')?.value||'').toLowerCase();
-  const prods=Object.values(await getProd()).filter(p=>!busca||p.nome?.toLowerCase().includes(busca)||p.cod?.toLowerCase().includes(busca))
+  const prods=Object.values(getProd()).filter(p=>!busca||p.nome?.toLowerCase().includes(busca)||p.cod?.toLowerCase().includes(busca))
     .sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
   const el=document.getElementById('cad-lista');
   if(!prods.length){ el.innerHTML=`<div class="empty"><span>📭</span><p>Nenhum produto.</p></div>`; return; }
@@ -1588,10 +1402,10 @@ async function renderCadLista() {
 
 const CATS_FIXAS = ['Limpeza','Bruto','Processado','Embalagens','Bebidas'];
 
-async function atualizarCatDL() { /* categorias fixas — sem datalist */ }
+function atualizarCatDL() { /* categorias fixas — sem datalist */ }
 
 // ── HISTÓRICO ────────────────────────────────────
-async function renderHistorico() {
+function renderHistorico() {
   const data=document.getElementById('hist-data')?.value||dataHoje();
   const hist=getHist().filter(h=>h.ts?.startsWith(data));
   const stats=document.getElementById('hist-stats');
@@ -1635,13 +1449,13 @@ function exportCSV() {
 }
 
 // ── RELATÓRIO ────────────────────────────────────
-async function renderRelatorio() {
+function renderRelatorio() {
   const busca=(document.getElementById('rel-busca')?.value||'').toLowerCase();
   const catFil=document.getElementById('rel-cat')?.value||'';
   const hist=getHist();
   const hoje=dataHoje();
 
-  const prods=Object.values(await getProd()).filter(p=>{
+  const prods=Object.values(getProd()).filter(p=>{
     if(busca&&!p.nome?.toLowerCase().includes(busca)&&!p.cod?.toLowerCase().includes(busca)) return false;
     if(catFil&&p.cat!==catFil) return false;
     return true;
@@ -1674,16 +1488,16 @@ async function renderRelatorio() {
   }).join('');
 }
 
-async function atualizarRelCats() {
+function atualizarRelCats() {
   const sel=document.getElementById('rel-cat'); if(!sel) return;
   const atual=sel.value;
   sel.innerHTML='<option value="">Todas categorias</option>'+CATS_FIXAS.map(c=>`<option value="${c}">${c}</option>`).join('');
   sel.value=atual;
 }
 
-async function exportRelXLSX() {
+function exportRelXLSX() {
   // Gera planilha real via SheetJS (CDN) — fallback para CSV se não carregar
-  const prods = Object.values(await getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
+  const prods = Object.values(getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
   const hist  = getHist();
   const descs = getDesc();
   if (!prods.length) { toast('Sem dados para exportar','err'); return; }
@@ -1729,8 +1543,8 @@ async function exportRelXLSX() {
   }
 }
 
-async function enviarRelWhatsApp() {
-  const prods = Object.values(await getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
+function enviarRelWhatsApp() {
+  const prods = Object.values(getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
   if (!prods.length) { toast('Sem produtos para enviar','err'); return; }
 
   const data = new Date().toLocaleDateString('pt-BR');
@@ -1766,8 +1580,8 @@ async function enviarRelWhatsApp() {
   window.open(url, '_blank');
 }
 
-async function gerarPedidoWhatsApp() {
-  const prods = Object.values(await getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
+function gerarPedidoWhatsApp() {
+  const prods = Object.values(getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
   // Filtrar apenas os que precisam de reposição (estoque < mín, ou zerado)
   const precisam = prods.filter(p => {
     const est = parseFloat(p.estoque)||0;
@@ -1814,7 +1628,7 @@ async function gerarPedidoWhatsApp() {
 }
 
 function exportRelCSV() {
-  const prods=Object.values(await getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
+  const prods=Object.values(getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
   const hist=getHist();
   if(!prods.length){toast('Sem dados','err');return;}
   const csv=['Produto,Código,Categoria,Unidade,Últ. Contagem,Total Entradas,Estoque Atual,Mín,Máx,Status']
@@ -1893,7 +1707,7 @@ function usarCodigo(cod, autoLancar) {
   const tipo = _scanAlvo === 'ent' ? 'entrada' : 'contagem';
 
   // Localizar produto pelo código
-  const p = Object.values(await getProd()).find(x => x.cod === cod || x.id === cod);
+  const p = Object.values(getProd()).find(x => x.cod === cod || x.id === cod);
   if (!p) {
     // Produto não encontrado — preenche campo e mostra para o usuário resolver
     document.getElementById(pfx + '-cod').value = cod;
@@ -1973,7 +1787,7 @@ function pararScanner() {
 function popularSelectDescarte() {
   const sel = document.getElementById('desc-prod');
   if (!sel) return;
-  const prods = Object.values(await getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
+  const prods = Object.values(getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
   const atual = sel.value;
   sel.innerHTML = '<option value="">Selecione o produto...</option>' +
     prods.map(p=>`<option value="${p.id}">${p.nome} (${fmtQ(p.estoque,p.und)})</option>`).join('');
@@ -1984,7 +1798,7 @@ function onDescProdChange() {
   const id = document.getElementById('desc-prod').value;
   const info = document.getElementById('desc-saldo-info');
   if (!id) { info.style.display='none'; return; }
-  const p = await getProd()[id];
+  const p = getProd()[id];
   if (!p) { info.style.display='none'; return; }
   info.style.display = 'block';
   document.getElementById('desc-saldo-val').textContent = fmtQ(p.estoque, p.und);
@@ -2006,7 +1820,7 @@ function registrarDescarte() {
   if (!qtd || qtd<=0) { toast('Informe a quantidade', 'err'); return; }
   if (!motivo)        { toast('Selecione o motivo', 'err'); return; }
 
-  const prods = await getProd();
+  const prods = getProd();
   const p = prods[pid];
   if (!p) { toast('Produto não encontrado', 'err'); return; }
 
@@ -2016,7 +1830,7 @@ function registrarDescarte() {
   prods[pid] = p;
   setProd(prods);
 
-  await pushDesc({ id:uid(), pid:p.id, pnome:p.nome, pcod:p.cod, pcat:p.cat||'', und:p.und, qtd, antes, depois, motivo, obs, ts:ts() });
+  pushDesc({ id:uid(), pid:p.id, pnome:p.nome, pcod:p.cod, pcat:p.cat||'', und:p.und, qtd, antes, depois, motivo, obs, ts:ts() });
 
   toast(`🗑️ Descarte registrado: ${fmtQ(qtd,p.und)} de ${p.nome}`, 'err');
 
@@ -2029,7 +1843,7 @@ function registrarDescarte() {
 
   popularSelectDescarte();
   renderDescartes();
-  _cache = await getProd();
+  _cache = getProd();
 }
 
 function renderDescartes() {
@@ -2066,7 +1880,7 @@ function exportDescartesCSV() {
 }
 
 // ── RELATÓRIO: seção descartes ────────────────────
-async function renderRelDescartes() {
+function renderRelDescartes() {
   const catFil = document.getElementById('rel-cat')?.value || '';
   const busca  = (document.getElementById('rel-busca')?.value||'').toLowerCase();
   const descartes = getDesc().filter(d => {
@@ -2101,83 +1915,67 @@ async function renderRelDescartes() {
 }
 
 
-// SUPABASE AUTH
-const _SB = supabase.createClient('https://njuztrlbdyfympmbfkup.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qdXp0cmxiZHlmeW1wbWJma3VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MjQzNTgsImV4cCI6MjA5ODQwMDM1OH0.L606BfHv9kTbdAczZi4pzC8G_MBv_2fF5_jLwx5TrH4');
-async function mostrarApp(u){
-  _currentUserEmail = u.email;
-  const s=document.getElementById('topbar-sub');
-  if(s)s.textContent=u.email;
-  // App só aparece depois do init() — chamado pelo fazerLogin/checkSession
+// ── ECOBIER AUTH ─────────────────────────────────────
+const _ECL_URL  = 'https://njuztrlbdyfympmbfkup.supabase.co';
+const _ECL_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qdXp0cmxiZHlmeW1wbWJma3VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MjQzNTgsImV4cCI6MjA5ODQwMDM1OH0.L606BfHv9kTbdAczZi4pzC8G_MBv_2fF5_jLwx5TrH4';
+const _ECL_SB   = supabase.createClient(_ECL_URL, _ECL_ANON);
+const MASTER_EMAIL = 'josiel@ecobier.app';
+let _currentUserEmail = '';
+
+function eclMostrarApp(email) {
+  _currentUserEmail = email;
+  document.getElementById('ecobier-login').style.display = 'none';
+  document.getElementById('ecobier-app').style.display   = 'block';
+  var sub = document.getElementById('topbar-sub');
+  if (sub) sub.textContent = email === MASTER_EMAIL ? 'MASTER' : email;
 }
-function revelarApp(){
-  document.getElementById('tela-login').style.display='none';
-  document.getElementById('app-main').style.display='block';
+
+function eclMostrarLogin() {
+  document.getElementById('ecobier-login').style.display = 'flex';
+  document.getElementById('ecobier-app').style.display   = 'none';
 }
-async function fazerLogin(){
-  const em  = document.getElementById('login-email').value.trim();
-  const se  = document.getElementById('login-senha').value;
-  const er  = document.getElementById('login-erro');
-  const ld  = document.getElementById('login-loading');
-  const btn = document.getElementById('btn-login-main');
+
+async function eclLogin() {
+  var em  = document.getElementById('ecl-email').value.trim();
+  var se  = document.getElementById('ecl-senha').value;
+  var er  = document.getElementById('ecl-erro');
+  var btn = document.getElementById('ecl-btn');
   er.style.display = 'none';
-  if (!em || !se) {
-    er.textContent = '⚠️ Preencha email e senha.';
-    er.style.display = 'block'; return;
-  }
-  // Animação no botão
-  if (btn) { btn.textContent = 'VERIFICANDO...'; btn.classList.add('lbtn-loading'); }
-  ld.style.display = 'block';
+  if (!em || !se) { er.textContent = '⚠️ Preencha email e senha.'; er.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = 'VERIFICANDO...';
   try {
-    const { data, error } = await _SB.auth.signInWithPassword({ email: em, password: se });
-    if (error) throw error;
-    ld.style.display = 'none';
-    if (btn) { btn.textContent = 'ENTRAR'; btn.classList.remove('lbtn-loading'); }
-    await mostrarApp(data.user);
-    try { await init(); } catch(err) { console.error('init error:', err); }
-    revelarApp();
+    var res = await _ECL_SB.auth.signInWithPassword({ email: em, password: se });
+    if (res.error) throw res.error;
+    eclMostrarApp(res.data.user.email);
+    init();
   } catch(e) {
-    ld.style.display = 'none';
-    if (btn) { btn.textContent = 'ENTRAR'; btn.classList.remove('lbtn-loading'); }
-    er.textContent = '❌ Email ou senha incorretos.';
-    er.style.display = 'block';
+    er.textContent = '❌ Email ou senha incorretos.'; er.style.display = 'block';
   }
+  btn.disabled = false; btn.textContent = 'ENTRAR';
 }
-async function fazerLogout(){
-  if(!confirm('Deseja sair?'))return;
-  await _SB.auth.signOut();
-  document.getElementById('app-main').style.display='none';
-  document.getElementById('tela-login').style.display='flex';
-  document.getElementById('login-email').value='';
-  document.getElementById('login-senha').value='';
+
+async function eclLogout() {
+  if (!confirm('Deseja sair?')) return;
+  await _ECL_SB.auth.signOut();
+  eclMostrarLogin();
 }
-async function checkSession(){
-  const {data:{session}}=await _SB.auth.getSession();
-  if(session?.user){
-    await mostrarApp(session.user);
-    try { await init(); } catch(err) { console.error('init error:', err); }
-    revelarApp();
+
+// Verificar sessão ao carregar
+window.addEventListener('load', async function() {
+  try {
+    var res = await _ECL_SB.auth.getSession();
+    if (res.data && res.data.session && res.data.session.user) {
+      eclMostrarApp(res.data.session.user.email);
+      init();
+    } else {
+      eclMostrarLogin();
+    }
+  } catch(e) {
+    eclMostrarLogin();
   }
-  else{
-    var tl2=document.getElementById('tela-login');
-    var am2=document.getElementById('app-main');
-    if(tl2) tl2.style.display='flex';
-    if(am2) am2.style.display='none';
-    hideLoading();
-  }
-}
-window.addEventListener('load', function(){
-  // Esconder loading, mostrar login enquanto verifica sessão
-  hideLoading();
-  var tl3 = document.getElementById('tela-login');
-  if(tl3) tl3.style.display='flex';
-  checkSession();
-});
-document.addEventListener('DOMContentLoaded',()=>{
-  const s=document.getElementById('login-senha');
-  if(s)s.addEventListener('keypress',e=>{if(e.key==='Enter')fazerLogin();});
 });
 
 </script>
-</div><!-- /app-main -->
+</div><!-- /ecobier-app -->
 </body>
 </html>
