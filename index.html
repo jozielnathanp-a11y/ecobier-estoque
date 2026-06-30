@@ -256,8 +256,33 @@
     .rel-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
     .rel-filtros { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+
+<!-- ── TELA DE LOGIN ── -->
+<div id="tela-login">
+  <div class="login-card">
+    <div class="login-logo">
+      <h1>🍺 ECOBIER</h1>
+      <p>Sistema de Estoque</p>
+    </div>
+    <div class="login-field">
+      <label>Email</label>
+      <input type="email" id="login-email" placeholder="seu@email.com" autocomplete="email">
+    </div>
+    <div class="login-field">
+      <label>Senha</label>
+      <input type="password" id="login-senha" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn-login" onclick="fazerLogin()">ENTRAR</button>
+    <div class="login-erro" id="login-erro">Email ou senha incorretos.</div>
+    <div class="login-loading" id="login-loading">Verificando...</div>
+  </div>
+</div>
+
+<!-- ── APP PRINCIPAL ── -->
+<div id="app-main">
 
 <!-- TOPBAR -->
 <div id="topbar">
@@ -1525,7 +1550,45 @@ function renderRelDescartes() {
   total.textContent = `Total de descartes: ${descartes.length} registro(s)`;
 }
 
-window.addEventListener('load', init);
+
+// ── SUPABASE AUTH ──────────────────────────────
+const _SB_URL  = 'https://njuztrlbdyfympmbfkup.supabase.co';
+const _SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qdXp0cmxiZHlmeW1wbWJma3VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MjQzNTgsImV4cCI6MjA5ODQwMDM1OH0.L606BfHv9kTbdAczZi4pzC8G_MBv_2fF5_jLwx5TrH4';
+const _sb = supabase.createClient(_SB_URL, _SB_ANON);
+
+function mostrarApp(user) {
+  document.getElementById('tela-login').style.display = 'none';
+  document.getElementById('app-main').style.display = 'block';
+  const sub = document.getElementById('topbar-sub');
+  if (sub) sub.textContent = user.email;
+}
+
+async function fazerLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const senha = document.getElementById('login-senha').value;
+  const erro  = document.getElementById('login-erro');
+  const load  = document.getElementById('login-loading');
+  erro.style.display = 'none';
+  if (!email || !senha) { erro.textContent = 'Preencha email e senha.'; erro.style.display = 'block'; return; }
+  load.style.display = 'block';
+  const { data, error } = await _sb.auth.signInWithPassword({ email, password: senha });
+  load.style.display = 'none';
+  if (error) { erro.textContent = 'Email ou senha incorretos.'; erro.style.display = 'block'; return; }
+  mostrarApp(data.user);
+  init();
+}
+
+// Verificar sessão ativa ao carregar
+async function checkSession() {
+  const { data: { session } } = await _sb.auth.getSession();
+  if (session?.user) { mostrarApp(session.user); init(); }
+}
+
+
+window.addEventListener('load', checkSession);
+
+document.getElementById('login-senha').addEventListener('keypress', e => { if(e.key==='Enter') fazerLogin(); });
 </script>
+</div><!-- /app-main -->
 </body>
 </html>
