@@ -261,7 +261,7 @@
     #tela-login {
       position:fixed;inset:0;z-index:9999;
       background:#0a0a0a;
-      display:flex;align-items:center;justify-content:center;padding:24px;
+      display:none;align-items:center;justify-content:center;padding:24px;
     }
     #tela-login::before {
       content:'';position:absolute;inset:0;pointer-events:none;
@@ -2152,9 +2152,19 @@ async function checkSession(){
     try { await init(); } catch(err) { console.error('init error:', err); }
     revelarApp();
   }
-  else{document.getElementById('tela-login').style.display='flex';document.getElementById('app-main').style.display='none';}
+  else{
+    var tl2=document.getElementById('tela-login');
+    var am2=document.getElementById('app-main');
+    if(tl2) tl2.style.display='flex';
+    if(am2) am2.style.display='none';
+    hideLoading();
+  }
 }
-window.addEventListener('load',checkSession);
+window.addEventListener('load', function(){
+  var tl3 = document.getElementById('tela-login');
+  if(tl3) tl3.style.display='flex';
+  checkSession();
+});
 document.addEventListener('DOMContentLoaded',()=>{
   const s=document.getElementById('login-senha');
   if(s)s.addEventListener('keypress',e=>{if(e.key==='Enter')fazerLogin();});
