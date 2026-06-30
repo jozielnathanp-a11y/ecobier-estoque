@@ -1324,21 +1324,73 @@ function fecharScanFundo(e) {
 }
 
 function usarManual() {
-  const cod=document.getElementById('scan-manual-input').value.trim();
-  if(!cod) return;
-  usarCodigo(cod);
+  const cod = document.getElementById('scan-manual-input').value.trim();
+  if (!cod) return;
+  usarCodigo(cod, false); // manual = mostra card para confirmar
 }
 
-function usarCodigo(cod) {
+// Extrai quantidade do código de barras:
+// EAN-13 de balança: prefixo 2 → posições 7-11 = peso em gramas (÷1000 = kg)
+// Caso contrário retorna 1 (uma unidade)
+function extrairQtdDoCodigo(cod, und) {
+  if (cod && cod.length === 13 && cod.startsWith('2')) {
+    const pesoG = parseInt(cod.substring(7, 12), 10);
+    if (!isNaN(pesoG) && pesoG > 0) {
+      // Se unidade for g, retorna em gramas; senão retorna em kg
+      return und === 'g' ? pesoG : pesoG / 1000;
+    }
+  }
+  return 1; // padrão: 1 unidade
+}
+
+function usarCodigo(cod, autoLancar) {
   fecharScan();
-  if (_scanAlvo==='cad') {
-    document.getElementById('cad-cod').value=cod;
-    toast('📷 Código: '+cod,'info');
+  if (_scanAlvo === 'cad') {
+    document.getElementById('cad-cod').value = cod;
+    toast('📷 Código: ' + cod, 'info');
+    return;
+  }
+
+  const pfx  = _scanAlvo === 'ent' ? 'ent' : 'cont';
+  const tipo = _scanAlvo === 'ent' ? 'entrada' : 'contagem';
+
+  // Localizar produto pelo código
+  const p = Object.values(getProd()).find(x => x.cod === cod || x.id === cod);
+  if (!p) {
+    // Produto não encontrado — preenche campo e mostra para o usuário resolver
+    document.getElementById(pfx + '-cod').value = cod;
+    toast('⚠️ Produto não encontrado: ' + cod, 'err');
+    return;
+  }
+
+  if (autoLancar) {
+    // LANÇAMENTO DIRETO — sem precisar confirmar
+    const qtd = extrairQtdDoCodigo(cod, p.und);
+    const prods = getProd();
+    const pp = prods[p.id];
+    const antes  = parseFloat(pp.estoque) || 0;
+    const depois = tipo === 'entrada' ? antes + qtd : qtd;
+    pp.estoque = depois;
+    prods[p.id] = pp;
+    setProd(prods);
+    _cache = prods;
+
+    pushHist({ id: uid(), tipo, pid: pp.id, pnome: pp.nome, pcod: pp.cod, und: pp.und, qtd, antes, depois, obs: 'Scanner automático', ts: ts() });
+
+    const lbl = tipo === 'entrada' ? '📥' : '📋';
+    toast(`${lbl} ${pp.nome}: +${fmtQ(qtd, pp.und)}`, 'ok');
+
+    // Atualizar card se visível
+    selecionarProdModo(pfx, prods[p.id]);
+
+    // Manter scanner pronto para próxima leitura
+    setTimeout(() => {
+      if (_scanAlvo) abrirScan(_scanAlvo);
+    }, 800);
   } else {
-    // ent ou cont
-    const pfx = _scanAlvo==='ent' ? 'ent' : 'cont';
-    document.getElementById(pfx+'-cod').value = cod;
-    buscarProdModo(pfx);
+    // MODO MANUAL — mostra card para confirmar
+    document.getElementById(pfx + '-cod').value = cod;
+    selecionarProdModo(pfx, p);
   }
 }
 
@@ -1369,7 +1421,7 @@ function iniciarScanner() {
     _scanner.start(
       { facingMode: 'environment' },
       config,
-      (decodedText) => { usarCodigo(decodedText); },
+      (decodedText) => { usarCodigo(decodedText, true); },
       (err) => { /* silencioso */ }
     ).then(() => {
       document.getElementById('scan-status').textContent = '📷 Câmera ativa — aponte para o código';
