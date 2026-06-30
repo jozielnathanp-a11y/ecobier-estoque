@@ -643,6 +643,7 @@
       <select id="rel-cat" onchange="renderRelatorio()"
         style="padding:7px 11px;border:2px solid #222;border-radius:4px;background:#1a1a1a;color:#f0f0f0;font-size:0.85rem;font-family:'Rajdhani',sans-serif;outline:none;">
         <option value="">Todas categorias</option>
+        <option value="Chopp">🍻 Chopp</option>
       </select>
       <button class="btn-g btn-blue" onclick="bloquearSeNecessario('cadastro_ilimitado',exportRelXLSX)">📊 Planilha 🔒</button>
       <button class="btn-g btn-blue" onclick="exportRelCSV()">📤 CSV</button>
@@ -1404,7 +1405,7 @@ function renderCadLista() {
     </div>`).join('');
 }
 
-const CATS_FIXAS = ['Limpeza','Bruto','Processado','Embalagens','Bebidas'];
+const CATS_FIXAS = ['Limpeza','Bruto','Processado','Embalagens','Bebidas','Chopp'];
 
 function atualizarCatDL() { /* categorias fixas — sem datalist */ }
 
