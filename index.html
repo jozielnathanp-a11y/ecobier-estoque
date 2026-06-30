@@ -793,30 +793,64 @@ function diasRestantes() {
 }
 
 function isPago() {
-  return isMaster() || getLic().plano === 'pago';
+  if (isMaster()) return true;
+  const lic = getLic();
+  if (lic.plano !== 'pago') return false;
+  if (lic.validoAte) return new Date(lic.validoAte) > new Date();
+  return true; // sem data = pago permanente
 }
 
 function isAtivo() {
   return isPago() || diasRestantes() > 0;
 }
 
-function ativarCodigo(cod) {
+async function ativarCodigo(cod) {
   const c = (cod||'').trim().toUpperCase();
   if (!c) { toast('Digite o código de ativação', 'err'); return; }
-  const lic = getLic();
-  if (lic.codigos_usados && lic.codigos_usados.includes(c)) {
-    toast('⚠️ Este código já foi utilizado', 'err'); return;
+  const btn = document.querySelector('#modal-licenca .btn-green');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Verificando...'; }
+  try {
+    // Buscar pool de códigos no Supabase
+    const EMPRESA_ID = 'ba8c98d5-3eef-42bd-bc6d-8d492c9995e1';
+    const resp = await fetch(_SB_URL + '/rest/v1/empresas?id=eq.' + EMPRESA_ID + '&select=codigo_ativacao', {
+      headers: { 'apikey': _SB_ANON, 'Authorization': 'Bearer ' + (_sbToken||_SB_ANON) }
+    });
+    const data = await resp.json();
+    if (!data || !data[0] || !data[0].codigo_ativacao) throw new Error('Sem dados');
+    const pool = typeof data[0].codigo_ativacao === 'string'
+      ? JSON.parse(data[0].codigo_ativacao)
+      : data[0].codigo_ativacao;
+    const disponiveis = pool.codigos_disponiveis || [];
+    const usados = pool.codigos_usados || [];
+    if (usados.includes(c)) {
+      toast('⚠️ Este código já foi utilizado', 'err');
+      if (btn) { btn.disabled=false; btn.textContent='🔓 ATIVAR LICENÇA'; }
+      return;
+    }
+    if (!disponiveis.includes(c)) {
+      toast('❌ Código inválido. Verifique e tente novamente.', 'err');
+      if (btn) { btn.disabled=false; btn.textContent='🔓 ATIVAR LICENÇA'; }
+      return;
+    }
+    // Marcar código como usado no Supabase
+    const novosUsados = [...usados, c];
+    const novoPool = JSON.stringify({ codigos_disponiveis: disponiveis, codigos_usados: novosUsados });
+    await fetch(_SB_URL + '/rest/v1/empresas?id=eq.' + EMPRESA_ID, {
+      method: 'PATCH',
+      headers: { 'apikey': _SB_ANON, 'Authorization': 'Bearer ' + (_sbToken||_SB_ANON), 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ codigo_ativacao: novoPool })
+    });
+    // Ativar localmente por 30 dias
+    const fim = new Date(Date.now() + 30 * 86400000).toISOString();
+    setLic({ plano: 'pago', codigo: c, ativadoEm: new Date().toISOString(), validoAte: fim });
+    document.getElementById('modal-licenca').style.display = 'none';
+    toast('🎉 Licença ativada! 30 dias de acesso liberados.', 'ok');
+    atualizarBadgeLicenca();
+    renderEstoque();
+  } catch(e) {
+    toast('Erro ao verificar código. Tente novamente.', 'err');
   }
-  if (!CODIGOS_VALIDOS.includes(c)) {
-    toast('❌ Código inválido. Verifique e tente novamente.', 'err'); return;
-  }
-  const usados = lic.codigos_usados || [];
-  usados.push(c);
-  setLic({ ...lic, plano: 'pago', codigo: c, codigos_usados: usados, ativadoEm: new Date().toISOString() });
-  document.getElementById('modal-licenca').style.display = 'none';
-  toast('🎉 Licença ativada com sucesso! Bem-vindo ao Ecogrill PRO!', 'ok');
-  atualizarBadgeLicenca();
-  renderEstoque();
+  if (btn) { btn.disabled=false; btn.textContent='🔓 ATIVAR LICENÇA'; }
 }
 
 function atualizarBadgeLicenca() {
@@ -829,7 +863,9 @@ function atualizarBadgeLicenca() {
     return;
   }
   if (isPago()) {
-    badge.textContent = '✅ PRO';
+    const lic = getLic();
+    const diasLic = lic.validoAte ? Math.max(0, Math.ceil((new Date(lic.validoAte)-new Date())/86400000)) : null;
+    badge.textContent = diasLic !== null ? '✅ PRO ' + diasLic + 'd' : '✅ PRO';
     badge.style.background = '#1a6e3c';
     badge.style.color = '#2ecc71';
   } else {
@@ -1889,11 +1925,13 @@ var _SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 var _SB_SESSION_KEY = 'ecogrill_session';
 var MASTER_EMAIL = 'josiel@ecogrill.app';
 var _currentUserEmail = '';
+var _sbToken = '';
 
 function isMaster() { return _currentUserEmail === MASTER_EMAIL; }
 
-function eclMostrarApp(email) {
+function eclMostrarApp(email, token) {
   _currentUserEmail = email;
+  if (token) _sbToken = token;
   document.getElementById('ecogrill-login').style.display = 'none';
   document.getElementById('ecogrill-app').style.display = 'block';
   var sub = document.getElementById('topbar-sub');
@@ -1923,7 +1961,7 @@ async function eclLogin() {
     if (!resp.ok || data.error) throw new Error(data.error_description || 'Erro');
     // Salvar sessão no localStorage
     localStorage.setItem(_SB_SESSION_KEY, JSON.stringify({ token: data.access_token, email: data.user.email }));
-    eclMostrarApp(data.user.email);
+    eclMostrarApp(data.user.email, data.access_token);
     init();
   } catch(e) {
     er.textContent = 'Email ou senha incorretos.'; er.style.display = 'block';
@@ -1944,7 +1982,7 @@ window.addEventListener('load', function() {
     try {
       var s = JSON.parse(saved);
       if (s && s.email && s.token) {
-        eclMostrarApp(s.email);
+        eclMostrarApp(s.email, s.token);
         init();
         return;
       }
