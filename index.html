@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Ecobier — Estoque ADM</title>
+  <title>Ecogrill — Estoque ADM</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&display=swap');
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -258,12 +258,12 @@
     .rel-filtros { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 
     /* ── LOGIN ── */
-    #ecobier-login {
+    #ecogrill-login {
       position:fixed; inset:0; z-index:9999;
       background:#0a0a0a;
       display:flex; align-items:center; justify-content:center; padding:20px;
     }
-    #ecobier-login::before {
+    #ecogrill-login::before {
       content:''; position:absolute; inset:0; pointer-events:none;
       background: radial-gradient(ellipse 80% 50% at 50% -5%, rgba(46,204,113,0.13) 0%, transparent 70%);
     }
@@ -297,11 +297,11 @@
 </head>
 <body>
 <!-- LOGIN -->
-<div id="ecobier-login">
+<div id="ecogrill-login">
   <div class="ecl-card">
     <div class="ecl-logo">
       <span class="ecl-logo-icon">🍺</span>
-      <h1>ECOBIER</h1>
+      <h1>ECOGRILL</h1>
       <p>Sistema de Gestão de Estoque</p>
     </div>
     <div class="ecl-sep"></div>
@@ -315,15 +315,15 @@
     </div>
     <button class="ecl-btn" id="ecl-btn" onclick="eclLogin()">ENTRAR</button>
     <div class="ecl-erro" id="ecl-erro"></div>
-    <div class="ecl-footer">ECOBIER &copy; 2026</div>
+    <div class="ecl-footer">ECOGRILL &copy; 2026</div>
   </div>
 </div>
-<div id="ecobier-app" style="display:none">
+<div id="ecogrill-app" style="display:none">
 
 <!-- TOPBAR -->
 <div id="topbar">
   <div>
-    <h1>🍺 ECOBIER</h1>
+    <h1>🍺 ECOGRILL</h1>
     <div id="topbar-sub">ESTOQUE ADM</div>
     <div style="display:flex;align-items:center;gap:8px;"><div id="badge-licenca" style="font-family:'Bebas Neue',sans-serif;font-size:0.8rem;padding:4px 10px;border-radius:4px;cursor:pointer;letter-spacing:1px;" onclick="mostrarModalLicenca('upgrade')">⏳ TRIAL</div>
     <button id="btn-logout" onclick="eclLogout()">🚪 SAIR</button>
@@ -718,7 +718,7 @@
 
     <div class="fg" style="margin-bottom:12px;">
       <label style="font-size:0.78rem;color:#666;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px;">Código de ativação</label>
-      <input type="text" id="input-codigo-lic" placeholder="Ex: ECOBIER-2026-XXXX"
+      <input type="text" id="input-codigo-lic" placeholder="Ex: ECOGRILL-2026-XXXX"
         style="width:100%;padding:11px 14px;border:2px solid #333;border-radius:6px;background:#1a1a1a;color:#f0f0f0;font-size:1rem;font-family:'Rajdhani',sans-serif;outline:none;text-transform:uppercase;letter-spacing:1px;"
         onkeydown="if(event.key==='Enter')ativarCodigo(document.getElementById('input-codigo-lic').value)">
     </div>
@@ -755,22 +755,22 @@
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
 // ════════════════════════════════════════════
-// ECOBIER — v4 — localStorage + licença
+// ECOGRILL — v4 — localStorage + licença
 // ════════════════════════════════════════════
-const K_PROD    = 'ecobier_produtos';
-const K_HIST    = 'ecobier_historico';
-const K_DESC    = 'ecobier_descartes';
-const K_LIC     = 'ecobier_licenca';
+const K_PROD    = 'ecogrill_produtos';
+const K_HIST    = 'ecogrill_historico';
+const K_DESC    = 'ecogrill_descartes';
+const K_LIC     = 'ecogrill_licenca';
 const TRIAL_DIAS = 30;
 
-// Códigos válidos — formato ECOBIER-XXXX-XXXX (gerados por você)
+// Códigos válidos — formato ECOGRILL-XXXX-XXXX (gerados por você)
 // Adicione novos códigos aqui quando um cliente pagar
 const CODIGOS_VALIDOS = [
-  'ECOBIER-2026-DEMO',
-  'ECOBIER-2026-A1B2',
-  'ECOBIER-2026-C3D4',
-  'ECOBIER-2026-E5F6',
-  'ECOBIER-2026-G7H8',
+  'ECOGRILL-2026-DEMO',
+  'ECOGRILL-2026-A1B2',
+  'ECOGRILL-2026-C3D4',
+  'ECOGRILL-2026-E5F6',
+  'ECOGRILL-2026-G7H8',
 ];
 
 // ── LICENÇA ───────────────────────────────────
@@ -814,7 +814,7 @@ function ativarCodigo(cod) {
   usados.push(c);
   setLic({ ...lic, plano: 'pago', codigo: c, codigos_usados: usados, ativadoEm: new Date().toISOString() });
   document.getElementById('modal-licenca').style.display = 'none';
-  toast('🎉 Licença ativada com sucesso! Bem-vindo ao Ecobier PRO!', 'ok');
+  toast('🎉 Licença ativada com sucesso! Bem-vindo ao Ecogrill PRO!', 'ok');
   atualizarBadgeLicenca();
   renderEstoque();
 }
@@ -870,7 +870,7 @@ function mostrarModalLicenca(modo) {
   const sub    = document.getElementById('modal-lic-sub');
   if (modo === 'expirado') {
     titulo.textContent = '⏰ Período de teste encerrado';
-    sub.textContent    = 'Seus 30 dias gratuitos terminaram. Ative sua licença para continuar usando o Ecobier.';
+    sub.textContent    = 'Seus 30 dias gratuitos terminaram. Ative sua licença para continuar usando o Ecogrill.';
   } else {
     titulo.textContent = '🔒 Recurso PRO';
     sub.textContent    = 'Este recurso está disponível no plano pago. Ative sua licença para desbloquear tudo.';
@@ -1413,7 +1413,7 @@ function exportCSV() {
   const csv=['Data,Tipo,Produto,Código,Quantidade,Unidade,Antes,Depois,Observação']
     .concat(hist.map(h=>[h.ts?.slice(0,10),h.tipo,h.pnome,h.pcod,h.qtd,h.und,h.antes,h.depois,h.obs||''].map(v=>`"${v||''}"`).join(',')))
     .join('\n');
-  baixarCSV(csv,'ecobier-historico-'+data+'.csv');
+  baixarCSV(csv,'ecogrill-historico-'+data+'.csv');
 }
 
 // ── RELATÓRIO ────────────────────────────────────
@@ -1495,7 +1495,7 @@ function exportRelXLSX() {
     wsDesc['!cols'] = [12,20,12,12,10,8,12,12,14,20].map(w=>({wch:w}));
     XLSX.utils.book_append_sheet(wb, wsEst,  'Estoque');
     XLSX.utils.book_append_sheet(wb, wsDesc, 'Descartes');
-    XLSX.writeFile(wb, 'ecobier-estoque-'+dataHoje()+'.xlsx');
+    XLSX.writeFile(wb, 'ecogrill-estoque-'+dataHoje()+'.xlsx');
     toast('📊 Planilha .xlsx baixada!','ok');
   }
 
@@ -1516,7 +1516,7 @@ function enviarRelWhatsApp() {
   if (!prods.length) { toast('Sem produtos para enviar','err'); return; }
 
   const data = new Date().toLocaleDateString('pt-BR');
-  let msg = `📦 *RELATÓRIO DE ESTOQUE — ECOBIER*\n🗓️ ${data}\n\n`;
+  let msg = `📦 *RELATÓRIO DE ESTOQUE — ECOGRILL*\n🗓️ ${data}\n\n`;
 
   // Agrupar por categoria
   const cats = {};
@@ -1563,7 +1563,7 @@ function gerarPedidoWhatsApp() {
   }
 
   const data = new Date().toLocaleDateString('pt-BR');
-  let msg = `🛒 *PEDIDO DE COMPRA — ECOBIER*\n🗓️ ${data}\n`;
+  let msg = `🛒 *PEDIDO DE COMPRA — ECOGRILL*\n🗓️ ${data}\n`;
   msg += `_Produtos abaixo do estoque mínimo:_\n\n`;
 
   // Agrupar por categoria
@@ -1606,7 +1606,7 @@ function exportRelCSV() {
       const st={ok:'OK',baixo:'Baixo',acima:'Acima Máx',zerado:'Zerado'}[getStatus(p)]||'';
       return [p.nome,p.cod,p.cat||'',p.und,uc?fmtQ(uc.qtd,p.und)+' ('+uc.ts?.slice(0,10)+')':'',te>0?te:'',parseFloat(p.estoque)||0,p.min||'',p.max||'',st].map(v=>`"${v}"`).join(',');
     })).join('\n');
-  baixarCSV(csv,'ecobier-relatorio-'+dataHoje()+'.csv');
+  baixarCSV(csv,'ecogrill-relatorio-'+dataHoje()+'.csv');
 }
 
 function baixarCSV(csv, nome) {
@@ -1844,7 +1844,7 @@ function exportDescartesCSV() {
   const csv = ['Data,Produto,Código,Categoria,Quantidade,Unidade,Estoque Antes,Estoque Depois,Motivo,Observação']
     .concat(descartes.map(d=>[d.ts?.slice(0,10),d.pnome,d.pcod,d.pcat,d.qtd,d.und,d.antes,d.depois,d.motivo,d.obs||''].map(v=>`"${v||''}"`).join(',')))
     .join('\n');
-  baixarCSV(csv, 'ecobier-descartes-'+dataHoje()+'.csv');
+  baixarCSV(csv, 'ecogrill-descartes-'+dataHoje()+'.csv');
 }
 
 // ── RELATÓRIO: seção descartes ────────────────────
@@ -1886,23 +1886,23 @@ function renderRelDescartes() {
 // AUTH via REST direto (sem SDK)
 var _SB_URL  = 'https://njuztrlbdyfympmbfkup.supabase.co';
 var _SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qdXp0cmxiZHlmeW1wbWJma3VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MjQzNTgsImV4cCI6MjA5ODQwMDM1OH0.L606BfHv9kTbdAczZi4pzC8G_MBv_2fF5_jLwx5TrH4';
-var _SB_SESSION_KEY = 'ecobier_session';
-var MASTER_EMAIL = 'josiel@ecobier.app';
+var _SB_SESSION_KEY = 'ecogrill_session';
+var MASTER_EMAIL = 'josiel@ecogrill.app';
 var _currentUserEmail = '';
 
 function isMaster() { return _currentUserEmail === MASTER_EMAIL; }
 
 function eclMostrarApp(email) {
   _currentUserEmail = email;
-  document.getElementById('ecobier-login').style.display = 'none';
-  document.getElementById('ecobier-app').style.display = 'block';
+  document.getElementById('ecogrill-login').style.display = 'none';
+  document.getElementById('ecogrill-app').style.display = 'block';
   var sub = document.getElementById('topbar-sub');
   if (sub) sub.textContent = email === MASTER_EMAIL ? 'MASTER' : email;
 }
 
 function eclMostrarLogin() {
-  document.getElementById('ecobier-login').style.display = 'flex';
-  document.getElementById('ecobier-app').style.display = 'none';
+  document.getElementById('ecogrill-login').style.display = 'flex';
+  document.getElementById('ecogrill-app').style.display = 'none';
 }
 
 async function eclLogin() {
@@ -1986,7 +1986,7 @@ function botFechar() {
 function botRenderizar() {
   var corpo = document.getElementById('bot-corpo');
   if (_botEtapa === 'menu') {
-    var html = '<div class="bot-boas">👋 Olá! Sou o assistente do <b>Ecobier</b>.<br>Como posso ajudar?</div>';
+    var html = '<div class="bot-boas">👋 Olá! Sou o assistente do <b>Ecogrill</b>.<br>Como posso ajudar?</div>';
     html += '<div class="bot-secao">❓ Perguntas Frequentes</div>';
     _BOT_FAQ.forEach(function(f, i) {
       html += '<button class="bot-item" onclick="botFaq(' + i + ')">' + f.q + '</button>';
@@ -2027,7 +2027,7 @@ function botEnviarSugestao() {
   var txt = (document.getElementById('bot-txt') ? document.getElementById('bot-txt').value : '').trim();
   if (!txt) { alert('Escreva sua mensagem antes de enviar.'); return; }
   var usuario = _currentUserEmail || 'usuário';
-  var msg = encodeURIComponent('💡 *Sugestão/Elogio Ecobier*\n\n*De:* ' + usuario + '\n\n' + txt);
+  var msg = encodeURIComponent('💡 *Sugestão/Elogio Ecogrill*\n\n*De:* ' + usuario + '\n\n' + txt);
   window.open('https://wa.me/5542988819420?text=' + msg, '_blank');
   _botEtapa = 'enviado';
   botRenderizar();
@@ -2035,7 +2035,7 @@ function botEnviarSugestao() {
 
 function botSuporte() {
   var usuario = _currentUserEmail || 'usuário';
-  var msg = encodeURIComponent('🔧 *Suporte Ecobier*\n\nOlá! Preciso de ajuda.\n\n*Usuário:* ' + usuario);
+  var msg = encodeURIComponent('🔧 *Suporte Ecogrill*\n\nOlá! Preciso de ajuda.\n\n*Usuário:* ' + usuario);
   window.open('https://wa.me/5542988819420?text=' + msg, '_blank');
 }
 </script>
@@ -2048,7 +2048,7 @@ function botSuporte() {
 
 <div id="bot-janela">
   <div class="bot-header">
-    <span>🤖 Assistente Ecobier</span>
+    <span>🤖 Assistente Ecogrill</span>
     <button onclick="botFechar()" style="background:none;border:none;color:#aaa;font-size:1.3rem;cursor:pointer;line-height:1;">✕</button>
   </div>
   <div id="bot-corpo" class="bot-corpo"></div>
