@@ -713,8 +713,10 @@
 const K_PROD    = 'ecobier_produtos';
 const K_HIST    = 'ecobier_historico';
 const K_DESC    = 'ecobier_descartes';
-const K_LIC     = 'ecobier_licenca';
+const K_LIC      = 'ecobier_licenca';
 const TRIAL_DIAS = 30;
+const MASTER_EMAIL = 'josiel@ecobier.app';
+let _currentUserEmail = ''; // preenchido no login
 
 // Códigos válidos — formato ECOBIER-XXXX-XXXX (gerados por você)
 // Adicione novos códigos aqui quando um cliente pagar
@@ -745,12 +747,16 @@ function diasRestantes() {
   return Math.max(0, TRIAL_DIAS - Math.floor(diff));
 }
 
+function isMaster() {
+  return _currentUserEmail === MASTER_EMAIL;
+}
+
 function isPago() {
-  return getLic().plano === 'pago';
+  return isMaster() || getLic().plano === 'pago';
 }
 
 function isAtivo() {
-  return isPago() || diasRestantes() > 0;
+  return isMaster() || isPago() || diasRestantes() > 0;
 }
 
 function ativarCodigo(cod) {
@@ -775,6 +781,13 @@ function ativarCodigo(cod) {
 function atualizarBadgeLicenca() {
   const badge = document.getElementById('badge-licenca');
   if (!badge) return;
+  if (isMaster()) {
+    badge.textContent = '👑 MASTER';
+    badge.style.background = '#1a3d6e';
+    badge.style.color = '#3498db';
+    badge.onclick = null;
+    return;
+  }
   if (isPago()) {
     badge.textContent = '✅ PRO';
     badge.style.background = '#1a6e3c';
@@ -795,11 +808,11 @@ function atualizarBadgeLicenca() {
 
 // Verifica se feature está liberada
 function podeUsar(feature) {
-  if (isPago()) return true;
-  if (!isAtivo()) return false; // trial expirado — bloqueia tudo
-  // trial ativo — features liberadas
-  const liberadas = ['estoque_basico','movimentar_simples','pedido_whatsapp','scanner'];
-  return liberadas.includes(feature);
+  if (isMaster()) return true; // Josiel: acesso total sempre
+  if (isPago()) return true;   // cliente com licença ativa
+  if (!isAtivo()) return false; // trial expirado
+  // trial ativo: tudo liberado por 30 dias
+  return true;
 }
 
 function bloquearSeNecessario(feature, callback) {
@@ -1832,7 +1845,13 @@ function renderRelDescartes() {
 
 // SUPABASE AUTH
 const _SB = supabase.createClient('https://njuztrlbdyfympmbfkup.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qdXp0cmxiZHlmeW1wbWJma3VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MjQzNTgsImV4cCI6MjA5ODQwMDM1OH0.L606BfHv9kTbdAczZi4pzC8G_MBv_2fF5_jLwx5TrH4');
-function mostrarApp(u){document.getElementById('tela-login').style.display='none';document.getElementById('app-main').style.display='block';const s=document.getElementById('topbar-sub');if(s)s.textContent=u.email;}
+function mostrarApp(u){
+  _currentUserEmail = u.email;
+  document.getElementById('tela-login').style.display='none';
+  document.getElementById('app-main').style.display='block';
+  const s=document.getElementById('topbar-sub');
+  if(s)s.textContent=u.email;
+}
 async function fazerLogin(){
   const em=document.getElementById('login-email').value.trim();
   const se=document.getElementById('login-senha').value;
