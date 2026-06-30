@@ -256,6 +256,65 @@
     /* ── EXPORT ── */
     .rel-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
     .rel-filtros { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+    /* ══ TELA LOGIN ══ */
+    #tela-login {
+      position:fixed;inset:0;z-index:9999;
+      background:#0a0a0a;
+      display:flex;align-items:center;justify-content:center;padding:24px;
+    }
+    #tela-login::before {
+      content:'';position:absolute;inset:0;pointer-events:none;
+      background:radial-gradient(ellipse 70% 50% at 50% -10%,rgba(46,204,113,0.13) 0%,transparent 70%),
+                 radial-gradient(ellipse 50% 40% at 90% 110%,rgba(26,110,60,0.08) 0%,transparent 60%);
+    }
+    .lcard {
+      position:relative;z-index:1;
+      background:#111;border:1px solid rgba(46,204,113,0.18);border-radius:20px;
+      padding:40px 28px 32px;width:100%;max-width:380px;
+      box-shadow:0 24px 64px rgba(0,0,0,0.7),0 0 0 1px rgba(46,204,113,0.04);
+    }
+    .llogo { text-align:center;margin-bottom:32px; }
+    .llogo-icon { font-size:2.8rem;display:block;margin-bottom:6px; }
+    .llogo h1 {
+      font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:#2ecc71;
+      letter-spacing:7px;line-height:1;
+      text-shadow:0 0 40px rgba(46,204,113,0.35);
+    }
+    .llogo-sub { font-size:0.65rem;color:#333;letter-spacing:4px;text-transform:uppercase;margin-top:8px; }
+    .lsep { height:1px;background:linear-gradient(90deg,transparent,rgba(46,204,113,0.18),transparent);margin:0 0 26px; }
+    .lfield { margin-bottom:16px; }
+    .lfield label { display:block;font-size:0.65rem;color:#2ecc71;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;font-weight:700; }
+    .lfield-wrap { position:relative; }
+    .lfield-icon { position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:0.95rem;pointer-events:none;transition:opacity 0.2s;opacity:0.3; }
+    .lfield-wrap:focus-within .lfield-icon { opacity:0.9; }
+    .lfield input {
+      width:100%;padding:13px 14px 13px 42px;
+      background:#0d0d0d;border:1.5px solid #1c1c1c;border-radius:10px;
+      color:#f0f0f0;font-size:0.95rem;font-family:'Rajdhani',sans-serif;font-weight:600;
+      outline:none;transition:border-color 0.2s,box-shadow 0.2s;
+    }
+    .lfield input::placeholder { color:#2a2a2a; }
+    .lfield input:focus { border-color:rgba(46,204,113,0.45);box-shadow:0 0 0 3px rgba(46,204,113,0.06); }
+    .btn-login {
+      width:100%;padding:15px;margin-top:8px;
+      background:linear-gradient(135deg,#17612f 0%,#27ae60 100%);
+      border:none;border-radius:10px;color:#fff;
+      font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:4px;
+      cursor:pointer;transition:all 0.25s;
+      box-shadow:0 4px 24px rgba(46,204,113,0.22);
+    }
+    .btn-login:hover { background:linear-gradient(135deg,#27ae60 0%,#2ecc71 100%);box-shadow:0 6px 32px rgba(46,204,113,0.38);transform:translateY(-1px); }
+    .btn-login:active { transform:scale(0.985); }
+    .btn-login.lbtn-loading { background:#161616;color:#2ecc71;pointer-events:none;letter-spacing:3px; }
+    .lerro {
+      background:rgba(231,76,60,0.07);color:#e74c3c;
+      border:1px solid rgba(231,76,60,0.18);border-radius:8px;
+      padding:10px 14px;font-size:0.85rem;margin-top:14px;text-align:center;display:none;
+    }
+    .lload { text-align:center;color:#2ecc71;font-size:0.78rem;margin-top:12px;display:none;letter-spacing:3px;opacity:0.7; }
+    .lfooter { text-align:center;margin-top:28px;font-size:0.6rem;color:#222;letter-spacing:2px; }
+
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -264,12 +323,30 @@
 <!-- LOGIN -->
 <div id="tela-login">
   <div class="lcard">
-    <div class="llogo"><h1>🍺 ECOBIER</h1><p>Sistema de Estoque</p></div>
-    <div class="lfield"><label>Email</label><input type="email" id="login-email" placeholder="seu@email.com" autocomplete="email"></div>
-    <div class="lfield"><label>Senha</label><input type="password" id="login-senha" placeholder="••••••••" autocomplete="current-password"></div>
-    <button class="btn-login" onclick="fazerLogin()">ENTRAR</button>
-    <div class="lerro" id="login-erro">Email ou senha incorretos.</div>
-    <div class="lload" id="login-loading">Verificando...</div>
+    <div class="llogo">
+      <span class="llogo-icon">🍺</span>
+      <h1>ECOBIER</h1>
+      <div class="llogo-sub">Sistema de Gestão de Estoque</div>
+    </div>
+    <div class="lsep"></div>
+    <div class="lfield">
+      <label>Email</label>
+      <div class="lfield-wrap">
+        <input type="email" id="login-email" placeholder="seu@email.com" autocomplete="email">
+        <span class="lfield-icon">✉️</span>
+      </div>
+    </div>
+    <div class="lfield">
+      <label>Senha</label>
+      <div class="lfield-wrap">
+        <input type="password" id="login-senha" placeholder="••••••••" autocomplete="current-password">
+        <span class="lfield-icon">🔒</span>
+      </div>
+    </div>
+    <button class="btn-login" id="btn-login-main" onclick="fazerLogin()">ENTRAR</button>
+    <div class="lerro" id="login-erro"></div>
+    <div class="lload" id="login-loading">● VERIFICANDO ACESSO...</div>
+    <div class="lfooter">ECOBIER © 2026 · POWERED BY BRAINLOGIC</div>
   </div>
 </div>
 <!-- APP -->
