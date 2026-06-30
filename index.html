@@ -894,7 +894,7 @@ function carregarLote() {
         <div class="lote-item-nome">${p.nome}</div>
         <div class="lote-item-sub">🔑 ${p.cod} · Atual: <b style="color:#2ecc71;">${fmtQ(p.estoque,p.und)}</b></div>
       </div>
-      <input type="number" id="lote-${p.id}" min="0" step="0.001" placeholder="—" title="${p.nome}">
+      <input type="number" id="lote-${p.id}" min="0" step="0.001" placeholder="0" title="${p.nome}">
     </div>`).join('');
 
   footer.style.display = 'block';
@@ -911,8 +911,9 @@ function confirmarLote() {
 
   catProds.forEach(p => {
     const inp = document.getElementById('lote-'+p.id);
-    if (!inp || inp.value==='' || inp.value===null) return; // campo vazio = não altera
-    const qtd = parseFloat(inp.value);
+    if (!inp) return;
+    const raw = inp.value;
+    const qtd = raw==='' ? 0 : parseFloat(raw); // campo vazio = zera o produto
     if (isNaN(qtd) || qtd < 0) return;
 
     const antes  = parseFloat(p.estoque)||0;
