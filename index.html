@@ -1082,12 +1082,12 @@ async function carregarAdmin() {
     document.getElementById('licenca-dias').textContent = `${diasRestantes} dias restantes de trial`;
 
     if (currentEmpresa.licenca_ativa) {
-      document.getElementById('licenca-status-text').textContent = '✅ Licença ativa';
+      document.getElementById('licenca-status-text').textContent = '✅ Licença ativa — acesso completo';
     } else if (diasRestantes > 0) {
-      document.getElementById('licenca-status-text').textContent = `⏳ Trial: ${diasRestantes} dias restantes`;
+      document.getElementById('licenca-status-text').textContent = `🎁 Trial gratuito — ${diasRestantes} dias restantes. Todos os recursos liberados!`;
       document.getElementById('ativar-licenca-form').style.display = 'block';
     } else {
-      document.getElementById('licenca-status-text').textContent = '🔴 Trial expirado';
+      document.getElementById('licenca-status-text').textContent = '🔴 Trial expirado — ative sua licença para continuar';
       document.getElementById('ativar-licenca-form').style.display = 'block';
     }
   }
