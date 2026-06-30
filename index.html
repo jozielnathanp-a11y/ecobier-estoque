@@ -234,6 +234,7 @@
   <button class="tab-btn"         onclick="goTab('movimentar',this)">⚡ Movimentar</button>
   <button class="tab-btn"         onclick="goTab('cadastro',this)">➕ Cadastro</button>
   <button class="tab-btn"         onclick="goTab('historico',this)">📋 Histórico</button>
+  <button class="tab-btn"         onclick="goTab('descarte',this)">🗑️ Descarte</button>
   <button class="tab-btn"         onclick="goTab('relatorio',this)">📊 Relatório</button>
 </div>
 
@@ -402,6 +403,64 @@
   <div id="lista-hist" style="display:flex;flex-direction:column;gap:6px;"></div>
 </div>
 
+<!-- ═══════════════════════════════════════════════════════ TAB DESCARTE -->
+<div id="tab-descarte" class="tab-pane">
+  <div class="form-card">
+    <h3>🗑️ REGISTRAR DESCARTE</h3>
+    <p style="font-size:0.82rem;color:#888;margin-bottom:14px;">O descarte desconta automaticamente do estoque e fica registrado no relatório.</p>
+
+    <div class="row2">
+      <div class="fg">
+        <label>Produto *</label>
+        <select id="desc-prod" onchange="onDescProdChange()">
+          <option value="">Selecione o produto...</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Quantidade *</label>
+        <input type="number" id="desc-qtd" min="0.001" step="0.001" placeholder="0">
+      </div>
+    </div>
+
+    <div class="row2">
+      <div class="fg">
+        <label>Motivo *</label>
+        <select id="desc-motivo">
+          <option value="">Selecione...</option>
+          <option value="Vencido">⏰ Vencido</option>
+          <option value="Danificado">💥 Danificado</option>
+          <option value="Contaminado">☣️ Contaminado</option>
+          <option value="Perda no processo">⚙️ Perda no processo</option>
+          <option value="Outro">📝 Outro</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Observação</label>
+        <input type="text" id="desc-obs" placeholder="Detalhes opcionais...">
+      </div>
+    </div>
+
+    <div id="desc-saldo-info" style="display:none;background:#1a1a1a;border-radius:5px;padding:10px 14px;margin-bottom:12px;font-size:0.85rem;">
+      Estoque atual: <span id="desc-saldo-val" style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:#2ecc71;"></span>
+      &nbsp;·&nbsp; Após descarte: <span id="desc-saldo-pos" style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:#e74c3c;"></span>
+    </div>
+
+    <button class="btn-g btn-red btn-full" onclick="registrarDescarte()">🗑️ CONFIRMAR DESCARTE</button>
+  </div>
+
+  <!-- Histórico de descartes -->
+  <div class="section-hd">DESCARTES REGISTRADOS</div>
+  <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:flex-end;">
+    <div class="fg" style="flex:1;min-width:140px;">
+      <label>Filtrar por data</label>
+      <input type="date" id="desc-data-fil" style="padding:8px 11px;border:2px solid #222;border-radius:4px;background:#1a1a1a;color:#f0f0f0;font-family:'Rajdhani',sans-serif;font-size:0.9rem;outline:none;" onchange="renderDescartes()">
+    </div>
+    <button class="btn-g btn-gray" onclick="document.getElementById('desc-data-fil').value='';renderDescartes()">Todos</button>
+    <button class="btn-g btn-blue" onclick="exportDescartesCSV()">📤 CSV</button>
+  </div>
+  <div id="lista-descartes" style="display:flex;flex-direction:column;gap:6px;"></div>
+</div>
+
 <!-- ═══════════════════════════════════════════════════════ TAB RELATÓRIO -->
 <div id="tab-relatorio" class="tab-pane">
   <div class="rel-header">
@@ -435,6 +494,26 @@
       <tbody id="rel-body"></tbody>
     </table>
   </div>
+
+  <!-- Seção de descartes no relatório -->
+  <div class="section-hd" style="margin-top:24px;color:#e74c3c;">🗑️ DESCARTES</div>
+  <div style="overflow-x:auto;">
+    <table class="rel-table" id="rel-desc-tabela">
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Produto</th>
+          <th>Cód.</th>
+          <th>Categoria</th>
+          <th>Quantidade</th>
+          <th>Motivo</th>
+          <th>Observação</th>
+        </tr>
+      </thead>
+      <tbody id="rel-desc-body"></tbody>
+    </table>
+  </div>
+  <div id="rel-desc-total" style="margin-top:8px;text-align:right;font-size:0.8rem;color:#e74c3c;"></div>
 </div>
 
 <!-- ═══════════════ SCANNER OVERLAY ═══════════════ -->
@@ -460,6 +539,7 @@
 // ════════════════════════════════════════════
 const K_PROD = 'ecobier_produtos';
 const K_HIST = 'ecobier_historico';
+const K_DESC = 'ecobier_descartes';
 
 let _cache   = {};   // produtos
 let _filAtivo = 'todos';
@@ -476,6 +556,8 @@ function getProd()     { return dbGet(K_PROD, {}); }
 function setProd(p)    { dbSet(K_PROD, p); _cache = p; }
 function getHist()     { return dbGet(K_HIST, []); }
 function pushHist(item){ const h = getHist(); h.unshift(item); dbSet(K_HIST, h.slice(0,3000)); }
+function getDesc()     { return dbGet(K_DESC, []); }
+function pushDesc(item){ const d = getDesc(); d.unshift(item); dbSet(K_DESC, d.slice(0,2000)); }
 
 // ── UTILS ─────────────────────────────────────
 function uid() { return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
@@ -515,9 +597,12 @@ function init() {
   renderEstoque();
   renderCadLista();
   atualizarCatDL();
+  popularSelectDescarte();
+  renderDescartes();
   document.getElementById('hist-data').value = dataHoje();
   renderHistorico();
   renderRelatorio();
+  renderRelDescartes();
   atualizarRelCats();
 }
 
@@ -529,8 +614,9 @@ function goTab(name, btn) {
   btn.classList.add('active');
   if (name==='estoque') { _cache=getProd(); renderEstoque(); }
   if (name==='cadastro') { renderCadLista(); atualizarCatDL(); }
+  if (name==='descarte') { popularSelectDescarte(); renderDescartes(); }
   if (name==='historico') renderHistorico();
-  if (name==='relatorio') { renderRelatorio(); atualizarRelCats(); }
+  if (name==='relatorio') { renderRelatorio(); renderRelDescartes(); atualizarRelCats(); }
 }
 
 // ── ESTOQUE ────────────────────────────────────
@@ -956,6 +1042,137 @@ function pararScanner() {
       }).catch(() => { _scanner = null; });
     } catch(e) { _scanner = null; }
   }
+}
+
+// ── DESCARTE ─────────────────────────────────────
+function popularSelectDescarte() {
+  const sel = document.getElementById('desc-prod');
+  if (!sel) return;
+  const prods = Object.values(getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
+  const atual = sel.value;
+  sel.innerHTML = '<option value="">Selecione o produto...</option>' +
+    prods.map(p=>`<option value="${p.id}">${p.nome} (${fmtQ(p.estoque,p.und)})</option>`).join('');
+  sel.value = atual;
+}
+
+function onDescProdChange() {
+  const id = document.getElementById('desc-prod').value;
+  const info = document.getElementById('desc-saldo-info');
+  if (!id) { info.style.display='none'; return; }
+  const p = getProd()[id];
+  if (!p) { info.style.display='none'; return; }
+  info.style.display = 'block';
+  document.getElementById('desc-saldo-val').textContent = fmtQ(p.estoque, p.und);
+  // atualizar preview ao mudar qtd também
+  document.getElementById('desc-qtd').oninput = () => {
+    const qtd = parseFloat(document.getElementById('desc-qtd').value)||0;
+    const pos = Math.max(0, (parseFloat(p.estoque)||0) - qtd);
+    document.getElementById('desc-saldo-pos').textContent = fmtQ(pos, p.und);
+  };
+}
+
+function registrarDescarte() {
+  const pid    = document.getElementById('desc-prod').value;
+  const qtd    = parseFloat(document.getElementById('desc-qtd').value);
+  const motivo = document.getElementById('desc-motivo').value;
+  const obs    = document.getElementById('desc-obs').value.trim();
+
+  if (!pid)           { toast('Selecione o produto', 'err'); return; }
+  if (!qtd || qtd<=0) { toast('Informe a quantidade', 'err'); return; }
+  if (!motivo)        { toast('Selecione o motivo', 'err'); return; }
+
+  const prods = getProd();
+  const p = prods[pid];
+  if (!p) { toast('Produto não encontrado', 'err'); return; }
+
+  const antes  = parseFloat(p.estoque)||0;
+  const depois = Math.max(0, antes - qtd);
+  p.estoque = depois;
+  prods[pid] = p;
+  setProd(prods);
+
+  pushDesc({ id:uid(), pid:p.id, pnome:p.nome, pcod:p.cod, pcat:p.cat||'', und:p.und, qtd, antes, depois, motivo, obs, ts:ts() });
+
+  toast(`🗑️ Descarte registrado: ${fmtQ(qtd,p.und)} de ${p.nome}`, 'err');
+
+  // Limpar form
+  document.getElementById('desc-prod').value   = '';
+  document.getElementById('desc-qtd').value    = '';
+  document.getElementById('desc-motivo').value = '';
+  document.getElementById('desc-obs').value    = '';
+  document.getElementById('desc-saldo-info').style.display = 'none';
+
+  popularSelectDescarte();
+  renderDescartes();
+  _cache = getProd();
+}
+
+function renderDescartes() {
+  const dataFil = document.getElementById('desc-data-fil')?.value || '';
+  const descartes = getDesc().filter(d => !dataFil || d.ts?.startsWith(dataFil));
+  const lista = document.getElementById('lista-descartes');
+
+  if (!descartes.length) {
+    lista.innerHTML = `<div class="empty"><span>🗑️</span><p>Nenhum descarte${dataFil?' em '+dataFil:''}.</p></div>`;
+    return;
+  }
+
+  lista.innerHTML = descartes.map(d => {
+    const hora = d.ts ? new Date(d.ts).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
+    return `<div class="hist-item" style="border-left-color:#e74c3c;">
+      <div>
+        <div class="hist-nome">${d.pnome}</div>
+        <div class="hist-meta">🔑 ${d.pcod}${d.pcat?' · 📂 '+d.pcat:''} · ${hora}</div>
+        <div class="hist-meta">Motivo: <b style="color:#e74c3c;">${d.motivo}</b>${d.obs?' · '+d.obs:''}</div>
+        <div class="hist-meta">Estoque: ${fmtQ(d.antes,d.und)} → ${fmtQ(d.depois,d.und)}</div>
+      </div>
+      <div class="hist-qty" style="color:#e74c3c;">-${fmtQ(d.qtd,d.und)}</div>
+    </div>`;
+  }).join('');
+}
+
+function exportDescartesCSV() {
+  const descartes = getDesc();
+  if (!descartes.length) { toast('Sem descartes para exportar','err'); return; }
+  const csv = ['Data,Produto,Código,Categoria,Quantidade,Unidade,Estoque Antes,Estoque Depois,Motivo,Observação']
+    .concat(descartes.map(d=>[d.ts?.slice(0,10),d.pnome,d.pcod,d.pcat,d.qtd,d.und,d.antes,d.depois,d.motivo,d.obs||''].map(v=>`"${v||''}"`).join(',')))
+    .join('\n');
+  baixarCSV(csv, 'ecobier-descartes-'+dataHoje()+'.csv');
+}
+
+// ── RELATÓRIO: seção descartes ────────────────────
+function renderRelDescartes() {
+  const catFil = document.getElementById('rel-cat')?.value || '';
+  const busca  = (document.getElementById('rel-busca')?.value||'').toLowerCase();
+  const descartes = getDesc().filter(d => {
+    if (catFil && d.pcat !== catFil) return false;
+    if (busca && !d.pnome?.toLowerCase().includes(busca) && !d.pcod?.toLowerCase().includes(busca)) return false;
+    return true;
+  });
+
+  const tbody = document.getElementById('rel-desc-body');
+  const total = document.getElementById('rel-desc-total');
+
+  if (!descartes.length) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:#444;padding:16px;">Nenhum descarte registrado.</td></tr>`;
+    total.textContent = '';
+    return;
+  }
+
+  tbody.innerHTML = descartes.map(d => {
+    const data = d.ts ? new Date(d.ts).toLocaleDateString('pt-BR') : '—';
+    return `<tr>
+      <td style="color:#888;font-size:0.78rem;">${data}</td>
+      <td style="font-weight:700;">${d.pnome}</td>
+      <td style="color:#666;font-size:0.78rem;">${d.pcod}</td>
+      <td style="color:#3498db;font-size:0.78rem;">${d.pcat||'—'}</td>
+      <td style="color:#e74c3c;font-weight:700;">-${fmtQ(d.qtd,d.und)}</td>
+      <td style="color:#e74c3c;">${d.motivo}</td>
+      <td style="color:#888;font-size:0.78rem;">${d.obs||'—'}</td>
+    </tr>`;
+  }).join('');
+
+  total.textContent = `Total de descartes: ${descartes.length} registro(s)`;
 }
 
 window.addEventListener('load', init);
