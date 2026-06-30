@@ -326,8 +326,14 @@
       </div>
       <div class="fg">
         <label>Categoria</label>
-        <input type="text" id="cad-cat" placeholder="Ex: Chopp, Embalagem..." list="dl-cat">
-        <datalist id="dl-cat"></datalist>
+        <select id="cad-cat">
+          <option value="">Selecione...</option>
+          <option value="Limpeza">🧹 Limpeza</option>
+          <option value="Bruto">🥩 Bruto</option>
+          <option value="Processado">🍳 Processado</option>
+          <option value="Embalagens">📦 Embalagens</option>
+          <option value="Bebidas">🍺 Bebidas</option>
+        </select>
       </div>
     </div>
 
@@ -745,10 +751,9 @@ function renderCadLista() {
     </div>`).join('');
 }
 
-function atualizarCatDL() {
-  const cats=[...new Set(Object.values(getProd()).map(p=>p.cat).filter(Boolean))];
-  const dl=document.getElementById('dl-cat'); if(dl) dl.innerHTML=cats.map(c=>`<option value="${c}">`).join('');
-}
+const CATS_FIXAS = ['Limpeza','Bruto','Processado','Embalagens','Bebidas'];
+
+function atualizarCatDL() { /* categorias fixas — sem datalist */ }
 
 // ── HISTÓRICO ────────────────────────────────────
 function renderHistorico() {
@@ -835,10 +840,9 @@ function renderRelatorio() {
 }
 
 function atualizarRelCats() {
-  const cats=[...new Set(Object.values(getProd()).map(p=>p.cat).filter(Boolean))].sort();
   const sel=document.getElementById('rel-cat'); if(!sel) return;
   const atual=sel.value;
-  sel.innerHTML='<option value="">Todas categorias</option>'+cats.map(c=>`<option value="${c}">${c}</option>`).join('');
+  sel.innerHTML='<option value="">Todas categorias</option>'+CATS_FIXAS.map(c=>`<option value="${c}">${c}</option>`).join('');
   sel.value=atual;
 }
 
