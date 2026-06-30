@@ -3,8 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>Ecobier — Estoque ADM</title>
   <style>
@@ -21,6 +19,7 @@
     #topbar h1 { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: #2ecc71; letter-spacing: 3px; }
     #topbar-sub { font-size: 0.72rem; color: #555; }
 
+    .tab-lock { font-size: 0.65rem; opacity: 0.6; }
     /* ── TABS ── */
     .tabs { display: flex; background: #111; border-bottom: 1px solid #1a1a1a; overflow-x: auto; }
     .tab-btn {
@@ -261,29 +260,18 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-
-<!-- ── TELA DE LOGIN ── -->
+<!-- LOGIN -->
 <div id="tela-login">
-  <div class="login-card">
-    <div class="login-logo">
-      <h1>🍺 ECOBIER</h1>
-      <p>Sistema de Estoque</p>
-    </div>
-    <div class="login-field">
-      <label>Email</label>
-      <input type="email" id="login-email" placeholder="seu@email.com" autocomplete="email">
-    </div>
-    <div class="login-field">
-      <label>Senha</label>
-      <input type="password" id="login-senha" placeholder="••••••••" autocomplete="current-password">
-    </div>
+  <div class="lcard">
+    <div class="llogo"><h1>🍺 ECOBIER</h1><p>Sistema de Estoque</p></div>
+    <div class="lfield"><label>Email</label><input type="email" id="login-email" placeholder="seu@email.com" autocomplete="email"></div>
+    <div class="lfield"><label>Senha</label><input type="password" id="login-senha" placeholder="••••••••" autocomplete="current-password"></div>
     <button class="btn-login" onclick="fazerLogin()">ENTRAR</button>
-    <div class="login-erro" id="login-erro">Email ou senha incorretos.</div>
-    <div class="login-loading" id="login-loading">Verificando...</div>
+    <div class="lerro" id="login-erro">Email ou senha incorretos.</div>
+    <div class="lload" id="login-loading">Verificando...</div>
   </div>
 </div>
-
-<!-- ── APP PRINCIPAL ── -->
+<!-- APP -->
 <div id="app-main" style="display:none">
 
 <!-- TOPBAR -->
@@ -291,6 +279,8 @@
   <div>
     <h1>🍺 ECOBIER</h1>
     <div id="topbar-sub">ESTOQUE ADM</div>
+    <div style="display:flex;align-items:center;gap:8px;"><div id="badge-licenca" style="font-family:'Bebas Neue',sans-serif;font-size:0.8rem;padding:4px 10px;border-radius:4px;cursor:pointer;letter-spacing:1px;" onclick="mostrarModalLicenca('upgrade')">⏳ TRIAL</div>
+    <button id="btn-logout" onclick="fazerLogout()">🚪 SAIR</button></div>
   </div>
 </div>
 
@@ -298,10 +288,10 @@
 <div class="tabs">
   <button class="tab-btn active"  onclick="goTab('estoque',this)">📦 Estoque</button>
   <button class="tab-btn"         onclick="goTab('movimentar',this)">⚡ Movimentar</button>
-  <button class="tab-btn"         onclick="goTab('cadastro',this)">➕ Cadastro</button>
-  <button class="tab-btn"         onclick="goTab('historico',this)">📋 Histórico</button>
-  <button class="tab-btn"         onclick="goTab('descarte',this)">🗑️ Descarte</button>
-  <button class="tab-btn"         onclick="goTab('relatorio',this)">📊 Relatório</button>
+  <button class="tab-btn" onclick="goTab('cadastro',this)">➕ Cadastro <span class="tab-lock">🔒</span></button>
+  <button class="tab-btn" onclick="goTab('historico',this)">📋 Histórico <span class="tab-lock">🔒</span></button>
+  <button class="tab-btn" onclick="goTab('descarte',this)">🗑️ Descarte <span class="tab-lock">🔒</span></button>
+  <button class="tab-btn" onclick="goTab('relatorio',this)">📊 Relatório</button>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════ TAB ESTOQUE -->
@@ -334,8 +324,8 @@
     <button class="modo-btn" id="modo-btn-contagem" onclick="setModo('contagem')">
       📋<br><span style="font-size:0.78rem;font-weight:700;">CONTAGEM</span><br><span style="font-size:0.65rem;color:#aaa;">substitui estoque</span>
     </button>
-    <button class="modo-btn" id="modo-btn-lote"     onclick="setModo('lote')">
-      📦<br><span style="font-size:0.78rem;font-weight:700;">LOTE</span><br><span style="font-size:0.65rem;color:#aaa;">contagem por cat.</span>
+    <button class="modo-btn" id="modo-btn-lote" onclick="bloquearSeNecessario('lote_contagem', ()=>setModo('lote'))">
+      📦<br><span style="font-size:0.78rem;font-weight:700;">LOTE 🔒</span><br><span style="font-size:0.65rem;color:#aaa;">contagem por cat.</span>
     </button>
   </div>
 
@@ -343,7 +333,7 @@
   <div id="painel-entrada">
     <div class="form-card">
       <h3>📥 ENTRADA</h3>
-      <p style="font-size:0.82rem;color:#888;margin-bottom:14px;">Escaneie ou procure o produto. A quantidade é <b style="color:#2ecc71;">somada</b> ao estoque.</p>
+      <p style="font-size:0.82rem;color:#888;margin-bottom:14px;">Escaneie ou procure. Os itens ficam na fila — confirme tudo de uma vez com seu nome.</p>
       <div class="row1 fg">
         <label>Escanear código de barras</label>
         <div class="inp-scan">
@@ -358,19 +348,24 @@
       </div>
       <div id="ent-lista-sugestoes" style="margin-top:4px;display:flex;flex-direction:column;gap:4px;max-height:160px;overflow-y:auto;"></div>
     </div>
-    <div id="ent-resultado" style="display:none;">
-      <div class="mov-card">
-        <div class="mov-nome" id="ent-nome"></div>
-        <div class="mov-cod" id="ent-cod-info"></div>
-        <div class="mov-saldo-wrap">
-          <div class="mov-saldo-box"><div class="mov-saldo-val" id="ent-saldo">—</div><div class="mov-saldo-lbl">Estoque Atual</div></div>
-          <div class="mov-saldo-box"><div class="mov-saldo-val" style="color:#3498db" id="ent-entradas-hoje">—</div><div class="mov-saldo-lbl">Entradas Hoje</div></div>
+
+    <!-- FILA PENDENTE ENTRADA -->
+    <div id="ent-fila-wrap" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:#2ecc71;letter-spacing:2px;">
+          PENDENTES <span id="ent-fila-count" style="background:#2ecc71;color:#111;border-radius:50%;padding:1px 7px;font-size:0.85rem;">0</span>
+          <span style="font-size:0.65rem;color:#555;font-family:'Rajdhani',sans-serif;"> / 10</span>
         </div>
-        <div class="row2">
-          <div class="fg"><label>Quantidade *</label><input type="number" id="ent-qtd" min="0" step="0.001" placeholder="0"></div>
-          <div class="fg"><label>Observação</label><input type="text" id="ent-obs" placeholder="Ex: NF 1234..."></div>
+        <button class="btn-g btn-gray" style="font-size:0.75rem;padding:5px 10px;" onclick="limparFila('ent')">🗑️ Limpar fila</button>
+      </div>
+      <div id="ent-fila-lista" style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;"></div>
+      <div class="form-card" style="margin-bottom:0;">
+        <div class="fg" style="margin-bottom:10px;">
+          <label>✍️ Nome de quem está lançando *</label>
+          <input type="text" id="ent-responsavel" placeholder="Ex: João, Maria..." autocomplete="off"
+            style="padding:10px 13px;border:2px solid #2ecc71;border-radius:5px;background:#1a1a1a;color:#f0f0f0;font-size:1rem;font-family:'Rajdhani',sans-serif;outline:none;width:100%;">
         </div>
-        <button class="btn-g btn-green btn-full" style="margin-top:6px;" onclick="confirmarModo('entrada')">📥 CONFIRMAR ENTRADA</button>
+        <button class="btn-g btn-green btn-full" onclick="confirmarFila('entrada')">✅ CONFIRMAR ENTRADA</button>
       </div>
     </div>
   </div>
@@ -379,7 +374,7 @@
   <div id="painel-contagem" style="display:none;">
     <div class="form-card">
       <h3>📋 CONTAGEM</h3>
-      <p style="font-size:0.82rem;color:#888;margin-bottom:14px;">Escaneie ou procure o produto. A quantidade <b style="color:#3498db;">substitui</b> o estoque atual.</p>
+      <p style="font-size:0.82rem;color:#888;margin-bottom:14px;">Escaneie ou procure. Os itens ficam na fila — confirme tudo de uma vez com seu nome.</p>
       <div class="row1 fg">
         <label>Escanear código de barras</label>
         <div class="inp-scan">
@@ -393,19 +388,24 @@
       </div>
       <div id="cont-lista-sugestoes" style="margin-top:4px;display:flex;flex-direction:column;gap:4px;max-height:160px;overflow-y:auto;"></div>
     </div>
-    <div id="cont-resultado" style="display:none;">
-      <div class="mov-card">
-        <div class="mov-nome" id="cont-nome"></div>
-        <div class="mov-cod" id="cont-cod-info"></div>
-        <div class="mov-saldo-wrap">
-          <div class="mov-saldo-box"><div class="mov-saldo-val" id="cont-saldo">—</div><div class="mov-saldo-lbl">Estoque Atual</div></div>
-          <div class="mov-saldo-box"><div class="mov-saldo-val" style="color:#f39c12" id="cont-ult-cont">—</div><div class="mov-saldo-lbl">Última Contagem</div></div>
+
+    <!-- FILA PENDENTE CONTAGEM -->
+    <div id="cont-fila-wrap" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:#3498db;letter-spacing:2px;">
+          PENDENTES <span id="cont-fila-count" style="background:#3498db;color:#111;border-radius:50%;padding:1px 7px;font-size:0.85rem;">0</span>
+          <span style="font-size:0.65rem;color:#555;font-family:'Rajdhani',sans-serif;"> / 10</span>
         </div>
-        <div class="row2">
-          <div class="fg"><label>Nova Contagem *</label><input type="number" id="cont-qtd" min="0" step="0.001" placeholder="0"></div>
-          <div class="fg"><label>Observação</label><input type="text" id="cont-obs" placeholder="Opcional..."></div>
+        <button class="btn-g btn-gray" style="font-size:0.75rem;padding:5px 10px;" onclick="limparFila('cont')">🗑️ Limpar fila</button>
+      </div>
+      <div id="cont-fila-lista" style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;"></div>
+      <div class="form-card" style="margin-bottom:0;">
+        <div class="fg" style="margin-bottom:10px;">
+          <label>✍️ Nome de quem está lançando *</label>
+          <input type="text" id="cont-responsavel" placeholder="Ex: João, Maria..." autocomplete="off"
+            style="padding:10px 13px;border:2px solid #3498db;border-radius:5px;background:#1a1a1a;color:#f0f0f0;font-size:1rem;font-family:'Rajdhani',sans-serif;outline:none;width:100%;">
         </div>
-        <button class="btn-g btn-full" style="margin-top:6px;background:#1a3d6e;color:#3498db;" onclick="confirmarModo('contagem')">📋 CONFIRMAR CONTAGEM</button>
+        <button class="btn-g btn-full" style="background:#1a3d6e;color:#3498db;" onclick="confirmarFila('contagem')">✅ CONFIRMAR CONTAGEM</button>
       </div>
     </div>
   </div>
@@ -597,14 +597,14 @@
         style="padding:7px 11px;border:2px solid #222;border-radius:4px;background:#1a1a1a;color:#f0f0f0;font-size:0.85rem;font-family:'Rajdhani',sans-serif;outline:none;">
         <option value="">Todas categorias</option>
       </select>
-      <button class="btn-g btn-blue" onclick="exportRelXLSX()">📊 Planilha</button>
+      <button class="btn-g btn-blue" onclick="bloquearSeNecessario('cadastro_ilimitado',exportRelXLSX)">📊 Planilha 🔒</button>
       <button class="btn-g btn-blue" onclick="exportRelCSV()">📤 CSV</button>
     </div>
   </div>
 
   <!-- Botões de ação -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
-    <button class="btn-g btn-green btn-full" onclick="enviarRelWhatsApp()">📲 Enviar no WhatsApp</button>
+    <button class="btn-g btn-green btn-full" onclick="bloquearSeNecessario('cadastro_ilimitado',enviarRelWhatsApp)">📲 Enviar no WhatsApp 🔒</button>
     <button class="btn-g btn-full" style="background:#1a3d6e;color:#3498db;" onclick="gerarPedidoWhatsApp()">🛒 Pedido de Compra (Mín/Máx)</button>
   </div>
 
@@ -649,6 +649,41 @@
   <div id="rel-desc-total" style="margin-top:8px;text-align:right;font-size:0.8rem;color:#e74c3c;"></div>
 </div>
 
+<!-- ═══════════════ MODAL LICENÇA ═══════════════ -->
+<div id="modal-licenca" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:4000;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#111;border-radius:12px;border:2px solid #2ecc71;max-width:420px;width:100%;padding:28px 24px;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:#2ecc71;letter-spacing:3px;margin-bottom:6px;" id="modal-lic-titulo">🔒 Recurso PRO</div>
+    <p id="modal-lic-sub" style="font-size:0.85rem;color:#888;margin-bottom:20px;line-height:1.5;"></p>
+
+    <div style="background:#1a1a1a;border-radius:8px;padding:16px;margin-bottom:20px;">
+      <div style="font-size:0.72rem;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Plano PRO — Tudo liberado</div>
+      <div style="display:flex;flex-direction:column;gap:6px;font-size:0.82rem;color:#aaa;">
+        <span>✅ Produtos ilimitados</span>
+        <span>✅ Fila de pendentes (10 itens)</span>
+        <span>✅ Contagem em lote</span>
+        <span>✅ Descarte com relatório</span>
+        <span>✅ Histórico completo</span>
+        <span>✅ Exportar planilha .xlsx</span>
+        <span>✅ Relatório via WhatsApp</span>
+        <span>✅ Suporte prioritário</span>
+      </div>
+    </div>
+
+    <div class="fg" style="margin-bottom:12px;">
+      <label style="font-size:0.78rem;color:#666;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px;">Código de ativação</label>
+      <input type="text" id="input-codigo-lic" placeholder="Ex: ECOBIER-2026-XXXX"
+        style="width:100%;padding:11px 14px;border:2px solid #333;border-radius:6px;background:#1a1a1a;color:#f0f0f0;font-size:1rem;font-family:'Rajdhani',sans-serif;outline:none;text-transform:uppercase;letter-spacing:1px;"
+        onkeydown="if(event.key==='Enter')ativarCodigo(document.getElementById('input-codigo-lic').value)">
+    </div>
+    <button class="btn-g btn-green btn-full" onclick="ativarCodigo(document.getElementById('input-codigo-lic').value)">🔓 ATIVAR LICENÇA</button>
+    <button onclick="document.getElementById('modal-licenca').style.display='none'"
+      style="margin-top:10px;width:100%;background:none;border:1px solid #222;color:#555;padding:9px;border-radius:6px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:0.85rem;">
+      Fechar
+    </button>
+    <p style="margin-top:14px;font-size:0.75rem;color:#444;text-align:center;">Para adquirir sua licença, entre em contato via WhatsApp.</p>
+  </div>
+</div>
+
 <!-- ═══════════════ SCANNER OVERLAY ═══════════════ -->
 <div class="scan-ov" id="scan-overlay" onclick="fecharScanFundo(event)">
   <div class="scan-panel" id="scan-panel">
@@ -673,17 +708,128 @@
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
 // ════════════════════════════════════════════
-// ECOBIER — v3 — localStorage
+// ECOBIER — v4 — localStorage + licença
 // ════════════════════════════════════════════
-const K_PROD = 'ecobier_produtos';
-const K_HIST = 'ecobier_historico';
-const K_DESC = 'ecobier_descartes';
+const K_PROD    = 'ecobier_produtos';
+const K_HIST    = 'ecobier_historico';
+const K_DESC    = 'ecobier_descartes';
+const K_LIC     = 'ecobier_licenca';
+const TRIAL_DIAS = 30;
 
-let _cache   = {};   // produtos
+// Códigos válidos — formato ECOBIER-XXXX-XXXX (gerados por você)
+// Adicione novos códigos aqui quando um cliente pagar
+const CODIGOS_VALIDOS = [
+  'ECOBIER-2026-DEMO',
+  'ECOBIER-2026-A1B2',
+  'ECOBIER-2026-C3D4',
+  'ECOBIER-2026-E5F6',
+  'ECOBIER-2026-G7H8',
+];
+
+// ── LICENÇA ───────────────────────────────────
+function getLic() { return dbGet(K_LIC, {}); }
+function setLic(l) { dbSet(K_LIC, l); }
+
+function iniciarTrial() {
+  const lic = getLic();
+  if (!lic.inicio) {
+    setLic({ inicio: new Date().toISOString(), plano: 'trial' });
+  }
+}
+
+function diasRestantes() {
+  const lic = getLic();
+  if (!lic.inicio) return TRIAL_DIAS;
+  if (lic.plano === 'pago') return 9999;
+  const diff = (Date.now() - new Date(lic.inicio).getTime()) / 86400000;
+  return Math.max(0, TRIAL_DIAS - Math.floor(diff));
+}
+
+function isPago() {
+  return getLic().plano === 'pago';
+}
+
+function isAtivo() {
+  return isPago() || diasRestantes() > 0;
+}
+
+function ativarCodigo(cod) {
+  const c = (cod||'').trim().toUpperCase();
+  if (!c) { toast('Digite o código de ativação', 'err'); return; }
+  const lic = getLic();
+  if (lic.codigos_usados && lic.codigos_usados.includes(c)) {
+    toast('⚠️ Este código já foi utilizado', 'err'); return;
+  }
+  if (!CODIGOS_VALIDOS.includes(c)) {
+    toast('❌ Código inválido. Verifique e tente novamente.', 'err'); return;
+  }
+  const usados = lic.codigos_usados || [];
+  usados.push(c);
+  setLic({ ...lic, plano: 'pago', codigo: c, codigos_usados: usados, ativadoEm: new Date().toISOString() });
+  document.getElementById('modal-licenca').style.display = 'none';
+  toast('🎉 Licença ativada com sucesso! Bem-vindo ao Ecobier PRO!', 'ok');
+  atualizarBadgeLicenca();
+  renderEstoque();
+}
+
+function atualizarBadgeLicenca() {
+  const badge = document.getElementById('badge-licenca');
+  if (!badge) return;
+  if (isPago()) {
+    badge.textContent = '✅ PRO';
+    badge.style.background = '#1a6e3c';
+    badge.style.color = '#2ecc71';
+  } else {
+    const d = diasRestantes();
+    if (d > 0) {
+      badge.textContent = `⏳ TRIAL ${d}d`;
+      badge.style.background = d <= 3 ? '#6e1a1a' : '#2a2a1a';
+      badge.style.color = d <= 3 ? '#e74c3c' : '#f39c12';
+    } else {
+      badge.textContent = '🔒 EXPIRADO';
+      badge.style.background = '#2a1a1a';
+      badge.style.color = '#e74c3c';
+    }
+  }
+}
+
+// Verifica se feature está liberada
+function podeUsar(feature) {
+  if (isPago()) return true;
+  if (!isAtivo()) return false; // trial expirado — bloqueia tudo
+  // trial ativo — features liberadas
+  const liberadas = ['estoque_basico','movimentar_simples','pedido_whatsapp','scanner'];
+  return liberadas.includes(feature);
+}
+
+function bloquearSeNecessario(feature, callback) {
+  if (podeUsar(feature)) { callback(); return; }
+  if (!isAtivo()) {
+    mostrarModalLicenca('expirado');
+  } else {
+    mostrarModalLicenca('upgrade');
+  }
+}
+
+function mostrarModalLicenca(modo) {
+  const modal = document.getElementById('modal-licenca');
+  const titulo = document.getElementById('modal-lic-titulo');
+  const sub    = document.getElementById('modal-lic-sub');
+  if (modo === 'expirado') {
+    titulo.textContent = '⏰ Período de teste encerrado';
+    sub.textContent    = 'Seus 30 dias gratuitos terminaram. Ative sua licença para continuar usando o Ecobier.';
+  } else {
+    titulo.textContent = '🔒 Recurso PRO';
+    sub.textContent    = 'Este recurso está disponível no plano pago. Ative sua licença para desbloquear tudo.';
+  }
+  modal.style.display = 'flex';
+}
+
+let _cache   = {};
 let _filAtivo = 'todos';
 let _movProd  = null;
 let _movTipo  = 'entrada';
-let _scanAlvo = null; // 'cad' | 'mov'
+let _scanAlvo = null;
 let _scanner  = null;
 let _toastT   = null;
 
@@ -731,6 +877,18 @@ function toast(msg, tipo='') {
 
 // ── INIT ──────────────────────────────────────
 function init() {
+  iniciarTrial();
+  atualizarBadgeLicenca();
+
+  // Se trial expirado, bloqueia tudo e mostra modal
+  if (!isAtivo()) {
+    mostrarModalLicenca('expirado');
+    // Permite apenas ver estoque básico
+    _cache = getProd();
+    renderEstoque();
+    return;
+  }
+
   _cache = getProd();
   renderEstoque();
   renderCadLista();
@@ -742,10 +900,29 @@ function init() {
   renderRelatorio();
   renderRelDescartes();
   atualizarRelCats();
+
+  // Esconder tabs PRO se trial
+  aplicarBloqueiosTabs();
+}
+
+function aplicarBloqueiosTabs() {
+  if (isPago()) {
+    // Remove todos os cadeados
+    document.querySelectorAll('.tab-lock').forEach(el => el.style.display='none');
+    return;
+  }
+  // Mostra cadeado nas tabs PRO
+  document.querySelectorAll('.tab-lock').forEach(el => el.style.display='inline');
 }
 
 // ── TABS ──────────────────────────────────────
 function goTab(name, btn) {
+  // Verificar se tab é PRO e está bloqueada
+  const tabsPro = ['cadastro','descarte','historico'];
+  // Contagem em lote bloqueada dentro do movimentar — tratado separado
+  if (tabsPro.includes(name) && !podeUsar('cadastro_ilimitado')) {
+    mostrarModalLicenca('upgrade'); return;
+  }
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
@@ -809,8 +986,9 @@ function setFil(f, btn) {
 
 // ── MOVIMENTAR — MODO ─────────────────────────────
 let _modoAtivo = 'entrada'; // 'entrada' | 'contagem' | 'lote'
-let _prodEntrada  = null;
-let _prodContagem = null;
+const MAX_FILA = 10;
+let _filaEnt  = []; // [{pid, pnome, pcod, und, qtd, codOriginal}]
+let _filaCont = [];
 
 function setModo(modo) {
   _modoAtivo = modo;
@@ -830,17 +1008,16 @@ function irMov(id) {
   document.getElementById('tab-movimentar').classList.add('active');
   document.querySelectorAll('.tab-btn')[1].classList.add('active');
   setModo('entrada');
-  selecionarProdModo('ent', p);
-  document.getElementById('ent-qtd').focus();
 }
 
-// ── BUSCA POR CÓDIGO ──
+// ── BUSCA POR CÓDIGO (digitação manual → adiciona à fila) ──
 function buscarProdModo(pfx) {
   const cod = document.getElementById(pfx+'-cod').value.trim();
   if (!cod) { toast('Digite ou escaneie um código','err'); return; }
   const p = Object.values(getProd()).find(x=>x.cod===cod||x.id===cod);
   if (!p) { toast('Produto não encontrado: '+cod,'err'); return; }
-  selecionarProdModo(pfx, p);
+  document.getElementById(pfx+'-cod').value = '';
+  adicionarFila(pfx, p, extrairQtdDoCodigo(cod, p.und), cod);
 }
 
 // ── BUSCA POR NOME (sugestões) ──
@@ -851,76 +1028,139 @@ function filtrarListaModo(pfx) {
   const prods = Object.values(getProd()).filter(p=>p.nome?.toLowerCase().includes(busca)||p.cod?.toLowerCase().includes(busca)).slice(0,8);
   if (!prods.length) { lista.innerHTML='<div style="padding:8px;color:#555;font-size:0.82rem;">Nenhum produto encontrado.</div>'; return; }
   lista.innerHTML = prods.map(p=>`
-    <div class="sug-item" onclick="selecionarProdModo('${pfx}',null,'${p.id}')">
+    <div class="sug-item" onclick="addFilaNome('${pfx}','${p.id}')">
       <div><div class="sug-nome">${p.nome}</div><div class="sug-sub">🔑 ${p.cod}${p.cat?' · '+p.cat:''}</div></div>
       <div class="sug-qty">${fmtQ(p.estoque,p.und)}</div>
     </div>`).join('');
 }
 
-function selecionarProdModo(pfx, p, idFallback) {
-  if (!p && idFallback) p = getProd()[idFallback];
+function addFilaNome(pfx, id) {
+  const p = getProd()[id];
   if (!p) return;
-
-  // limpar sugestoes e busca nome
   const listaSug = document.getElementById(pfx+'-lista-sugestoes');
   if (listaSug) listaSug.innerHTML = '';
   const buscaNome = document.getElementById(pfx+'-busca-nome');
   if (buscaNome) buscaNome.value = '';
-
-  const hoje = dataHoje();
-  const hist = getHist();
-
-  if (pfx==='ent') {
-    _prodEntrada = p;
-    const entradasHoje = hist.filter(h=>h.pid===p.id&&h.tipo==='entrada'&&h.ts?.startsWith(hoje)).reduce((s,h)=>s+(parseFloat(h.qtd)||0),0);
-    document.getElementById('ent-resultado').style.display = 'block';
-    document.getElementById('ent-nome').textContent        = p.nome;
-    document.getElementById('ent-cod-info').textContent    = '🔑 '+p.cod+(p.cat?' · 📂 '+p.cat:'');
-    document.getElementById('ent-saldo').textContent       = fmtQ(p.estoque, p.und);
-    document.getElementById('ent-entradas-hoje').textContent = entradasHoje>0 ? fmtQ(entradasHoje,p.und) : '—';
-    document.getElementById('ent-qtd').value = '';
-    setTimeout(()=>document.getElementById('ent-qtd').focus(), 80);
-  } else {
-    _prodContagem = p;
-    const ultCont = hist.find(h=>h.pid===p.id&&h.tipo==='contagem');
-    document.getElementById('cont-resultado').style.display = 'block';
-    document.getElementById('cont-nome').textContent        = p.nome;
-    document.getElementById('cont-cod-info').textContent    = '🔑 '+p.cod+(p.cat?' · 📂 '+p.cat:'');
-    document.getElementById('cont-saldo').textContent       = fmtQ(p.estoque, p.und);
-    document.getElementById('cont-ult-cont').textContent    = ultCont ? fmtQ(ultCont.qtd,p.und)+' ('+ultCont.ts?.slice(0,10)+')' : '—';
-    document.getElementById('cont-qtd').value = '';
-    setTimeout(()=>document.getElementById('cont-qtd').focus(), 80);
-  }
+  adicionarFila(pfx, p, 1, p.cod);
 }
 
-// ── CONFIRMAR (entrada ou contagem individual) ──
-function confirmarModo(tipo) {
-  const pfx  = tipo==='entrada' ? 'ent' : 'cont';
-  const prod = tipo==='entrada' ? _prodEntrada : _prodContagem;
-  if (!prod) { toast('Nenhum produto selecionado','err'); return; }
+// ── FILA ──
+function adicionarFila(pfx, p, qtd, codOriginal) {
+  const fila = pfx==='ent' ? _filaEnt : _filaCont;
 
-  const qtd = parseFloat(document.getElementById(pfx+'-qtd').value);
-  if (isNaN(qtd)||qtd<0) { toast('Quantidade inválida','err'); return; }
-  const obs = document.getElementById(pfx+'-obs').value.trim();
+  if (fila.length >= MAX_FILA) {
+    toast(`⛔ Limite de ${MAX_FILA} itens atingido! Confirme a fila antes de continuar.`, 'err');
+    return;
+  }
+
+  // Se produto já está na fila, soma a quantidade
+  const existente = fila.find(i => i.pid === p.id);
+  if (existente) {
+    existente.qtd += qtd;
+    toast(`➕ ${p.nome}: agora ${fmtQ(existente.qtd, p.und)}`, 'ok');
+  } else {
+    fila.push({ pid: p.id, pnome: p.nome, pcod: p.cod, und: p.und, qtd, codOriginal });
+    toast(`📋 ${p.nome}: ${fmtQ(qtd, p.und)} adicionado`, 'ok');
+  }
+
+  renderFila(pfx);
+}
+
+function removerFila(pfx, idx) {
+  if (pfx==='ent') _filaEnt.splice(idx,1);
+  else             _filaCont.splice(idx,1);
+  renderFila(pfx);
+}
+
+function limparFila(pfx) {
+  if (pfx==='ent') _filaEnt=[];
+  else             _filaCont=[];
+  renderFila(pfx);
+}
+
+function renderFila(pfx) {
+  const fila  = pfx==='ent' ? _filaEnt : _filaCont;
+  const wrap  = document.getElementById(pfx+'-fila-wrap');
+  const lista = document.getElementById(pfx+'-fila-lista');
+  const count = document.getElementById(pfx+'-fila-count');
+
+  count.textContent = fila.length;
+
+  if (!fila.length) {
+    wrap.style.display = 'none';
+    lista.innerHTML = '';
+    return;
+  }
+
+  wrap.style.display = 'block';
+  const cor = pfx==='ent' ? '#2ecc71' : '#3498db';
+
+  lista.innerHTML = fila.map((item, idx) => `
+    <div class="lote-item" style="border-left:3px solid ${cor};">
+      <div class="lote-item-info">
+        <div class="lote-item-nome">${item.pnome}</div>
+        <div class="lote-item-sub">🔑 ${item.pcod}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <input type="number" value="${item.qtd}" min="0.001" step="0.001"
+          style="width:80px;padding:6px 8px;border:2px solid #333;border-radius:4px;background:#1a1a1a;color:${cor};font-family:'Bebas Neue',sans-serif;font-size:1rem;outline:none;text-align:center;"
+          onchange="editarQtdFila('${pfx}',${idx},this.value)">
+        <span style="font-size:0.72rem;color:#555;">${item.und}</span>
+        <button onclick="removerFila('${pfx}',${idx})" style="background:none;border:none;color:#555;cursor:pointer;font-size:1rem;padding:4px;" title="Remover">✕</button>
+      </div>
+    </div>`).join('');
+
+  // Alerta visual quando fila cheia
+  count.style.background = fila.length >= MAX_FILA ? '#e74c3c' : cor;
+}
+
+function editarQtdFila(pfx, idx, val) {
+  const fila = pfx==='ent' ? _filaEnt : _filaCont;
+  const qtd  = parseFloat(val);
+  if (!isNaN(qtd) && qtd > 0) fila[idx].qtd = qtd;
+}
+
+// ── CONFIRMAR FILA ──
+function confirmarFila(tipo) {
+  // Fila de pendentes é PRO
+  if (!podeUsar('cadastro_ilimitado')) { mostrarModalLicenca('upgrade'); return; }
+  const pfx  = tipo==='entrada' ? 'ent' : 'cont';
+  const fila = pfx==='ent' ? _filaEnt : _filaCont;
+
+  if (!fila.length) { toast('Fila vazia — escaneie produtos primeiro','err'); return; }
+
+  const resp = (document.getElementById(pfx+'-responsavel')?.value||'').trim();
+  if (!resp) {
+    toast('⚠️ Informe o nome de quem está lançando','err');
+    document.getElementById(pfx+'-responsavel').focus();
+    return;
+  }
 
   const prods = getProd();
-  const p = prods[prod.id];
-  if (!p) { toast('Produto não encontrado','err'); return; }
+  let ok = 0;
 
-  const antes  = parseFloat(p.estoque)||0;
-  const depois = tipo==='entrada' ? antes+qtd : qtd;
-  p.estoque = depois;
-  prods[p.id] = p;
+  fila.forEach(item => {
+    const p = prods[item.pid];
+    if (!p) return;
+    const antes  = parseFloat(p.estoque)||0;
+    const depois = tipo==='entrada' ? antes + item.qtd : item.qtd;
+    p.estoque = depois;
+    prods[p.id] = p;
+    pushHist({ id:uid(), tipo, pid:p.id, pnome:p.nome, pcod:p.cod, und:p.und, qtd:item.qtd, antes, depois, obs:'Por: '+resp, ts:ts() });
+    ok++;
+  });
+
   setProd(prods);
   _cache = prods;
 
-  pushHist({ id:uid(), tipo, pid:p.id, pnome:p.nome, pcod:p.cod, und:p.und, qtd, antes, depois, obs, ts:ts() });
-
   const lbl = tipo==='entrada' ? '📥 Entrada' : '📋 Contagem';
-  toast(`${lbl}: ${fmtQ(qtd,p.und)} — ${p.nome}`, 'ok');
+  toast(`${lbl} confirmada! ${ok} produto(s) por ${resp}`, 'ok');
 
-  // Atualizar display
-  selecionarProdModo(pfx, prods[prod.id]);
+  // Limpar fila e campo
+  if (pfx==='ent') _filaEnt=[];
+  else             _filaCont=[];
+  document.getElementById(pfx+'-responsavel').value = '';
+  renderFila(pfx);
 }
 
 // ── CONTAGEM EM LOTE ──
@@ -1351,21 +1591,58 @@ function fecharScanFundo(e) {
 }
 
 function usarManual() {
-  const cod=document.getElementById('scan-manual-input').value.trim();
-  if(!cod) return;
-  usarCodigo(cod);
+  const cod = document.getElementById('scan-manual-input').value.trim();
+  if (!cod) return;
+  usarCodigo(cod, false); // manual = mostra card para confirmar
 }
 
-function usarCodigo(cod) {
+// Extrai quantidade do código de barras:
+// EAN-13 de balança: prefixo 2 → posições 7-11 = peso em gramas (÷1000 = kg)
+// Caso contrário retorna 1 (uma unidade)
+function extrairQtdDoCodigo(cod, und) {
+  if (cod && cod.length === 13 && cod.startsWith('2')) {
+    const pesoG = parseInt(cod.substring(7, 12), 10);
+    if (!isNaN(pesoG) && pesoG > 0) {
+      // Se unidade for g, retorna em gramas; senão retorna em kg
+      return und === 'g' ? pesoG : pesoG / 1000;
+    }
+  }
+  return 1; // padrão: 1 unidade
+}
+
+function usarCodigo(cod, autoLancar) {
   fecharScan();
-  if (_scanAlvo==='cad') {
-    document.getElementById('cad-cod').value=cod;
-    toast('📷 Código: '+cod,'info');
+  if (_scanAlvo === 'cad') {
+    document.getElementById('cad-cod').value = cod;
+    toast('📷 Código: ' + cod, 'info');
+    return;
+  }
+
+  const pfx  = _scanAlvo === 'ent' ? 'ent' : 'cont';
+  const tipo = _scanAlvo === 'ent' ? 'entrada' : 'contagem';
+
+  // Localizar produto pelo código
+  const p = Object.values(getProd()).find(x => x.cod === cod || x.id === cod);
+  if (!p) {
+    // Produto não encontrado — preenche campo e mostra para o usuário resolver
+    document.getElementById(pfx + '-cod').value = cod;
+    toast('⚠️ Produto não encontrado: ' + cod, 'err');
+    return;
+  }
+
+  if (autoLancar) {
+    // LANÇAMENTO NA FILA — sem precisar confirmar individualmente
+    const qtd = extrairQtdDoCodigo(cod, p.und);
+    adicionarFila(pfx, p, qtd, cod);
+
+    // Manter scanner pronto para próxima leitura
+    setTimeout(() => {
+      if (_scanAlvo) abrirScan(_scanAlvo);
+    }, 600);
   } else {
-    // ent ou cont
-    const pfx = _scanAlvo==='ent' ? 'ent' : 'cont';
-    document.getElementById(pfx+'-cod').value = cod;
-    buscarProdModo(pfx);
+    // MODO MANUAL — adiciona à fila também
+    const qtd = extrairQtdDoCodigo(cod, p.und);
+    adicionarFila(pfx, p, qtd, cod);
   }
 }
 
@@ -1396,7 +1673,7 @@ function iniciarScanner() {
     _scanner.start(
       { facingMode: 'environment' },
       config,
-      (decodedText) => { usarCodigo(decodedText); },
+      (decodedText) => { usarCodigo(decodedText, true); },
       (err) => { /* silencioso */ }
     ).then(() => {
       document.getElementById('scan-status').textContent = '📷 Câmera ativa — aponte para o código';
@@ -1553,50 +1830,41 @@ function renderRelDescartes() {
 }
 
 
-// ── SUPABASE AUTH ──────────────────────────────
-const _SB_URL  = 'https://njuztrlbdyfympmbfkup.supabase.co';
-const _SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qdXp0cmxiZHlmeW1wbWJma3VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MjQzNTgsImV4cCI6MjA5ODQwMDM1OH0.L606BfHv9kTbdAczZi4pzC8G_MBv_2fF5_jLwx5TrH4';
-const _sb = supabase.createClient(_SB_URL, _SB_ANON);
-
-function mostrarApp(user) {
-  document.getElementById('tela-login').style.display = 'none';
-  document.getElementById('app-main').style.display = 'block';
-  const sub = document.getElementById('topbar-sub');
-  if (sub) sub.textContent = user.email;
+// SUPABASE AUTH
+const _SB = supabase.createClient('https://njuztrlbdyfympmbfkup.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qdXp0cmxiZHlmeW1wbWJma3VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MjQzNTgsImV4cCI6MjA5ODQwMDM1OH0.L606BfHv9kTbdAczZi4pzC8G_MBv_2fF5_jLwx5TrH4');
+function mostrarApp(u){document.getElementById('tela-login').style.display='none';document.getElementById('app-main').style.display='block';const s=document.getElementById('topbar-sub');if(s)s.textContent=u.email;}
+async function fazerLogin(){
+  const em=document.getElementById('login-email').value.trim();
+  const se=document.getElementById('login-senha').value;
+  const er=document.getElementById('login-erro');
+  const ld=document.getElementById('login-loading');
+  er.style.display='none';
+  if(!em||!se){er.textContent='Preencha email e senha.';er.style.display='block';return;}
+  ld.style.display='block';
+  const {data,error}=await _SB.auth.signInWithPassword({email:em,password:se});
+  ld.style.display='none';
+  if(error){er.textContent='Email ou senha incorretos.';er.style.display='block';return;}
+  mostrarApp(data.user);init();
 }
-
-async function fazerLogin() {
-  const email = document.getElementById('login-email').value.trim();
-  const senha = document.getElementById('login-senha').value;
-  const erro  = document.getElementById('login-erro');
-  const load  = document.getElementById('login-loading');
-  erro.style.display = 'none';
-  if (!email || !senha) { erro.textContent = 'Preencha email e senha.'; erro.style.display = 'block'; return; }
-  load.style.display = 'block';
-  const { data, error } = await _sb.auth.signInWithPassword({ email, password: senha });
-  load.style.display = 'none';
-  if (error) { erro.textContent = 'Email ou senha incorretos.'; erro.style.display = 'block'; return; }
-  mostrarApp(data.user);
-  init();
+async function fazerLogout(){
+  if(!confirm('Deseja sair?'))return;
+  await _SB.auth.signOut();
+  document.getElementById('app-main').style.display='none';
+  document.getElementById('tela-login').style.display='flex';
+  document.getElementById('login-email').value='';
+  document.getElementById('login-senha').value='';
 }
-
-// Verificar sessão ativa ao carregar
-async function checkSession() {
-  const { data: { session } } = await _sb.auth.getSession();
-  if (session?.user) {
-    mostrarApp(session.user);
-    init();
-  } else {
-    // Sem sessão: mostrar login, garantir app oculto
-    document.getElementById('tela-login').style.display = 'flex';
-    document.getElementById('app-main').style.display = 'none';
-  }
+async function checkSession(){
+  const {data:{session}}=await _SB.auth.getSession();
+  if(session?.user){mostrarApp(session.user);init();}
+  else{document.getElementById('tela-login').style.display='flex';document.getElementById('app-main').style.display='none';}
 }
+window.addEventListener('load',checkSession);
+document.addEventListener('DOMContentLoaded',()=>{
+  const s=document.getElementById('login-senha');
+  if(s)s.addEventListener('keypress',e=>{if(e.key==='Enter')fazerLogin();});
+});
 
-
-window.addEventListener('load', checkSession);
-
-document.getElementById('login-senha').addEventListener('keypress', e => { if(e.key==='Enter') fazerLogin(); });
 </script>
 </div><!-- /app-main -->
 </body>
