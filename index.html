@@ -319,7 +319,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<div id="loading-overlay"><div class="spinner"></div><div class="loading-txt">CARREGANDO...</div></div>
+<div id="loading-overlay" style="display:none;"><div class="spinner"></div><div class="loading-txt">CARREGANDO...</div></div>
 <!-- LOGIN -->
 <div id="tela-login">
   <div class="lcard">
@@ -1128,11 +1128,16 @@ function toast(msg, tipo='') {
 // ── INIT ──────────────────────────────────────
 
 function showLoading(msg){
-  const o=document.getElementById('loading-overlay');
-  if(o){o.querySelector('.loading-txt').textContent=msg||'CARREGANDO...';o.style.display='flex';}
+  var o=document.getElementById('loading-overlay');
+  if(o){
+    var t=o.querySelector('.loading-txt');
+    if(t) t.textContent=msg||'CARREGANDO...';
+    o.style.display='flex';
+  }
 }
 function hideLoading(){
-  const o=document.getElementById('loading-overlay');if(o)o.style.display='none';
+  var o=document.getElementById('loading-overlay');
+  if(o) o.style.display='none';
 }
 async function init() {
   iniciarTrial();
@@ -2161,6 +2166,8 @@ async function checkSession(){
   }
 }
 window.addEventListener('load', function(){
+  // Esconder loading, mostrar login enquanto verifica sessão
+  hideLoading();
   var tl3 = document.getElementById('tela-login');
   if(tl3) tl3.style.display='flex';
   checkSession();
