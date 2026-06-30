@@ -2099,7 +2099,7 @@ async function renderRelDescartes() {
 
 // SUPABASE AUTH
 const _SB = supabase.createClient('https://njuztrlbdyfympmbfkup.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qdXp0cmxiZHlmeW1wbWJma3VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MjQzNTgsImV4cCI6MjA5ODQwMDM1OH0.L606BfHv9kTbdAczZi4pzC8G_MBv_2fF5_jLwx5TrH4');
-function mostrarApp(u){
+async function mostrarApp(u){
   _currentUserEmail = u.email;
   document.getElementById('tela-login').style.display='none';
   document.getElementById('app-main').style.display='block';
@@ -2107,17 +2107,32 @@ function mostrarApp(u){
   if(s)s.textContent=u.email;
 }
 async function fazerLogin(){
-  const em=document.getElementById('login-email').value.trim();
-  const se=document.getElementById('login-senha').value;
-  const er=document.getElementById('login-erro');
-  const ld=document.getElementById('login-loading');
-  er.style.display='none';
-  if(!em||!se){er.textContent='Preencha email e senha.';er.style.display='block';return;}
-  ld.style.display='block';
-  const {data,error}=await _SB.auth.signInWithPassword({email:em,password:se});
-  ld.style.display='none';
-  if(error){er.textContent='Email ou senha incorretos.';er.style.display='block';return;}
-  mostrarApp(data.user);init();
+  const em  = document.getElementById('login-email').value.trim();
+  const se  = document.getElementById('login-senha').value;
+  const er  = document.getElementById('login-erro');
+  const ld  = document.getElementById('login-loading');
+  const btn = document.getElementById('btn-login-main');
+  er.style.display = 'none';
+  if (!em || !se) {
+    er.textContent = '⚠️ Preencha email e senha.';
+    er.style.display = 'block'; return;
+  }
+  // Animação no botão
+  if (btn) { btn.textContent = 'VERIFICANDO...'; btn.classList.add('lbtn-loading'); }
+  ld.style.display = 'block';
+  try {
+    const { data, error } = await _SB.auth.signInWithPassword({ email: em, password: se });
+    if (error) throw error;
+    ld.style.display = 'none';
+    if (btn) { btn.textContent = 'ENTRAR'; btn.classList.remove('lbtn-loading'); }
+    await mostrarApp(data.user);
+    await init();
+  } catch(e) {
+    ld.style.display = 'none';
+    if (btn) { btn.textContent = 'ENTRAR'; btn.classList.remove('lbtn-loading'); }
+    er.textContent = '❌ Email ou senha incorretos.';
+    er.style.display = 'block';
+  }
 }
 async function fazerLogout(){
   if(!confirm('Deseja sair?'))return;
@@ -2129,7 +2144,7 @@ async function fazerLogout(){
 }
 async function checkSession(){
   const {data:{session}}=await _SB.auth.getSession();
-  if(session?.user){mostrarApp(session.user);await init();}
+  if(session?.user){await mostrarApp(session.user);await init();}
   else{document.getElementById('tela-login').style.display='flex';document.getElementById('app-main').style.display='none';}
 }
 window.addEventListener('load',checkSession);
