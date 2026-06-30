@@ -260,6 +260,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+<div id="loading-overlay"><div class="spinner"></div><div class="loading-txt">CARREGANDO...</div></div>
 <!-- LOGIN -->
 <div id="tela-login">
   <div class="lcard">
@@ -847,14 +848,173 @@ let _scanner  = null;
 let _toastT   = null;
 
 // ── STORAGE ──────────────────────────────────
+// ── SUPABASE DB (sincronizado em todos os celulares) ─────────────
+const SB_URL  = 'https://njuztrlbdyfympmbfkup.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qdXp0cmxiZHlmeW1wbWJma3VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MjQzNTgsImV4cCI6MjA5ODQwMDM1OH0.L606BfHv9kTbdAczZi4pzC8G_MBv_2fF5_jLwx5TrH4';
+let _empresaId = null; // preenchido após login
+let _cache     = {};   // cache local de produtos
+
+function sbHeaders(jwt) {
+  const h = { 'apikey': SB_ANON, 'Content-Type': 'application/json', 'Accept': 'application/json' };
+  if (jwt) h['Authorization'] = 'Bearer ' + jwt;
+  return h;
+}
+async function sbGet(table, params, jwt) {
+  const q = params ? '?' + params : '';
+  const r = await fetch(SB_URL + '/rest/v1/' + table + q, { headers: sbHeaders(jwt) });
+  return r.ok ? r.json() : [];
+}
+async function sbPost(table, body, jwt) {
+  const r = await fetch(SB_URL + '/rest/v1/' + table, {
+    method: 'POST', headers: { ...sbHeaders(jwt), 'Prefer': 'return=representation' },
+    body: JSON.stringify(body)
+  });
+  return r.ok ? r.json() : null;
+}
+async function sbPatch(table, filter, body, jwt) {
+  const r = await fetch(SB_URL + '/rest/v1/' + table + '?' + filter, {
+    method: 'PATCH', headers: { ...sbHeaders(jwt), 'Prefer': 'return=representation' },
+    body: JSON.stringify(body)
+  });
+  return r.ok ? r.json() : null;
+}
+async function sbDelete(table, filter, jwt) {
+  const r = await fetch(SB_URL + '/rest/v1/' + table + '?' + filter, {
+    method: 'DELETE', headers: sbHeaders(jwt)
+  });
+  return r.ok;
+}
+
+// Pega JWT da sessão atual
+async function getJwt() {
+  const { data: { session } } = await _SB.auth.getSession();
+  return session?.access_token || null;
+}
+
+// Carrega empresa_id do perfil do usuário logado
+async function carregarEmpresa() {
+  const jwt = await getJwt();
+  const { data: { user } } = await _SB.auth.getUser();
+  if (!user) return null;
+  const perfis = await sbGet('perfis', 'select=empresa_id&id=eq.' + user.id, jwt);
+  if (perfis && perfis[0]?.empresa_id) {
+    _empresaId = perfis[0].empresa_id;
+  } else {
+    // master sem empresa: usar primeira empresa
+    const emps = await sbGet('empresas', 'select=id&limit=1', jwt);
+    _empresaId = emps?.[0]?.id || null;
+  }
+  return _empresaId;
+}
+
+// ── PRODUTOS ─────────────────────────────────────────
+async function await getProd() {
+  if (!_empresaId) return {};
+  const jwt = await getJwt();
+  const rows = await sbGet('produtos', 'select=*&empresa_id=eq.' + _empresaId + '&order=nome', jwt);
+  const map = {};
+  (rows || []).forEach(r => {
+    map[r.id] = {
+      id: r.id, nome: r.nome, cod: r.codigo, cat: r.categoria,
+      und: r.unidade, min: r.estoque_min, max: r.estoque_max,
+      estoque: r.estoque, criado: r.created_at
+    };
+  });
+  _cache = map;
+  return map;
+}
+
+async function setProdItem(prod) {
+  // Upsert de um produto no Supabase
+  const jwt = await getJwt();
+  const body = {
+    empresa_id: _empresaId,
+    nome: prod.nome, codigo: prod.cod, categoria: prod.cat || 'Geral',
+    unidade: prod.und, estoque_min: prod.min || 0,
+    estoque_max: prod.max || 0, estoque: prod.estoque || 0
+  };
+  if (prod.id) {
+    // update
+    await sbPatch('produtos', 'id=eq.' + prod.id, body, jwt);
+    _cache[prod.id] = prod;
+  } else {
+    // insert
+    const res = await sbPost('produtos', body, jwt);
+    if (res && res[0]) {
+      const newId = res[0].id;
+      prod.id = newId;
+      _cache[newId] = prod;
+    }
+  }
+  return prod;
+}
+
+async function deleteProdItem(id) {
+  const jwt = await getJwt();
+  await sbDelete('produtos', 'id=eq.' + id, jwt);
+  delete _cache[id];
+}
+
+async function updateEstoque(id, novoEstoque) {
+  const jwt = await getJwt();
+  await sbPatch('produtos', 'id=eq.' + id, { estoque: novoEstoque }, jwt);
+  if (_cache[id]) _cache[id].estoque = novoEstoque;
+}
+
+// ── HISTÓRICO (movimentacoes) ─────────────────────────
+async function getHist() {
+  if (!_empresaId) return [];
+  const jwt = await getJwt();
+  const rows = await sbGet('movimentacoes', 'select=*&empresa_id=eq.' + _empresaId + '&order=created_at.desc&limit=500', jwt);
+  return (rows || []).map(r => ({
+    id: r.id, tipo: r.tipo, pid: r.produto_id,
+    pnome: r.observacao?.split('|')[0] || '', pcod: r.observacao?.split('|')[1] || '',
+    und: r.observacao?.split('|')[2] || 'un',
+    qtd: r.quantidade, antes: 0, depois: 0,
+    obs: r.responsavel, ts: r.created_at
+  }));
+}
+
+async function await pushHist(item) {
+  const jwt = await getJwt();
+  await sbPost('movimentacoes', {
+    empresa_id: _empresaId,
+    produto_id: item.pid,
+    tipo: item.tipo,
+    quantidade: item.qtd,
+    responsavel: item.obs || '',
+    observacao: [item.pnome, item.pcod, item.und].join('|')
+  }, jwt);
+}
+
+// ── DESCARTES ─────────────────────────────────────────
+async function getDesc() {
+  if (!_empresaId) return [];
+  const jwt = await getJwt();
+  const rows = await sbGet('descartes', 'select=*&empresa_id=eq.' + _empresaId + '&order=created_at.desc&limit=300', jwt);
+  return (rows || []).map(r => ({
+    id: r.id, pid: r.produto_id,
+    pnome: r.motivo?.split('|')[0] || '', pcod: r.motivo?.split('|')[1] || '',
+    und: r.motivo?.split('|')[2] || 'un',
+    qtd: r.quantidade, motivo: r.motivo?.split('|')[3] || '',
+    obs: r.responsavel, ts: r.created_at
+  }));
+}
+
+async function await pushDesc(item) {
+  const jwt = await getJwt();
+  await sbPost('descartes', {
+    empresa_id: _empresaId,
+    produto_id: item.pid,
+    quantidade: item.qtd,
+    motivo: [item.pnome, item.pcod, item.und, item.motivo || ''].join('|'),
+    responsavel: item.obs || ''
+  }, jwt);
+}
+
+// compat: localStorage só para licença
 function dbGet(k, def) { try { return JSON.parse(localStorage.getItem(k)) ?? def; } catch { return def; } }
 function dbSet(k, v)   { localStorage.setItem(k, JSON.stringify(v)); }
-function getProd()     { return dbGet(K_PROD, {}); }
-function setProd(p)    { dbSet(K_PROD, p); _cache = p; }
-function getHist()     { return dbGet(K_HIST, []); }
-function pushHist(item){ const h = getHist(); h.unshift(item); dbSet(K_HIST, h.slice(0,3000)); }
-function getDesc()     { return dbGet(K_DESC, []); }
-function pushDesc(item){ const d = getDesc(); d.unshift(item); dbSet(K_DESC, d.slice(0,2000)); }
 
 // ── UTILS ─────────────────────────────────────
 function uid() { return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
@@ -889,7 +1049,15 @@ function toast(msg, tipo='') {
 }
 
 // ── INIT ──────────────────────────────────────
-function init() {
+
+function showLoading(msg){
+  const o=document.getElementById('loading-overlay');
+  if(o){o.querySelector('.loading-txt').textContent=msg||'CARREGANDO...';o.style.display='flex';}
+}
+function hideLoading(){
+  const o=document.getElementById('loading-overlay');if(o)o.style.display='none';
+}
+async function init() {
   iniciarTrial();
   atualizarBadgeLicenca();
 
@@ -897,12 +1065,12 @@ function init() {
   if (!isAtivo()) {
     mostrarModalLicenca('expirado');
     // Permite apenas ver estoque básico
-    _cache = getProd();
+    _cache = await getProd();
     renderEstoque();
     return;
   }
 
-  _cache = getProd();
+  _cache = await getProd();
   renderEstoque();
   renderCadLista();
   atualizarCatDL();
@@ -940,15 +1108,20 @@ function goTab(name, btn) {
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
   btn.classList.add('active');
-  if (name==='estoque') { _cache=getProd(); renderEstoque(); }
+  if (name==='estoque') { _cache=await getProd(); renderEstoque(); }
   if (name==='cadastro') { renderCadLista(); atualizarCatDL(); }
   if (name==='descarte') { popularSelectDescarte(); renderDescartes(); }
-  if (name==='historico') renderHistorico();
-  if (name==='relatorio') { renderRelatorio(); renderRelDescartes(); atualizarRelCats(); }
+  if (name==='historico') { await renderHistorico(); hideLoading(); return; }
+  if (name==='relatorio') { await renderRelatorio(); await renderRelDescartes(); await atualizarRelCats(); hideLoading(); }
 }
 
 // ── ESTOQUE ────────────────────────────────────
-function renderEstoque() {
+
+// Atualiza cache local e Supabase por lote
+async function syncProd(prods) { _cache = prods; }
+// setProd legado mantém cache local
+function setProd(p) { _cache = p; }
+async function renderEstoque() {
   const prods = Object.values(_cache);
   const busca = (document.getElementById('est-busca')?.value||'').toLowerCase().trim();
 
@@ -1027,7 +1200,7 @@ function irMov(id) {
 function buscarProdModo(pfx) {
   const cod = document.getElementById(pfx+'-cod').value.trim();
   if (!cod) { toast('Digite ou escaneie um código','err'); return; }
-  const p = Object.values(getProd()).find(x=>x.cod===cod||x.id===cod);
+  const p = Object.values(await getProd()).find(x=>x.cod===cod||x.id===cod);
   if (!p) { toast('Produto não encontrado: '+cod,'err'); return; }
   document.getElementById(pfx+'-cod').value = '';
   adicionarFila(pfx, p, extrairQtdDoCodigo(cod, p.und), cod);
@@ -1038,7 +1211,7 @@ function filtrarListaModo(pfx) {
   const busca = (document.getElementById(pfx+'-busca-nome')?.value||'').toLowerCase().trim();
   const lista = document.getElementById(pfx+'-lista-sugestoes');
   if (!busca || busca.length < 2) { lista.innerHTML=''; return; }
-  const prods = Object.values(getProd()).filter(p=>p.nome?.toLowerCase().includes(busca)||p.cod?.toLowerCase().includes(busca)).slice(0,8);
+  const prods = Object.values(await getProd()).filter(p=>p.nome?.toLowerCase().includes(busca)||p.cod?.toLowerCase().includes(busca)).slice(0,8);
   if (!prods.length) { lista.innerHTML='<div style="padding:8px;color:#555;font-size:0.82rem;">Nenhum produto encontrado.</div>'; return; }
   lista.innerHTML = prods.map(p=>`
     <div class="sug-item" onclick="addFilaNome('${pfx}','${p.id}')">
@@ -1048,7 +1221,7 @@ function filtrarListaModo(pfx) {
 }
 
 function addFilaNome(pfx, id) {
-  const p = getProd()[id];
+  const p = await getProd()[id];
   if (!p) return;
   const listaSug = document.getElementById(pfx+'-lista-sugestoes');
   if (listaSug) listaSug.innerHTML = '';
@@ -1134,7 +1307,7 @@ function editarQtdFila(pfx, idx, val) {
 }
 
 // ── CONFIRMAR FILA ──
-function confirmarFila(tipo) {
+async function confirmarFila(tipo) {
   // Fila de pendentes é PRO
   if (!podeUsar('cadastro_ilimitado')) { mostrarModalLicenca('upgrade'); return; }
   const pfx  = tipo==='entrada' ? 'ent' : 'cont';
@@ -1149,7 +1322,7 @@ function confirmarFila(tipo) {
     return;
   }
 
-  const prods = getProd();
+  const prods = await getProd();
   let ok = 0;
 
   fila.forEach(item => {
@@ -1159,11 +1332,14 @@ function confirmarFila(tipo) {
     const depois = tipo==='entrada' ? antes + item.qtd : item.qtd;
     p.estoque = depois;
     prods[p.id] = p;
-    pushHist({ id:uid(), tipo, pid:p.id, pnome:p.nome, pcod:p.cod, und:p.und, qtd:item.qtd, antes, depois, obs:'Por: '+resp, ts:ts() });
+    await pushHist({ id:uid(), tipo, pid:p.id, pnome:p.nome, pcod:p.cod, und:p.und, qtd:item.qtd, antes, depois, obs:'Por: '+resp, ts:ts() });
     ok++;
   });
 
-  setProd(prods);
+  // Atualizar estoques no Supabase
+  for (const [pid, prod] of Object.entries(prods)) {
+    await updateEstoque(pid, prod.estoque);
+  }
   _cache = prods;
 
   const lbl = tipo==='entrada' ? '📥 Entrada' : '📋 Contagem';
@@ -1177,14 +1353,14 @@ function confirmarFila(tipo) {
 }
 
 // ── CONTAGEM EM LOTE ──
-function carregarLote() {
+async function carregarLote() {
   const cat   = document.getElementById('lote-cat').value;
   const lista = document.getElementById('lote-lista');
   const footer= document.getElementById('lote-footer');
 
   if (!cat) { lista.innerHTML=''; footer.style.display='none'; return; }
 
-  const prods = Object.values(getProd()).filter(p=>p.cat===cat).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
+  const prods = Object.values(await getProd()).filter(p=>p.cat===cat).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
   if (!prods.length) {
     lista.innerHTML=`<div class="empty"><span>📭</span><p>Nenhum produto nesta categoria.</p></div>`;
     footer.style.display='none'; return;
@@ -1202,12 +1378,12 @@ function carregarLote() {
   footer.style.display = 'block';
 }
 
-function confirmarLote() {
+async function confirmarLote() {
   const cat  = document.getElementById('lote-cat').value;
   const obs  = document.getElementById('lote-obs').value.trim();
   if (!cat)  { toast('Selecione a categoria','err'); return; }
 
-  const prods = getProd();
+  const prods = await getProd();
   const catProds = Object.values(prods).filter(p=>p.cat===cat);
   let contador = 0;
 
@@ -1222,13 +1398,15 @@ function confirmarLote() {
     const depois = qtd; // contagem substitui
     p.estoque = depois;
     prods[p.id] = p;
-    pushHist({ id:uid(), tipo:'contagem', pid:p.id, pnome:p.nome, pcod:p.cod, und:p.und, qtd, antes, depois, obs:obs||'Lote: '+cat, ts:ts() });
+    await pushHist({ id:uid(), tipo:'contagem', pid:p.id, pnome:p.nome, pcod:p.cod, und:p.und, qtd, antes, depois, obs:obs||'Lote: '+cat, ts:ts() });
     contador++;
   });
 
   if (!contador) { toast('Nenhum valor preenchido','err'); return; }
 
-  setProd(prods);
+  for (const [pid, prod] of Object.entries(prods)) {
+    if (prod._mudou) await updateEstoque(pid, prod.estoque);
+  }
   _cache = prods;
   toast(`📦 Lote confirmado! ${contador} produto(s) atualizados.`, 'ok');
 
@@ -1242,7 +1420,7 @@ function confirmarLote() {
 }
 
 // ── CADASTRO ────────────────────────────────────
-function salvarProd() {
+async function salvarProd() {
   const id   = document.getElementById('cad-id').value.trim();
   const nome = document.getElementById('cad-nome').value.trim();
   const cod  = document.getElementById('cad-cod').value.trim();
@@ -1256,29 +1434,28 @@ function salvarProd() {
   if (!cod)  { toast('Informe o código', 'err'); return; }
   if (!und)  { toast('Selecione a unidade', 'err'); return; }
 
-  const prods = getProd();
+  const prods = await getProd();
   const dup = Object.values(prods).find(p=>p.cod===cod&&p.id!==id);
   if (dup) { toast('Código já existe em: '+dup.nome, 'err'); return; }
 
   if (id && prods[id]) {
-    prods[id] = { ...prods[id], nome, cod, cat, und, min, max };
+    const updated = { ...prods[id], nome, cod, cat, und, min, max };
+    await setProdItem(updated);
     toast('✅ Produto atualizado!','ok');
   } else {
-    const nid = uid();
-    prods[nid] = { id:nid, nome, cod, cat, und, min, max, estoque:ini, criado:ts() };
-    if (ini>0) pushHist({ id:uid(), tipo:'entrada', pid:nid, pnome:nome, pcod:cod, und, qtd:ini, antes:0, depois:ini, obs:'Estoque inicial', ts:ts() });
+    const newProd = { nome, cod, cat, und, min, max, estoque: ini };
+    const saved = await setProdItem(newProd);
+    if (ini > 0) await pushHist({ id:uid(), tipo:'entrada', pid:saved.id, pnome:nome, pcod:cod, und, qtd:ini, antes:0, depois:ini, obs:'Estoque inicial', ts:ts() });
     toast('✅ Produto cadastrado!','ok');
   }
-
-  setProd(prods);
   limparCad();
-  renderCadLista();
-  atualizarCatDL();
-  atualizarRelCats();
+  await renderCadLista();
+  await atualizarCatDL();
+  await atualizarRelCats();
 }
 
-function editarProd(id) {
-  const p = getProd()[id]; if(!p) return;
+async function editarProd(id) {
+  const p = await getProd()[id]; if(!p) return;
   document.getElementById('cad-id').value   = p.id;
   document.getElementById('cad-nome').value = p.nome||'';
   document.getElementById('cad-cod').value  = p.cod||'';
@@ -1294,12 +1471,12 @@ function editarProd(id) {
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function deletarProd() {
+async function deletarProd() {
   const id = document.getElementById('cad-id').value; if(!id) return;
-  const p = getProd()[id]; if(!p) return;
+  const p = await getProd()[id]; if(!p) return;
   if (!confirm(`Excluir "${p.nome}"?`)) return;
-  const prods = getProd(); delete prods[id]; setProd(prods);
-  limparCad(); renderCadLista(); toast('🗑️ Excluído','');
+  await deleteProdItem(id);
+  limparCad(); await renderCadLista(); toast('🗑️ Excluído','');
 }
 
 function limparCad() {
@@ -1312,9 +1489,9 @@ function limparCad() {
   document.getElementById('btn-del').style.display='none';
 }
 
-function renderCadLista() {
+async function renderCadLista() {
   const busca=(document.getElementById('cad-busca')?.value||'').toLowerCase();
-  const prods=Object.values(getProd()).filter(p=>!busca||p.nome?.toLowerCase().includes(busca)||p.cod?.toLowerCase().includes(busca))
+  const prods=Object.values(await getProd()).filter(p=>!busca||p.nome?.toLowerCase().includes(busca)||p.cod?.toLowerCase().includes(busca))
     .sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
   const el=document.getElementById('cad-lista');
   if(!prods.length){ el.innerHTML=`<div class="empty"><span>📭</span><p>Nenhum produto.</p></div>`; return; }
@@ -1330,10 +1507,10 @@ function renderCadLista() {
 
 const CATS_FIXAS = ['Limpeza','Bruto','Processado','Embalagens','Bebidas'];
 
-function atualizarCatDL() { /* categorias fixas — sem datalist */ }
+async function atualizarCatDL() { /* categorias fixas — sem datalist */ }
 
 // ── HISTÓRICO ────────────────────────────────────
-function renderHistorico() {
+async function renderHistorico() {
   const data=document.getElementById('hist-data')?.value||dataHoje();
   const hist=getHist().filter(h=>h.ts?.startsWith(data));
   const stats=document.getElementById('hist-stats');
@@ -1377,13 +1554,13 @@ function exportCSV() {
 }
 
 // ── RELATÓRIO ────────────────────────────────────
-function renderRelatorio() {
+async function renderRelatorio() {
   const busca=(document.getElementById('rel-busca')?.value||'').toLowerCase();
   const catFil=document.getElementById('rel-cat')?.value||'';
   const hist=getHist();
   const hoje=dataHoje();
 
-  const prods=Object.values(getProd()).filter(p=>{
+  const prods=Object.values(await getProd()).filter(p=>{
     if(busca&&!p.nome?.toLowerCase().includes(busca)&&!p.cod?.toLowerCase().includes(busca)) return false;
     if(catFil&&p.cat!==catFil) return false;
     return true;
@@ -1416,16 +1593,16 @@ function renderRelatorio() {
   }).join('');
 }
 
-function atualizarRelCats() {
+async function atualizarRelCats() {
   const sel=document.getElementById('rel-cat'); if(!sel) return;
   const atual=sel.value;
   sel.innerHTML='<option value="">Todas categorias</option>'+CATS_FIXAS.map(c=>`<option value="${c}">${c}</option>`).join('');
   sel.value=atual;
 }
 
-function exportRelXLSX() {
+async function exportRelXLSX() {
   // Gera planilha real via SheetJS (CDN) — fallback para CSV se não carregar
-  const prods = Object.values(getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
+  const prods = Object.values(await getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
   const hist  = getHist();
   const descs = getDesc();
   if (!prods.length) { toast('Sem dados para exportar','err'); return; }
@@ -1471,8 +1648,8 @@ function exportRelXLSX() {
   }
 }
 
-function enviarRelWhatsApp() {
-  const prods = Object.values(getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
+async function enviarRelWhatsApp() {
+  const prods = Object.values(await getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
   if (!prods.length) { toast('Sem produtos para enviar','err'); return; }
 
   const data = new Date().toLocaleDateString('pt-BR');
@@ -1508,8 +1685,8 @@ function enviarRelWhatsApp() {
   window.open(url, '_blank');
 }
 
-function gerarPedidoWhatsApp() {
-  const prods = Object.values(getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
+async function gerarPedidoWhatsApp() {
+  const prods = Object.values(await getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
   // Filtrar apenas os que precisam de reposição (estoque < mín, ou zerado)
   const precisam = prods.filter(p => {
     const est = parseFloat(p.estoque)||0;
@@ -1556,7 +1733,7 @@ function gerarPedidoWhatsApp() {
 }
 
 function exportRelCSV() {
-  const prods=Object.values(getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
+  const prods=Object.values(await getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
   const hist=getHist();
   if(!prods.length){toast('Sem dados','err');return;}
   const csv=['Produto,Código,Categoria,Unidade,Últ. Contagem,Total Entradas,Estoque Atual,Mín,Máx,Status']
@@ -1635,7 +1812,7 @@ function usarCodigo(cod, autoLancar) {
   const tipo = _scanAlvo === 'ent' ? 'entrada' : 'contagem';
 
   // Localizar produto pelo código
-  const p = Object.values(getProd()).find(x => x.cod === cod || x.id === cod);
+  const p = Object.values(await getProd()).find(x => x.cod === cod || x.id === cod);
   if (!p) {
     // Produto não encontrado — preenche campo e mostra para o usuário resolver
     document.getElementById(pfx + '-cod').value = cod;
@@ -1715,7 +1892,7 @@ function pararScanner() {
 function popularSelectDescarte() {
   const sel = document.getElementById('desc-prod');
   if (!sel) return;
-  const prods = Object.values(getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
+  const prods = Object.values(await getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
   const atual = sel.value;
   sel.innerHTML = '<option value="">Selecione o produto...</option>' +
     prods.map(p=>`<option value="${p.id}">${p.nome} (${fmtQ(p.estoque,p.und)})</option>`).join('');
@@ -1726,7 +1903,7 @@ function onDescProdChange() {
   const id = document.getElementById('desc-prod').value;
   const info = document.getElementById('desc-saldo-info');
   if (!id) { info.style.display='none'; return; }
-  const p = getProd()[id];
+  const p = await getProd()[id];
   if (!p) { info.style.display='none'; return; }
   info.style.display = 'block';
   document.getElementById('desc-saldo-val').textContent = fmtQ(p.estoque, p.und);
@@ -1748,7 +1925,7 @@ function registrarDescarte() {
   if (!qtd || qtd<=0) { toast('Informe a quantidade', 'err'); return; }
   if (!motivo)        { toast('Selecione o motivo', 'err'); return; }
 
-  const prods = getProd();
+  const prods = await getProd();
   const p = prods[pid];
   if (!p) { toast('Produto não encontrado', 'err'); return; }
 
@@ -1758,7 +1935,7 @@ function registrarDescarte() {
   prods[pid] = p;
   setProd(prods);
 
-  pushDesc({ id:uid(), pid:p.id, pnome:p.nome, pcod:p.cod, pcat:p.cat||'', und:p.und, qtd, antes, depois, motivo, obs, ts:ts() });
+  await pushDesc({ id:uid(), pid:p.id, pnome:p.nome, pcod:p.cod, pcat:p.cat||'', und:p.und, qtd, antes, depois, motivo, obs, ts:ts() });
 
   toast(`🗑️ Descarte registrado: ${fmtQ(qtd,p.und)} de ${p.nome}`, 'err');
 
@@ -1771,7 +1948,7 @@ function registrarDescarte() {
 
   popularSelectDescarte();
   renderDescartes();
-  _cache = getProd();
+  _cache = await getProd();
 }
 
 function renderDescartes() {
@@ -1808,7 +1985,7 @@ function exportDescartesCSV() {
 }
 
 // ── RELATÓRIO: seção descartes ────────────────────
-function renderRelDescartes() {
+async function renderRelDescartes() {
   const catFil = document.getElementById('rel-cat')?.value || '';
   const busca  = (document.getElementById('rel-busca')?.value||'').toLowerCase();
   const descartes = getDesc().filter(d => {
@@ -1875,7 +2052,7 @@ async function fazerLogout(){
 }
 async function checkSession(){
   const {data:{session}}=await _SB.auth.getSession();
-  if(session?.user){mostrarApp(session.user);init();}
+  if(session?.user){mostrarApp(session.user);await init();}
   else{document.getElementById('tela-login').style.display='flex';document.getElementById('app-main').style.display='none';}
 }
 window.addEventListener('load',checkSession);
