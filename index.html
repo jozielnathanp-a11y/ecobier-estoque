@@ -272,58 +272,31 @@
       background:#111; border:1px solid rgba(46,204,113,0.2);
       border-radius:18px; padding:40px 28px 32px;
       width:100%; max-width:370px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(46,204,113,0.05);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.7);
     }
     .ecl-logo { text-align:center; margin-bottom:30px; }
     .ecl-logo-icon { font-size:3rem; display:block; margin-bottom:4px; }
-    .ecl-logo h1 {
-      font-family:'Bebas Neue',sans-serif; font-size:2.8rem;
-      color:#2ecc71; letter-spacing:7px; line-height:1;
-      text-shadow: 0 0 30px rgba(46,204,113,0.3);
-    }
+    .ecl-logo h1 { font-family:'Bebas Neue',sans-serif; font-size:2.8rem; color:#2ecc71; letter-spacing:7px; line-height:1; text-shadow:0 0 30px rgba(46,204,113,0.3); }
     .ecl-logo p { font-size:0.65rem; color:#333; letter-spacing:4px; text-transform:uppercase; margin-top:6px; }
     .ecl-sep { height:1px; background:linear-gradient(90deg,transparent,rgba(46,204,113,0.2),transparent); margin:0 0 24px; }
     .ecl-field { margin-bottom:14px; }
     .ecl-field label { display:block; font-size:0.65rem; color:#2ecc71; text-transform:uppercase; letter-spacing:2px; margin-bottom:7px; font-weight:700; }
-    .ecl-field input {
-      width:100%; padding:13px 14px;
-      background:#0d0d0d; border:1.5px solid #1e1e1e; border-radius:9px;
-      color:#f0f0f0; font-size:1rem; font-family:'Rajdhani',sans-serif; font-weight:600;
-      outline:none; transition:border-color .2s;
-    }
+    .ecl-field input { width:100%; padding:13px 14px; background:#0d0d0d; border:1.5px solid #1e1e1e; border-radius:9px; color:#f0f0f0; font-size:1rem; font-family:'Rajdhani',sans-serif; font-weight:600; outline:none; transition:border-color .2s; }
     .ecl-field input::placeholder { color:#2a2a2a; }
     .ecl-field input:focus { border-color:rgba(46,204,113,0.5); }
-    .ecl-btn {
-      width:100%; padding:14px; margin-top:8px;
-      background:linear-gradient(135deg,#17612f,#27ae60);
-      border:none; border-radius:9px; color:#fff;
-      font-family:'Bebas Neue',sans-serif; font-size:1.15rem; letter-spacing:4px;
-      cursor:pointer; transition:all .2s;
-      box-shadow: 0 4px 20px rgba(46,204,113,0.2);
-    }
+    .ecl-btn { width:100%; padding:14px; margin-top:8px; background:linear-gradient(135deg,#17612f,#27ae60); border:none; border-radius:9px; color:#fff; font-family:'Bebas Neue',sans-serif; font-size:1.15rem; letter-spacing:4px; cursor:pointer; transition:all .2s; box-shadow:0 4px 20px rgba(46,204,113,0.2); }
     .ecl-btn:hover { background:linear-gradient(135deg,#27ae60,#2ecc71); transform:translateY(-1px); }
     .ecl-btn:active { transform:scale(0.98); }
     .ecl-btn:disabled { background:#1a1a1a; color:#2ecc71; cursor:default; transform:none; }
-    .ecl-erro {
-      background:rgba(231,76,60,0.08); color:#e74c3c;
-      border:1px solid rgba(231,76,60,0.2); border-radius:7px;
-      padding:9px 14px; font-size:0.85rem; margin-top:12px;
-      text-align:center; display:none;
-    }
+    .ecl-erro { background:rgba(231,76,60,0.08); color:#e74c3c; border:1px solid rgba(231,76,60,0.2); border-radius:7px; padding:9px 14px; font-size:0.85rem; margin-top:12px; text-align:center; display:none; }
     .ecl-footer { text-align:center; margin-top:26px; font-size:0.6rem; color:#222; letter-spacing:2px; }
-    /* botão sair no topbar */
-    #btn-logout {
-      background:none; border:1px solid #1a6e3c33; color:#555;
-      padding:4px 10px; border-radius:4px; cursor:pointer;
-      font-size:0.75rem; font-family:'Rajdhani',sans-serif; letter-spacing:1px; transition:all .2s;
-    }
+    #btn-logout { background:none; border:1px solid #1a6e3c33; color:#555; padding:4px 10px; border-radius:4px; cursor:pointer; font-size:0.75rem; font-family:'Rajdhani',sans-serif; letter-spacing:1px; transition:all .2s; }
     #btn-logout:hover { border-color:#e74c3c; color:#e74c3c; }
 
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<!-- ── TELA LOGIN ── -->
+<!-- LOGIN -->
 <div id="ecobier-login">
   <div class="ecl-card">
     <div class="ecl-logo">
@@ -345,8 +318,6 @@
     <div class="ecl-footer">ECOBIER &copy; 2026</div>
   </div>
 </div>
-
-<!-- ── APP PRINCIPAL ── -->
 <div id="ecobier-app" style="display:none">
 
 <!-- TOPBAR -->
@@ -820,9 +791,6 @@ function diasRestantes() {
   const diff = (Date.now() - new Date(lic.inicio).getTime()) / 86400000;
   return Math.max(0, TRIAL_DIAS - Math.floor(diff));
 }
-
-
-function isMaster() { return _currentUserEmail === MASTER_EMAIL; }
 
 function isPago() {
   return isMaster() || getLic().plano === 'pago';
@@ -1915,67 +1883,77 @@ function renderRelDescartes() {
 }
 
 
-// ── ECOBIER AUTH ─────────────────────────────────────
-const _ECL_URL  = 'https://njuztrlbdyfympmbfkup.supabase.co';
-const _ECL_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qdXp0cmxiZHlmeW1wbWJma3VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MjQzNTgsImV4cCI6MjA5ODQwMDM1OH0.L606BfHv9kTbdAczZi4pzC8G_MBv_2fF5_jLwx5TrH4';
-const _ECL_SB   = supabase.createClient(_ECL_URL, _ECL_ANON);
-const MASTER_EMAIL = 'josiel@ecobier.app';
-let _currentUserEmail = '';
+// AUTH via REST direto (sem SDK)
+var _SB_URL  = 'https://njuztrlbdyfympmbfkup.supabase.co';
+var _SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qdXp0cmxiZHlmeW1wbWJma3VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MjQzNTgsImV4cCI6MjA5ODQwMDM1OH0.L606BfHv9kTbdAczZi4pzC8G_MBv_2fF5_jLwx5TrH4';
+var _SB_SESSION_KEY = 'ecobier_session';
+var MASTER_EMAIL = 'josiel@ecobier.app';
+var _currentUserEmail = '';
+
+function isMaster() { return _currentUserEmail === MASTER_EMAIL; }
 
 function eclMostrarApp(email) {
   _currentUserEmail = email;
   document.getElementById('ecobier-login').style.display = 'none';
-  document.getElementById('ecobier-app').style.display   = 'block';
+  document.getElementById('ecobier-app').style.display = 'block';
   var sub = document.getElementById('topbar-sub');
   if (sub) sub.textContent = email === MASTER_EMAIL ? 'MASTER' : email;
 }
 
 function eclMostrarLogin() {
   document.getElementById('ecobier-login').style.display = 'flex';
-  document.getElementById('ecobier-app').style.display   = 'none';
+  document.getElementById('ecobier-app').style.display = 'none';
 }
 
 async function eclLogin() {
-  var em  = document.getElementById('ecl-email').value.trim();
-  var se  = document.getElementById('ecl-senha').value;
+  var em  = (document.getElementById('ecl-email').value || '').trim();
+  var se  = document.getElementById('ecl-senha').value || '';
   var er  = document.getElementById('ecl-erro');
   var btn = document.getElementById('ecl-btn');
   er.style.display = 'none';
-  if (!em || !se) { er.textContent = '⚠️ Preencha email e senha.'; er.style.display = 'block'; return; }
+  if (!em || !se) { er.textContent = 'Preencha email e senha.'; er.style.display = 'block'; return; }
   btn.disabled = true; btn.textContent = 'VERIFICANDO...';
   try {
-    var res = await _ECL_SB.auth.signInWithPassword({ email: em, password: se });
-    if (res.error) throw res.error;
-    eclMostrarApp(res.data.user.email);
+    var resp = await fetch(_SB_URL + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': _SB_ANON },
+      body: JSON.stringify({ email: em, password: se })
+    });
+    var data = await resp.json();
+    if (!resp.ok || data.error) throw new Error(data.error_description || 'Erro');
+    // Salvar sessão no localStorage
+    localStorage.setItem(_SB_SESSION_KEY, JSON.stringify({ token: data.access_token, email: data.user.email }));
+    eclMostrarApp(data.user.email);
     init();
   } catch(e) {
-    er.textContent = '❌ Email ou senha incorretos.'; er.style.display = 'block';
+    er.textContent = 'Email ou senha incorretos.'; er.style.display = 'block';
   }
   btn.disabled = false; btn.textContent = 'ENTRAR';
 }
 
-async function eclLogout() {
+function eclLogout() {
   if (!confirm('Deseja sair?')) return;
-  await _ECL_SB.auth.signOut();
+  localStorage.removeItem(_SB_SESSION_KEY);
+  _currentUserEmail = '';
   eclMostrarLogin();
 }
 
-// Verificar sessão ao carregar
-window.addEventListener('load', async function() {
-  try {
-    var res = await _ECL_SB.auth.getSession();
-    if (res.data && res.data.session && res.data.session.user) {
-      eclMostrarApp(res.data.session.user.email);
-      init();
-    } else {
-      eclMostrarLogin();
-    }
-  } catch(e) {
-    eclMostrarLogin();
+window.addEventListener('load', function() {
+  var saved = localStorage.getItem(_SB_SESSION_KEY);
+  if (saved) {
+    try {
+      var s = JSON.parse(saved);
+      if (s && s.email && s.token) {
+        eclMostrarApp(s.email);
+        init();
+        return;
+      }
+    } catch(e) {}
   }
+  eclMostrarLogin();
 });
 
 </script>
-</div><!-- /ecobier-app -->
+</div>
 </body>
 </html>
