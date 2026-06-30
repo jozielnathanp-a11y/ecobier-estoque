@@ -19,6 +19,7 @@
     #topbar h1 { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: #2ecc71; letter-spacing: 3px; }
     #topbar-sub { font-size: 0.72rem; color: #555; }
 
+    .tab-lock { font-size: 0.65rem; opacity: 0.6; }
     /* ── TABS ── */
     .tabs { display: flex; background: #111; border-bottom: 1px solid #1a1a1a; overflow-x: auto; }
     .tab-btn {
@@ -264,6 +265,7 @@
   <div>
     <h1>🍺 ECOBIER</h1>
     <div id="topbar-sub">ESTOQUE ADM</div>
+    <div id="badge-licenca" style="font-family:'Bebas Neue',sans-serif;font-size:0.8rem;padding:4px 10px;border-radius:4px;cursor:pointer;letter-spacing:1px;" onclick="mostrarModalLicenca('upgrade')">⏳ TRIAL</div>
   </div>
 </div>
 
@@ -271,10 +273,10 @@
 <div class="tabs">
   <button class="tab-btn active"  onclick="goTab('estoque',this)">📦 Estoque</button>
   <button class="tab-btn"         onclick="goTab('movimentar',this)">⚡ Movimentar</button>
-  <button class="tab-btn"         onclick="goTab('cadastro',this)">➕ Cadastro</button>
-  <button class="tab-btn"         onclick="goTab('historico',this)">📋 Histórico</button>
-  <button class="tab-btn"         onclick="goTab('descarte',this)">🗑️ Descarte</button>
-  <button class="tab-btn"         onclick="goTab('relatorio',this)">📊 Relatório</button>
+  <button class="tab-btn" onclick="goTab('cadastro',this)">➕ Cadastro <span class="tab-lock">🔒</span></button>
+  <button class="tab-btn" onclick="goTab('historico',this)">📋 Histórico <span class="tab-lock">🔒</span></button>
+  <button class="tab-btn" onclick="goTab('descarte',this)">🗑️ Descarte <span class="tab-lock">🔒</span></button>
+  <button class="tab-btn" onclick="goTab('relatorio',this)">📊 Relatório</button>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════ TAB ESTOQUE -->
@@ -307,8 +309,8 @@
     <button class="modo-btn" id="modo-btn-contagem" onclick="setModo('contagem')">
       📋<br><span style="font-size:0.78rem;font-weight:700;">CONTAGEM</span><br><span style="font-size:0.65rem;color:#aaa;">substitui estoque</span>
     </button>
-    <button class="modo-btn" id="modo-btn-lote"     onclick="setModo('lote')">
-      📦<br><span style="font-size:0.78rem;font-weight:700;">LOTE</span><br><span style="font-size:0.65rem;color:#aaa;">contagem por cat.</span>
+    <button class="modo-btn" id="modo-btn-lote" onclick="bloquearSeNecessario('lote_contagem', ()=>setModo('lote'))">
+      📦<br><span style="font-size:0.78rem;font-weight:700;">LOTE 🔒</span><br><span style="font-size:0.65rem;color:#aaa;">contagem por cat.</span>
     </button>
   </div>
 
@@ -580,14 +582,14 @@
         style="padding:7px 11px;border:2px solid #222;border-radius:4px;background:#1a1a1a;color:#f0f0f0;font-size:0.85rem;font-family:'Rajdhani',sans-serif;outline:none;">
         <option value="">Todas categorias</option>
       </select>
-      <button class="btn-g btn-blue" onclick="exportRelXLSX()">📊 Planilha</button>
+      <button class="btn-g btn-blue" onclick="bloquearSeNecessario('cadastro_ilimitado',exportRelXLSX)">📊 Planilha 🔒</button>
       <button class="btn-g btn-blue" onclick="exportRelCSV()">📤 CSV</button>
     </div>
   </div>
 
   <!-- Botões de ação -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
-    <button class="btn-g btn-green btn-full" onclick="enviarRelWhatsApp()">📲 Enviar no WhatsApp</button>
+    <button class="btn-g btn-green btn-full" onclick="bloquearSeNecessario('cadastro_ilimitado',enviarRelWhatsApp)">📲 Enviar no WhatsApp 🔒</button>
     <button class="btn-g btn-full" style="background:#1a3d6e;color:#3498db;" onclick="gerarPedidoWhatsApp()">🛒 Pedido de Compra (Mín/Máx)</button>
   </div>
 
@@ -632,6 +634,41 @@
   <div id="rel-desc-total" style="margin-top:8px;text-align:right;font-size:0.8rem;color:#e74c3c;"></div>
 </div>
 
+<!-- ═══════════════ MODAL LICENÇA ═══════════════ -->
+<div id="modal-licenca" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:4000;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#111;border-radius:12px;border:2px solid #2ecc71;max-width:420px;width:100%;padding:28px 24px;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:#2ecc71;letter-spacing:3px;margin-bottom:6px;" id="modal-lic-titulo">🔒 Recurso PRO</div>
+    <p id="modal-lic-sub" style="font-size:0.85rem;color:#888;margin-bottom:20px;line-height:1.5;"></p>
+
+    <div style="background:#1a1a1a;border-radius:8px;padding:16px;margin-bottom:20px;">
+      <div style="font-size:0.72rem;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Plano PRO — Tudo liberado</div>
+      <div style="display:flex;flex-direction:column;gap:6px;font-size:0.82rem;color:#aaa;">
+        <span>✅ Produtos ilimitados</span>
+        <span>✅ Fila de pendentes (10 itens)</span>
+        <span>✅ Contagem em lote</span>
+        <span>✅ Descarte com relatório</span>
+        <span>✅ Histórico completo</span>
+        <span>✅ Exportar planilha .xlsx</span>
+        <span>✅ Relatório via WhatsApp</span>
+        <span>✅ Suporte prioritário</span>
+      </div>
+    </div>
+
+    <div class="fg" style="margin-bottom:12px;">
+      <label style="font-size:0.78rem;color:#666;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px;">Código de ativação</label>
+      <input type="text" id="input-codigo-lic" placeholder="Ex: ECOBIER-2026-XXXX"
+        style="width:100%;padding:11px 14px;border:2px solid #333;border-radius:6px;background:#1a1a1a;color:#f0f0f0;font-size:1rem;font-family:'Rajdhani',sans-serif;outline:none;text-transform:uppercase;letter-spacing:1px;"
+        onkeydown="if(event.key==='Enter')ativarCodigo(document.getElementById('input-codigo-lic').value)">
+    </div>
+    <button class="btn-g btn-green btn-full" onclick="ativarCodigo(document.getElementById('input-codigo-lic').value)">🔓 ATIVAR LICENÇA</button>
+    <button onclick="document.getElementById('modal-licenca').style.display='none'"
+      style="margin-top:10px;width:100%;background:none;border:1px solid #222;color:#555;padding:9px;border-radius:6px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:0.85rem;">
+      Fechar
+    </button>
+    <p style="margin-top:14px;font-size:0.75rem;color:#444;text-align:center;">Para adquirir sua licença, entre em contato via WhatsApp.</p>
+  </div>
+</div>
+
 <!-- ═══════════════ SCANNER OVERLAY ═══════════════ -->
 <div class="scan-ov" id="scan-overlay" onclick="fecharScanFundo(event)">
   <div class="scan-panel" id="scan-panel">
@@ -656,17 +693,128 @@
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
 // ════════════════════════════════════════════
-// ECOBIER — v3 — localStorage
+// ECOBIER — v4 — localStorage + licença
 // ════════════════════════════════════════════
-const K_PROD = 'ecobier_produtos';
-const K_HIST = 'ecobier_historico';
-const K_DESC = 'ecobier_descartes';
+const K_PROD    = 'ecobier_produtos';
+const K_HIST    = 'ecobier_historico';
+const K_DESC    = 'ecobier_descartes';
+const K_LIC     = 'ecobier_licenca';
+const TRIAL_DIAS = 30;
 
-let _cache   = {};   // produtos
+// Códigos válidos — formato ECOBIER-XXXX-XXXX (gerados por você)
+// Adicione novos códigos aqui quando um cliente pagar
+const CODIGOS_VALIDOS = [
+  'ECOBIER-2026-DEMO',
+  'ECOBIER-2026-A1B2',
+  'ECOBIER-2026-C3D4',
+  'ECOBIER-2026-E5F6',
+  'ECOBIER-2026-G7H8',
+];
+
+// ── LICENÇA ───────────────────────────────────
+function getLic() { return dbGet(K_LIC, {}); }
+function setLic(l) { dbSet(K_LIC, l); }
+
+function iniciarTrial() {
+  const lic = getLic();
+  if (!lic.inicio) {
+    setLic({ inicio: new Date().toISOString(), plano: 'trial' });
+  }
+}
+
+function diasRestantes() {
+  const lic = getLic();
+  if (!lic.inicio) return TRIAL_DIAS;
+  if (lic.plano === 'pago') return 9999;
+  const diff = (Date.now() - new Date(lic.inicio).getTime()) / 86400000;
+  return Math.max(0, TRIAL_DIAS - Math.floor(diff));
+}
+
+function isPago() {
+  return getLic().plano === 'pago';
+}
+
+function isAtivo() {
+  return isPago() || diasRestantes() > 0;
+}
+
+function ativarCodigo(cod) {
+  const c = (cod||'').trim().toUpperCase();
+  if (!c) { toast('Digite o código de ativação', 'err'); return; }
+  const lic = getLic();
+  if (lic.codigos_usados && lic.codigos_usados.includes(c)) {
+    toast('⚠️ Este código já foi utilizado', 'err'); return;
+  }
+  if (!CODIGOS_VALIDOS.includes(c)) {
+    toast('❌ Código inválido. Verifique e tente novamente.', 'err'); return;
+  }
+  const usados = lic.codigos_usados || [];
+  usados.push(c);
+  setLic({ ...lic, plano: 'pago', codigo: c, codigos_usados: usados, ativadoEm: new Date().toISOString() });
+  document.getElementById('modal-licenca').style.display = 'none';
+  toast('🎉 Licença ativada com sucesso! Bem-vindo ao Ecobier PRO!', 'ok');
+  atualizarBadgeLicenca();
+  renderEstoque();
+}
+
+function atualizarBadgeLicenca() {
+  const badge = document.getElementById('badge-licenca');
+  if (!badge) return;
+  if (isPago()) {
+    badge.textContent = '✅ PRO';
+    badge.style.background = '#1a6e3c';
+    badge.style.color = '#2ecc71';
+  } else {
+    const d = diasRestantes();
+    if (d > 0) {
+      badge.textContent = `⏳ TRIAL ${d}d`;
+      badge.style.background = d <= 3 ? '#6e1a1a' : '#2a2a1a';
+      badge.style.color = d <= 3 ? '#e74c3c' : '#f39c12';
+    } else {
+      badge.textContent = '🔒 EXPIRADO';
+      badge.style.background = '#2a1a1a';
+      badge.style.color = '#e74c3c';
+    }
+  }
+}
+
+// Verifica se feature está liberada
+function podeUsar(feature) {
+  if (isPago()) return true;
+  if (!isAtivo()) return false; // trial expirado — bloqueia tudo
+  // trial ativo — features liberadas
+  const liberadas = ['estoque_basico','movimentar_simples','pedido_whatsapp','scanner'];
+  return liberadas.includes(feature);
+}
+
+function bloquearSeNecessario(feature, callback) {
+  if (podeUsar(feature)) { callback(); return; }
+  if (!isAtivo()) {
+    mostrarModalLicenca('expirado');
+  } else {
+    mostrarModalLicenca('upgrade');
+  }
+}
+
+function mostrarModalLicenca(modo) {
+  const modal = document.getElementById('modal-licenca');
+  const titulo = document.getElementById('modal-lic-titulo');
+  const sub    = document.getElementById('modal-lic-sub');
+  if (modo === 'expirado') {
+    titulo.textContent = '⏰ Período de teste encerrado';
+    sub.textContent    = 'Seus 30 dias gratuitos terminaram. Ative sua licença para continuar usando o Ecobier.';
+  } else {
+    titulo.textContent = '🔒 Recurso PRO';
+    sub.textContent    = 'Este recurso está disponível no plano pago. Ative sua licença para desbloquear tudo.';
+  }
+  modal.style.display = 'flex';
+}
+
+let _cache   = {};
 let _filAtivo = 'todos';
 let _movProd  = null;
 let _movTipo  = 'entrada';
-let _scanAlvo = null; // 'cad' | 'mov'
+let _scanAlvo = null;
 let _scanner  = null;
 let _toastT   = null;
 
@@ -714,6 +862,18 @@ function toast(msg, tipo='') {
 
 // ── INIT ──────────────────────────────────────
 function init() {
+  iniciarTrial();
+  atualizarBadgeLicenca();
+
+  // Se trial expirado, bloqueia tudo e mostra modal
+  if (!isAtivo()) {
+    mostrarModalLicenca('expirado');
+    // Permite apenas ver estoque básico
+    _cache = getProd();
+    renderEstoque();
+    return;
+  }
+
   _cache = getProd();
   renderEstoque();
   renderCadLista();
@@ -725,10 +885,29 @@ function init() {
   renderRelatorio();
   renderRelDescartes();
   atualizarRelCats();
+
+  // Esconder tabs PRO se trial
+  aplicarBloqueiosTabs();
+}
+
+function aplicarBloqueiosTabs() {
+  if (isPago()) {
+    // Remove todos os cadeados
+    document.querySelectorAll('.tab-lock').forEach(el => el.style.display='none');
+    return;
+  }
+  // Mostra cadeado nas tabs PRO
+  document.querySelectorAll('.tab-lock').forEach(el => el.style.display='inline');
 }
 
 // ── TABS ──────────────────────────────────────
 function goTab(name, btn) {
+  // Verificar se tab é PRO e está bloqueada
+  const tabsPro = ['cadastro','descarte','historico'];
+  // Contagem em lote bloqueada dentro do movimentar — tratado separado
+  if (tabsPro.includes(name) && !podeUsar('cadastro_ilimitado')) {
+    mostrarModalLicenca('upgrade'); return;
+  }
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
@@ -928,6 +1107,8 @@ function editarQtdFila(pfx, idx, val) {
 
 // ── CONFIRMAR FILA ──
 function confirmarFila(tipo) {
+  // Fila de pendentes é PRO
+  if (!podeUsar('cadastro_ilimitado')) { mostrarModalLicenca('upgrade'); return; }
   const pfx  = tipo==='entrada' ? 'ent' : 'cont';
   const fila = pfx==='ent' ? _filaEnt : _filaCont;
 
