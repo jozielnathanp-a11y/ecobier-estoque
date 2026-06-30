@@ -1148,19 +1148,18 @@ async function init() {
   }
 
   _cache = await getProd();
-  renderEstoque();
-  renderCadLista();
-  atualizarCatDL();
-  popularSelectDescarte();
-  renderDescartes();
-  document.getElementById('hist-data').value = dataHoje();
-  renderHistorico();
-  renderRelatorio();
-  renderRelDescartes();
-  atualizarRelCats();
-
-  // Esconder tabs PRO se trial
-  aplicarBloqueiosTabs();
+  try { await renderEstoque(); } catch(e){}
+  try { renderCadLista(); } catch(e){}
+  try { atualizarCatDL(); } catch(e){}
+  try { popularSelectDescarte(); } catch(e){}
+  try { renderDescartes(); } catch(e){}
+  const hd = document.getElementById('hist-data');
+  if(hd) hd.value = dataHoje();
+  try { renderHistorico(); } catch(e){}
+  try { renderRelatorio(); } catch(e){}
+  try { renderRelDescartes(); } catch(e){}
+  try { atualizarRelCats(); } catch(e){}
+  try { aplicarBloqueiosTabs(); } catch(e){}
 }
 
 function aplicarBloqueiosTabs() {
@@ -2101,10 +2100,13 @@ async function renderRelDescartes() {
 const _SB = supabase.createClient('https://njuztrlbdyfympmbfkup.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qdXp0cmxiZHlmeW1wbWJma3VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MjQzNTgsImV4cCI6MjA5ODQwMDM1OH0.L606BfHv9kTbdAczZi4pzC8G_MBv_2fF5_jLwx5TrH4');
 async function mostrarApp(u){
   _currentUserEmail = u.email;
-  document.getElementById('tela-login').style.display='none';
-  document.getElementById('app-main').style.display='block';
   const s=document.getElementById('topbar-sub');
   if(s)s.textContent=u.email;
+  // App só aparece depois do init() — chamado pelo fazerLogin/checkSession
+}
+function revelarApp(){
+  document.getElementById('tela-login').style.display='none';
+  document.getElementById('app-main').style.display='block';
 }
 async function fazerLogin(){
   const em  = document.getElementById('login-email').value.trim();
@@ -2126,7 +2128,8 @@ async function fazerLogin(){
     ld.style.display = 'none';
     if (btn) { btn.textContent = 'ENTRAR'; btn.classList.remove('lbtn-loading'); }
     await mostrarApp(data.user);
-    await init();
+    try { await init(); } catch(err) { console.error('init error:', err); }
+    revelarApp();
   } catch(e) {
     ld.style.display = 'none';
     if (btn) { btn.textContent = 'ENTRAR'; btn.classList.remove('lbtn-loading'); }
@@ -2144,7 +2147,11 @@ async function fazerLogout(){
 }
 async function checkSession(){
   const {data:{session}}=await _SB.auth.getSession();
-  if(session?.user){await mostrarApp(session.user);await init();}
+  if(session?.user){
+    await mostrarApp(session.user);
+    try { await init(); } catch(err) { console.error('init error:', err); }
+    revelarApp();
+  }
   else{document.getElementById('tela-login').style.display='flex';document.getElementById('app-main').style.display='none';}
 }
 window.addEventListener('load',checkSession);
