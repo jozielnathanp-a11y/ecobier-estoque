@@ -282,7 +282,7 @@
 </div>
 
 <!-- ── APP PRINCIPAL ── -->
-<div id="app-main">
+<div id="app-main" style="display:none">
 
 <!-- TOPBAR -->
 <div id="topbar">
@@ -1581,7 +1581,14 @@ async function fazerLogin() {
 // Verificar sessão ativa ao carregar
 async function checkSession() {
   const { data: { session } } = await _sb.auth.getSession();
-  if (session?.user) { mostrarApp(session.user); init(); }
+  if (session?.user) {
+    mostrarApp(session.user);
+    init();
+  } else {
+    // Sem sessão: mostrar login, garantir app oculto
+    document.getElementById('tela-login').style.display = 'flex';
+    document.getElementById('app-main').style.display = 'none';
+  }
 }
 
 
