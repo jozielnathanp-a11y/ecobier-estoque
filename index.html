@@ -114,7 +114,37 @@
     .btn-red:hover    { background: #e74c3c; color: #fff; }
     .btn-full { width: 100%; }
 
-    /* ── MOVIMENTAÇÃO RÁPIDA ── */
+    /* ── MODO BTN ── */
+    .modo-btn {
+      background: #111; border: 2px solid #2a2a2a; border-radius: 8px; color: #666;
+      padding: 12px 6px; cursor: pointer; font-family: 'Rajdhani', sans-serif;
+      font-size: 1.2rem; transition: all 0.2s; text-align: center; line-height: 1.4;
+    }
+    .modo-btn.active { border-color: #2ecc71; color: #2ecc71; background: #1a6e3c18; }
+    .modo-btn:hover  { border-color: #555; color: #f0f0f0; }
+
+    /* ── SUGESTÃO ITEM ── */
+    .sug-item {
+      background: #1a1a1a; border-radius: 4px; padding: 8px 12px; cursor: pointer;
+      border: 1px solid #222; display: flex; align-items: center; justify-content: space-between; transition: all 0.15s;
+    }
+    .sug-item:hover { border-color: #2ecc71; background: #141414; }
+    .sug-nome { font-weight: 700; font-size: 0.88rem; }
+    .sug-sub  { font-size: 0.7rem; color: #555; }
+    .sug-qty  { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; color: #2ecc71; }
+
+    /* ── LOTE ITEM ── */
+    .lote-item {
+      background: #111; border-radius: 6px; padding: 10px 14px;
+      border: 1px solid #1a1a1a; display: flex; align-items: center; gap: 10px;
+    }
+    .lote-item-info { flex: 1; min-width: 0; }
+    .lote-item-nome { font-weight: 700; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .lote-item-sub  { font-size: 0.7rem; color: #555; }
+    .lote-item input { width: 90px; padding: 7px 9px; border: 2px solid #222; border-radius: 4px; background: #1a1a1a; color: #f0f0f0; font-size: 0.95rem; font-family: 'Rajdhani', sans-serif; outline: none; text-align: center; transition: border 0.2s; flex-shrink: 0; }
+    .lote-item input:focus { border-color: #3498db; }
+
+    /* ── MOVIMENTAÇÃO ── */
     #mov-resultado { display: none; }
     .mov-card { background: #141414; border-radius: 8px; padding: 16px; border: 1px solid #1a6e3c33; margin-bottom: 12px; }
     .mov-nome { font-size: 1.05rem; font-weight: 700; margin-bottom: 2px; }
@@ -259,59 +289,118 @@
 
 <!-- ═══════════════════════════════════════════════════════ TAB MOVIMENTAR -->
 <div id="tab-movimentar" class="tab-pane">
-  <div class="form-card">
-    <h3>⚡ MOVIMENTAÇÃO RÁPIDA</h3>
-    <p style="font-size:0.82rem;color:#888;margin-bottom:14px;">Escaneie ou digite o código do produto para registrar entrada ou contagem.</p>
-    <div class="row1 fg">
-      <label>Código / Chave</label>
-      <div class="inp-scan">
-        <input type="text" id="mov-cod-input" placeholder="Digite ou escaneie..." onkeydown="if(event.key==='Enter')buscarMov()">
-        <button class="btn-cam" onclick="abrirScan('mov')">📷</button>
-      </div>
-    </div>
-    <button class="btn-g btn-full" style="margin-top:4px;" onclick="buscarMov()">🔍 Buscar</button>
+
+  <!-- SELETOR DE MODO -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;">
+    <button class="modo-btn active" id="modo-btn-entrada"  onclick="setModo('entrada')">
+      📥<br><span style="font-size:0.78rem;font-weight:700;">ENTRADA</span><br><span style="font-size:0.65rem;color:#aaa;">soma ao estoque</span>
+    </button>
+    <button class="modo-btn" id="modo-btn-contagem" onclick="setModo('contagem')">
+      📋<br><span style="font-size:0.78rem;font-weight:700;">CONTAGEM</span><br><span style="font-size:0.65rem;color:#aaa;">substitui estoque</span>
+    </button>
+    <button class="modo-btn" id="modo-btn-lote"     onclick="setModo('lote')">
+      📦<br><span style="font-size:0.78rem;font-weight:700;">LOTE</span><br><span style="font-size:0.65rem;color:#aaa;">contagem por cat.</span>
+    </button>
   </div>
 
-  <div id="mov-resultado">
-    <div class="mov-card">
-      <div class="mov-nome" id="mov-nome"></div>
-      <div class="mov-cod" id="mov-cod-info"></div>
-      <div class="mov-saldo-wrap">
-        <div class="mov-saldo-box">
-          <div class="mov-saldo-val" id="mov-saldo-atual">—</div>
-          <div class="mov-saldo-lbl">Estoque Atual</div>
-        </div>
-        <div class="mov-saldo-box">
-          <div class="mov-saldo-val" style="color:#f39c12" id="mov-ult-contagem">—</div>
-          <div class="mov-saldo-lbl">Última Contagem</div>
-        </div>
-        <div class="mov-saldo-box">
-          <div class="mov-saldo-val" style="color:#3498db" id="mov-total-entradas">—</div>
-          <div class="mov-saldo-lbl">Entradas Hoje</div>
+  <!-- ── MODO ENTRADA ── -->
+  <div id="painel-entrada">
+    <div class="form-card">
+      <h3>📥 ENTRADA</h3>
+      <p style="font-size:0.82rem;color:#888;margin-bottom:14px;">Escaneie ou procure o produto. A quantidade é <b style="color:#2ecc71;">somada</b> ao estoque.</p>
+      <div class="row1 fg">
+        <label>Escanear código de barras</label>
+        <div class="inp-scan">
+          <input type="text" id="ent-cod" placeholder="Escaneie ou digite o código..." onkeydown="if(event.key==='Enter')buscarProdModo('ent')">
+          <button class="btn-cam" onclick="abrirScan('ent')">📷</button>
         </div>
       </div>
-
-      <!-- Tipo -->
-      <div style="font-size:0.72rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Tipo de movimentação</div>
-      <div class="mov-tipo-btns">
-        <button class="mov-tipo-btn sel-entrada" id="btn-tipo-entrada" onclick="selTipo('entrada')">📥 ENTRADA<br><span style="font-size:0.68rem;font-weight:400;">(soma ao estoque)</span></button>
-        <button class="mov-tipo-btn" id="btn-tipo-contagem" onclick="selTipo('contagem')">📋 CONTAGEM<br><span style="font-size:0.68rem;font-weight:400;">(substitui estoque)</span></button>
+      <div class="row1 fg" style="margin-top:8px;">
+        <label>Ou procurar por nome</label>
+        <input type="text" id="ent-busca-nome" placeholder="Digite o nome do produto..." oninput="filtrarListaModo('ent')" list="dl-ent">
+        <datalist id="dl-ent"></datalist>
       </div>
-
-      <div class="row2">
-        <div class="fg">
-          <label>Quantidade</label>
-          <input type="number" id="mov-qtd" min="0" step="0.001" placeholder="0">
+      <div id="ent-lista-sugestoes" style="margin-top:4px;display:flex;flex-direction:column;gap:4px;max-height:160px;overflow-y:auto;"></div>
+    </div>
+    <div id="ent-resultado" style="display:none;">
+      <div class="mov-card">
+        <div class="mov-nome" id="ent-nome"></div>
+        <div class="mov-cod" id="ent-cod-info"></div>
+        <div class="mov-saldo-wrap">
+          <div class="mov-saldo-box"><div class="mov-saldo-val" id="ent-saldo">—</div><div class="mov-saldo-lbl">Estoque Atual</div></div>
+          <div class="mov-saldo-box"><div class="mov-saldo-val" style="color:#3498db" id="ent-entradas-hoje">—</div><div class="mov-saldo-lbl">Entradas Hoje</div></div>
         </div>
-        <div class="fg">
-          <label>Observação</label>
-          <input type="text" id="mov-obs" placeholder="Opcional...">
+        <div class="row2">
+          <div class="fg"><label>Quantidade *</label><input type="number" id="ent-qtd" min="0" step="0.001" placeholder="0"></div>
+          <div class="fg"><label>Observação</label><input type="text" id="ent-obs" placeholder="Ex: NF 1234..."></div>
         </div>
+        <button class="btn-g btn-green btn-full" style="margin-top:6px;" onclick="confirmarModo('entrada')">📥 CONFIRMAR ENTRADA</button>
       </div>
-
-      <button class="btn-g btn-full" style="margin-top:4px;" onclick="registrarMov()">✅ CONFIRMAR</button>
     </div>
   </div>
+
+  <!-- ── MODO CONTAGEM ── -->
+  <div id="painel-contagem" style="display:none;">
+    <div class="form-card">
+      <h3>📋 CONTAGEM</h3>
+      <p style="font-size:0.82rem;color:#888;margin-bottom:14px;">Escaneie ou procure o produto. A quantidade <b style="color:#3498db;">substitui</b> o estoque atual.</p>
+      <div class="row1 fg">
+        <label>Escanear código de barras</label>
+        <div class="inp-scan">
+          <input type="text" id="cont-cod" placeholder="Escaneie ou digite o código..." onkeydown="if(event.key==='Enter')buscarProdModo('cont')">
+          <button class="btn-cam" onclick="abrirScan('cont')">📷</button>
+        </div>
+      </div>
+      <div class="row1 fg" style="margin-top:8px;">
+        <label>Ou procurar por nome</label>
+        <input type="text" id="cont-busca-nome" placeholder="Digite o nome do produto..." oninput="filtrarListaModo('cont')">
+      </div>
+      <div id="cont-lista-sugestoes" style="margin-top:4px;display:flex;flex-direction:column;gap:4px;max-height:160px;overflow-y:auto;"></div>
+    </div>
+    <div id="cont-resultado" style="display:none;">
+      <div class="mov-card">
+        <div class="mov-nome" id="cont-nome"></div>
+        <div class="mov-cod" id="cont-cod-info"></div>
+        <div class="mov-saldo-wrap">
+          <div class="mov-saldo-box"><div class="mov-saldo-val" id="cont-saldo">—</div><div class="mov-saldo-lbl">Estoque Atual</div></div>
+          <div class="mov-saldo-box"><div class="mov-saldo-val" style="color:#f39c12" id="cont-ult-cont">—</div><div class="mov-saldo-lbl">Última Contagem</div></div>
+        </div>
+        <div class="row2">
+          <div class="fg"><label>Nova Contagem *</label><input type="number" id="cont-qtd" min="0" step="0.001" placeholder="0"></div>
+          <div class="fg"><label>Observação</label><input type="text" id="cont-obs" placeholder="Opcional..."></div>
+        </div>
+        <button class="btn-g btn-full" style="margin-top:6px;background:#1a3d6e;color:#3498db;" onclick="confirmarModo('contagem')">📋 CONFIRMAR CONTAGEM</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODO LOTE ── -->
+  <div id="painel-lote" style="display:none;">
+    <div class="form-card">
+      <h3>📦 CONTAGEM EM LOTE</h3>
+      <p style="font-size:0.82rem;color:#888;margin-bottom:14px;">Selecione uma categoria e digite a quantidade de cada produto. Confirme tudo de uma vez.</p>
+      <div class="row1 fg" style="margin-bottom:12px;">
+        <label>Categoria</label>
+        <select id="lote-cat" onchange="carregarLote()">
+          <option value="">Selecione a categoria...</option>
+          <option value="Limpeza">🧹 Limpeza</option>
+          <option value="Bruto">🥩 Bruto</option>
+          <option value="Processado">🍳 Processado</option>
+          <option value="Embalagens">📦 Embalagens</option>
+          <option value="Bebidas">🍺 Bebidas</option>
+        </select>
+      </div>
+    </div>
+    <div id="lote-lista" style="display:flex;flex-direction:column;gap:8px;"></div>
+    <div id="lote-footer" style="display:none;margin-top:12px;">
+      <div class="fg" style="margin-bottom:8px;">
+        <label>Observação geral (opcional)</label>
+        <input type="text" id="lote-obs" placeholder="Ex: Contagem semana 27/06...">
+      </div>
+      <button class="btn-g btn-full" style="background:#1a3d6e;color:#3498db;" onclick="confirmarLote()">📦 CONFIRMAR CONTAGEM EM LOTE</button>
+    </div>
+  </div>
+
 </div>
 
 <!-- ═══════════════════════════════════════════════════════ TAB CADASTRO -->
@@ -528,7 +617,7 @@
 </div>
 
 <!-- FAB -->
-<button id="fab" onclick="abrirScan('mov')" title="Escanear">📷</button>
+<button id="fab" onclick="abrirScan('ent')" title="Escanear">📷</button>
 
 <div id="toast"></div>
 
@@ -669,85 +758,184 @@ function setFil(f, btn) {
   renderEstoque();
 }
 
-// Ir para movimentar a partir do estoque
+// ── MOVIMENTAR — MODO ─────────────────────────────
+let _modoAtivo = 'entrada'; // 'entrada' | 'contagem' | 'lote'
+let _prodEntrada  = null;
+let _prodContagem = null;
+
+function setModo(modo) {
+  _modoAtivo = modo;
+  ['entrada','contagem','lote'].forEach(m => {
+    document.getElementById('painel-'+m).style.display   = m===modo ? 'block' : 'none';
+    document.getElementById('modo-btn-'+m).classList.toggle('active', m===modo);
+  });
+  if (modo==='lote') carregarLote();
+}
+
+// Ir para movimentar a partir do estoque (atalho)
 function irMov(id) {
   const p = _cache[id];
   if (!p) return;
-  _movProd = p;
-  document.getElementById('mov-cod-input').value = p.cod;
-  mostrarMovProd(p);
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.tab-pane').forEach(t=>t.classList.remove('active'));
   document.getElementById('tab-movimentar').classList.add('active');
   document.querySelectorAll('.tab-btn')[1].classList.add('active');
-  document.getElementById('mov-qtd').focus();
+  setModo('entrada');
+  selecionarProdModo('ent', p);
+  document.getElementById('ent-qtd').focus();
 }
 
-// ── MOVIMENTAR ─────────────────────────────────
-function buscarMov() {
-  const cod = document.getElementById('mov-cod-input').value.trim();
-  if (!cod) { toast('Digite ou escaneie um código', 'err'); return; }
+// ── BUSCA POR CÓDIGO ──
+function buscarProdModo(pfx) {
+  const cod = document.getElementById(pfx+'-cod').value.trim();
+  if (!cod) { toast('Digite ou escaneie um código','err'); return; }
   const p = Object.values(getProd()).find(x=>x.cod===cod||x.id===cod);
-  if (!p) { toast('Produto não encontrado: '+cod, 'err'); return; }
-  _movProd = p;
-  mostrarMovProd(p);
+  if (!p) { toast('Produto não encontrado: '+cod,'err'); return; }
+  selecionarProdModo(pfx, p);
 }
 
-function mostrarMovProd(p) {
-  // calcular entradas de hoje
+// ── BUSCA POR NOME (sugestões) ──
+function filtrarListaModo(pfx) {
+  const busca = (document.getElementById(pfx+'-busca-nome')?.value||'').toLowerCase().trim();
+  const lista = document.getElementById(pfx+'-lista-sugestoes');
+  if (!busca || busca.length < 2) { lista.innerHTML=''; return; }
+  const prods = Object.values(getProd()).filter(p=>p.nome?.toLowerCase().includes(busca)||p.cod?.toLowerCase().includes(busca)).slice(0,8);
+  if (!prods.length) { lista.innerHTML='<div style="padding:8px;color:#555;font-size:0.82rem;">Nenhum produto encontrado.</div>'; return; }
+  lista.innerHTML = prods.map(p=>`
+    <div class="sug-item" onclick="selecionarProdModo('${pfx}',null,'${p.id}')">
+      <div><div class="sug-nome">${p.nome}</div><div class="sug-sub">🔑 ${p.cod}${p.cat?' · '+p.cat:''}</div></div>
+      <div class="sug-qty">${fmtQ(p.estoque,p.und)}</div>
+    </div>`).join('');
+}
+
+function selecionarProdModo(pfx, p, idFallback) {
+  if (!p && idFallback) p = getProd()[idFallback];
+  if (!p) return;
+
+  // limpar sugestoes e busca nome
+  const listaSug = document.getElementById(pfx+'-lista-sugestoes');
+  if (listaSug) listaSug.innerHTML = '';
+  const buscaNome = document.getElementById(pfx+'-busca-nome');
+  if (buscaNome) buscaNome.value = '';
+
   const hoje = dataHoje();
   const hist = getHist();
-  const entradasHoje = hist.filter(h=>h.pid===p.id&&h.tipo==='entrada'&&h.ts?.startsWith(hoje))
-                           .reduce((s,h)=>s+(parseFloat(h.qtd)||0),0);
-  const ultContagem = hist.find(h=>h.pid===p.id&&h.tipo==='contagem');
 
-  document.getElementById('mov-resultado').style.display = 'block';
-  document.getElementById('mov-nome').textContent = p.nome;
-  document.getElementById('mov-cod-info').textContent = '🔑 '+p.cod+(p.cat?' · 📂 '+p.cat:'');
-  document.getElementById('mov-saldo-atual').textContent = fmtQ(p.estoque, p.und);
-  document.getElementById('mov-ult-contagem').textContent = ultContagem ? fmtQ(ultContagem.qtd, p.und)+'\n'+ultContagem.ts?.slice(0,10) : '—';
-  document.getElementById('mov-total-entradas').textContent = entradasHoje > 0 ? fmtQ(entradasHoje, p.und) : '—';
-  document.getElementById('mov-qtd').value = '';
-  document.getElementById('mov-obs').value = '';
+  if (pfx==='ent') {
+    _prodEntrada = p;
+    const entradasHoje = hist.filter(h=>h.pid===p.id&&h.tipo==='entrada'&&h.ts?.startsWith(hoje)).reduce((s,h)=>s+(parseFloat(h.qtd)||0),0);
+    document.getElementById('ent-resultado').style.display = 'block';
+    document.getElementById('ent-nome').textContent        = p.nome;
+    document.getElementById('ent-cod-info').textContent    = '🔑 '+p.cod+(p.cat?' · 📂 '+p.cat:'');
+    document.getElementById('ent-saldo').textContent       = fmtQ(p.estoque, p.und);
+    document.getElementById('ent-entradas-hoje').textContent = entradasHoje>0 ? fmtQ(entradasHoje,p.und) : '—';
+    document.getElementById('ent-qtd').value = '';
+    setTimeout(()=>document.getElementById('ent-qtd').focus(), 80);
+  } else {
+    _prodContagem = p;
+    const ultCont = hist.find(h=>h.pid===p.id&&h.tipo==='contagem');
+    document.getElementById('cont-resultado').style.display = 'block';
+    document.getElementById('cont-nome').textContent        = p.nome;
+    document.getElementById('cont-cod-info').textContent    = '🔑 '+p.cod+(p.cat?' · 📂 '+p.cat:'');
+    document.getElementById('cont-saldo').textContent       = fmtQ(p.estoque, p.und);
+    document.getElementById('cont-ult-cont').textContent    = ultCont ? fmtQ(ultCont.qtd,p.und)+' ('+ultCont.ts?.slice(0,10)+')' : '—';
+    document.getElementById('cont-qtd').value = '';
+    setTimeout(()=>document.getElementById('cont-qtd').focus(), 80);
+  }
 }
 
-function selTipo(tipo) {
-  _movTipo = tipo;
-  document.getElementById('btn-tipo-entrada').className  = 'mov-tipo-btn'+(tipo==='entrada'?' sel-entrada':'');
-  document.getElementById('btn-tipo-contagem').className = 'mov-tipo-btn'+(tipo==='contagem'?' sel-contagem':'');
-}
+// ── CONFIRMAR (entrada ou contagem individual) ──
+function confirmarModo(tipo) {
+  const pfx  = tipo==='entrada' ? 'ent' : 'cont';
+  const prod = tipo==='entrada' ? _prodEntrada : _prodContagem;
+  if (!prod) { toast('Nenhum produto selecionado','err'); return; }
 
-function registrarMov() {
-  if (!_movProd) { toast('Nenhum produto selecionado', 'err'); return; }
-  const qtd = parseFloat(document.getElementById('mov-qtd').value);
-  if (isNaN(qtd)||qtd<0) { toast('Quantidade inválida', 'err'); return; }
-  const obs = document.getElementById('mov-obs').value.trim();
+  const qtd = parseFloat(document.getElementById(pfx+'-qtd').value);
+  if (isNaN(qtd)||qtd<0) { toast('Quantidade inválida','err'); return; }
+  const obs = document.getElementById(pfx+'-obs').value.trim();
 
   const prods = getProd();
-  const p = prods[_movProd.id];
-  if (!p) { toast('Produto não encontrado', 'err'); return; }
+  const p = prods[prod.id];
+  if (!p) { toast('Produto não encontrado','err'); return; }
 
-  const antes = parseFloat(p.estoque)||0;
-  let depois;
-  if (_movTipo==='entrada') {
-    depois = antes + qtd;
-  } else {
-    // contagem: substitui
-    depois = qtd;
-  }
+  const antes  = parseFloat(p.estoque)||0;
+  const depois = tipo==='entrada' ? antes+qtd : qtd;
   p.estoque = depois;
   prods[p.id] = p;
   setProd(prods);
+  _cache = prods;
 
-  pushHist({ id:uid(), tipo:_movTipo, pid:p.id, pnome:p.nome, pcod:p.cod, und:p.und, qtd, antes, depois, obs, ts:ts() });
+  pushHist({ id:uid(), tipo, pid:p.id, pnome:p.nome, pcod:p.cod, und:p.und, qtd, antes, depois, obs, ts:ts() });
 
-  const lbl = _movTipo==='entrada' ? '✅ Entrada' : '📋 Contagem';
+  const lbl = tipo==='entrada' ? '📥 Entrada' : '📋 Contagem';
   toast(`${lbl}: ${fmtQ(qtd,p.und)} — ${p.nome}`, 'ok');
 
-  _movProd = p;
-  mostrarMovProd(p);
-  document.getElementById('mov-qtd').value='';
-  document.getElementById('mov-qtd').focus();
+  // Atualizar display
+  selecionarProdModo(pfx, prods[prod.id]);
+}
+
+// ── CONTAGEM EM LOTE ──
+function carregarLote() {
+  const cat   = document.getElementById('lote-cat').value;
+  const lista = document.getElementById('lote-lista');
+  const footer= document.getElementById('lote-footer');
+
+  if (!cat) { lista.innerHTML=''; footer.style.display='none'; return; }
+
+  const prods = Object.values(getProd()).filter(p=>p.cat===cat).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
+  if (!prods.length) {
+    lista.innerHTML=`<div class="empty"><span>📭</span><p>Nenhum produto nesta categoria.</p></div>`;
+    footer.style.display='none'; return;
+  }
+
+  lista.innerHTML = prods.map(p=>`
+    <div class="lote-item">
+      <div class="lote-item-info">
+        <div class="lote-item-nome">${p.nome}</div>
+        <div class="lote-item-sub">🔑 ${p.cod} · Atual: <b style="color:#2ecc71;">${fmtQ(p.estoque,p.und)}</b></div>
+      </div>
+      <input type="number" id="lote-${p.id}" min="0" step="0.001" placeholder="—" title="${p.nome}">
+    </div>`).join('');
+
+  footer.style.display = 'block';
+}
+
+function confirmarLote() {
+  const cat  = document.getElementById('lote-cat').value;
+  const obs  = document.getElementById('lote-obs').value.trim();
+  if (!cat)  { toast('Selecione a categoria','err'); return; }
+
+  const prods = getProd();
+  const catProds = Object.values(prods).filter(p=>p.cat===cat);
+  let contador = 0;
+
+  catProds.forEach(p => {
+    const inp = document.getElementById('lote-'+p.id);
+    if (!inp || inp.value==='' || inp.value===null) return; // campo vazio = não altera
+    const qtd = parseFloat(inp.value);
+    if (isNaN(qtd) || qtd < 0) return;
+
+    const antes  = parseFloat(p.estoque)||0;
+    const depois = qtd; // contagem substitui
+    p.estoque = depois;
+    prods[p.id] = p;
+    pushHist({ id:uid(), tipo:'contagem', pid:p.id, pnome:p.nome, pcod:p.cod, und:p.und, qtd, antes, depois, obs:obs||'Lote: '+cat, ts:ts() });
+    contador++;
+  });
+
+  if (!contador) { toast('Nenhum valor preenchido','err'); return; }
+
+  setProd(prods);
+  _cache = prods;
+  toast(`📦 Lote confirmado! ${contador} produto(s) atualizados.`, 'ok');
+
+  // Limpar campos
+  catProds.forEach(p => {
+    const inp = document.getElementById('lote-'+p.id);
+    if (inp) inp.value = '';
+  });
+  document.getElementById('lote-obs').value = '';
+  carregarLote(); // recarrega com saldos atualizados
 }
 
 // ── CADASTRO ────────────────────────────────────
@@ -961,12 +1149,13 @@ function abrirScan(alvo) {
   document.getElementById('scan-manual-input').value='';
   document.getElementById('scan-status').textContent='Aponte a câmera para o código de barras';
   iniciarScanner();
-  // Mudar para aba movimentar se alvo=mov
-  if(alvo==='mov'){
+  // Garantir que aba movimentar esteja ativa
+  if (alvo==='ent' || alvo==='cont') {
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('.tab-pane').forEach(t=>t.classList.remove('active'));
     document.getElementById('tab-movimentar').classList.add('active');
     document.querySelectorAll('.tab-btn')[1].classList.add('active');
+    setModo(alvo==='ent' ? 'entrada' : 'contagem');
   }
 }
 
@@ -983,12 +1172,14 @@ function usarManual() {
 
 function usarCodigo(cod) {
   fecharScan();
-  if(_scanAlvo==='cad') {
+  if (_scanAlvo==='cad') {
     document.getElementById('cad-cod').value=cod;
     toast('📷 Código: '+cod,'info');
   } else {
-    document.getElementById('mov-cod-input').value=cod;
-    buscarMov();
+    // ent ou cont
+    const pfx = _scanAlvo==='ent' ? 'ent' : 'cont';
+    document.getElementById(pfx+'-cod').value = cod;
+    buscarProdModo(pfx);
   }
 }
 
