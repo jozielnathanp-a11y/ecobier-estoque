@@ -570,9 +570,17 @@
         style="padding:7px 11px;border:2px solid #222;border-radius:4px;background:#1a1a1a;color:#f0f0f0;font-size:0.85rem;font-family:'Rajdhani',sans-serif;outline:none;">
         <option value="">Todas categorias</option>
       </select>
+      <button class="btn-g btn-blue" onclick="exportRelXLSX()">📊 Planilha</button>
       <button class="btn-g btn-blue" onclick="exportRelCSV()">📤 CSV</button>
     </div>
   </div>
+
+  <!-- Botões de ação -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+    <button class="btn-g btn-green btn-full" onclick="enviarRelWhatsApp()">📲 Enviar no WhatsApp</button>
+    <button class="btn-g btn-full" style="background:#1a3d6e;color:#3498db;" onclick="gerarPedidoWhatsApp()">🛒 Pedido de Compra (Mín/Máx)</button>
+  </div>
+
   <div style="overflow-x:auto;">
     <table class="rel-table" id="rel-tabela">
       <thead>
@@ -1133,6 +1141,138 @@ function atualizarRelCats() {
   const atual=sel.value;
   sel.innerHTML='<option value="">Todas categorias</option>'+CATS_FIXAS.map(c=>`<option value="${c}">${c}</option>`).join('');
   sel.value=atual;
+}
+
+function exportRelXLSX() {
+  // Gera planilha real via SheetJS (CDN) — fallback para CSV se não carregar
+  const prods = Object.values(getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
+  const hist  = getHist();
+  const descs = getDesc();
+  if (!prods.length) { toast('Sem dados para exportar','err'); return; }
+
+  // Montar dados do estoque
+  const dadosEst = [['Produto','Código','Categoria','Unidade','Últ. Contagem','Data Últ. Contagem','Total Entradas','Estoque Atual','Mínimo','Máximo','Status']];
+  prods.forEach(p => {
+    const uc  = hist.find(h=>h.pid===p.id&&h.tipo==='contagem');
+    const te  = hist.filter(h=>h.pid===p.id&&h.tipo==='entrada').reduce((s,h)=>s+(parseFloat(h.qtd)||0),0);
+    const st  = {ok:'OK',baixo:'Baixo',acima:'Acima Máx',zerado:'Zerado'}[getStatus(p)]||'';
+    dadosEst.push([p.nome,p.cod,p.cat||'',p.und,uc?parseFloat(uc.qtd):'',(uc?.ts||'').slice(0,10),te||0,parseFloat(p.estoque)||0,p.min||0,p.max||0,st]);
+  });
+
+  // Montar dados dos descartes
+  const dadosDesc = [['Data','Produto','Código','Categoria','Quantidade','Unidade','Estoque Antes','Estoque Depois','Motivo','Observação']];
+  descs.forEach(d => {
+    dadosDesc.push([(d.ts||'').slice(0,10),d.pnome,d.pcod,d.pcat||'',d.qtd,d.und,d.antes,d.depois,d.motivo,d.obs||'']);
+  });
+
+  // Tentar usar SheetJS
+  function gerarComSheetJS(XLSX) {
+    const wb = XLSX.utils.book_new();
+    const wsEst  = XLSX.utils.aoa_to_sheet(dadosEst);
+    const wsDesc = XLSX.utils.aoa_to_sheet(dadosDesc);
+    // Largura colunas
+    wsEst['!cols']  = [20,14,12,8,14,16,14,14,8,8,10].map(w=>({wch:w}));
+    wsDesc['!cols'] = [12,20,12,12,10,8,12,12,14,20].map(w=>({wch:w}));
+    XLSX.utils.book_append_sheet(wb, wsEst,  'Estoque');
+    XLSX.utils.book_append_sheet(wb, wsDesc, 'Descartes');
+    XLSX.writeFile(wb, 'ecobier-estoque-'+dataHoje()+'.xlsx');
+    toast('📊 Planilha .xlsx baixada!','ok');
+  }
+
+  if (typeof XLSX !== 'undefined') {
+    gerarComSheetJS(XLSX);
+  } else {
+    // Carregar SheetJS dinamicamente
+    const s = document.createElement('script');
+    s.src = 'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js';
+    s.onload  = () => gerarComSheetJS(window.XLSX);
+    s.onerror = () => { toast('Erro ao carregar lib — baixando CSV','err'); exportRelCSV(); };
+    document.head.appendChild(s);
+  }
+}
+
+function enviarRelWhatsApp() {
+  const prods = Object.values(getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
+  if (!prods.length) { toast('Sem produtos para enviar','err'); return; }
+
+  const data = new Date().toLocaleDateString('pt-BR');
+  let msg = `📦 *RELATÓRIO DE ESTOQUE — ECOBIER*\n🗓️ ${data}\n\n`;
+
+  // Agrupar por categoria
+  const cats = {};
+  prods.forEach(p => {
+    const c = p.cat||'Sem Categoria';
+    if (!cats[c]) cats[c] = [];
+    cats[c].push(p);
+  });
+
+  Object.entries(cats).forEach(([cat, lista]) => {
+    msg += `*📂 ${cat.toUpperCase()}*\n`;
+    lista.forEach(p => {
+      const st = getStatus(p);
+      const ico = {ok:'✅',baixo:'⚠️',zerado:'🔴',acima:'🟣'}[st]||'•';
+      msg += `${ico} ${p.nome}: *${fmtQ(p.estoque,p.und)}*`;
+      if (p.min>0) msg += ` (mín: ${fmtQ(p.min,p.und)})`;
+      msg += '\n';
+    });
+    msg += '\n';
+  });
+
+  // Resumo
+  const tot   = prods.length;
+  const baixo = prods.filter(p=>getStatus(p)==='baixo').length;
+  const zerado= prods.filter(p=>getStatus(p)==='zerado').length;
+  msg += `📊 *Resumo:* ${tot} produtos | ⚠️ ${baixo} baixo(s) | 🔴 ${zerado} zerado(s)`;
+
+  const url = 'https://wa.me/?text=' + encodeURIComponent(msg);
+  window.open(url, '_blank');
+}
+
+function gerarPedidoWhatsApp() {
+  const prods = Object.values(getProd()).sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
+  // Filtrar apenas os que precisam de reposição (estoque < mín, ou zerado)
+  const precisam = prods.filter(p => {
+    const est = parseFloat(p.estoque)||0;
+    const min = parseFloat(p.min)||0;
+    return min > 0 && est < min;
+  });
+
+  if (!precisam.length) {
+    toast('✅ Nenhum produto abaixo do mínimo!','ok');
+    return;
+  }
+
+  const data = new Date().toLocaleDateString('pt-BR');
+  let msg = `🛒 *PEDIDO DE COMPRA — ECOBIER*\n🗓️ ${data}\n`;
+  msg += `_Produtos abaixo do estoque mínimo:_\n\n`;
+
+  // Agrupar por categoria
+  const cats = {};
+  precisam.forEach(p => {
+    const c = p.cat||'Sem Categoria';
+    if (!cats[c]) cats[c] = [];
+    cats[c].push(p);
+  });
+
+  Object.entries(cats).forEach(([cat, lista]) => {
+    msg += `*📂 ${cat.toUpperCase()}*\n`;
+    lista.forEach(p => {
+      const est    = parseFloat(p.estoque)||0;
+      const min    = parseFloat(p.min)||0;
+      const max    = parseFloat(p.max)||0;
+      const comprar = max > 0 ? max - est : min - est;
+      const ico = est<=0 ? '🔴' : '⚠️';
+      msg += `${ico} *${p.nome}*\n`;
+      msg += `   Atual: ${fmtQ(est,p.und)} | Mín: ${fmtQ(min,p.und)} | Máx: ${max>0?fmtQ(max,p.und):'—'}\n`;
+      msg += `   ➡️ Comprar: *${fmtQ(comprar,p.und)}*\n`;
+    });
+    msg += '\n';
+  });
+
+  msg += `📦 *Total: ${precisam.length} item(ns) para repor*`;
+
+  const url = 'https://wa.me/?text=' + encodeURIComponent(msg);
+  window.open(url, '_blank');
 }
 
 function exportRelCSV() {
