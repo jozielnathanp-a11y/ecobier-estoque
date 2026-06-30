@@ -185,21 +185,30 @@
 
     /* ── SCANNER ── */
     .scan-ov {
-      position: fixed; inset: 0; background: #000; z-index: 3000;
-      display: none; flex-direction: column; align-items: center; justify-content: flex-start;
-      padding-top: 56px;
+      position: fixed; inset: 0; background: rgba(0,0,0,0.72); z-index: 3000;
+      display: none; align-items: flex-end; justify-content: center;
     }
     .scan-ov.open { display: flex; }
-    .scan-vid-wrap { position: relative; width: 100%; max-width: 480px; }
-    .scan-vid-wrap video { width: 100%; border-radius: 8px; display: block; }
+    .scan-panel {
+      background: #111; border-radius: 16px 16px 0 0; width: 100%; max-width: 520px;
+      padding: 14px 16px 24px; border-top: 2px solid #2ecc71;
+      animation: slideUp 0.22s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(100%); opacity:0; } to { transform: translateY(0); opacity:1; } }
+    .scan-panel-header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
+    }
+    .scan-panel-header span { font-family: 'Bebas Neue', sans-serif; font-size: 1.05rem; color: #2ecc71; letter-spacing: 2px; }
+    .btn-fechar-scan { background: #222; border: none; color: #aaa; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-family: 'Rajdhani', sans-serif; }
+    .btn-fechar-scan:hover { color: #f0f0f0; }
+    #scan-reader { background: #000; border-radius: 8px; overflow: hidden; width: 100%; aspect-ratio: 4/3; max-height: 220px; }
+    #scan-reader video { width: 100% !important; height: 100% !important; object-fit: cover; border-radius: 8px; }
     /* html5-qrcode overrides */
-    #scan-reader video { border-radius: 8px; }
-    #scan-reader { background: #000; }
-    .scan-status { color: #2ecc71; font-size: 0.9rem; margin-top: 14px; font-family: 'Rajdhani', sans-serif; text-align: center; padding: 0 20px; }
-    .scan-manual-wrap { display: flex; gap: 8px; margin-top: 14px; padding: 0 20px; width: 100%; max-width: 480px; }
-    .scan-manual-wrap input { flex: 1; padding: 10px 13px; border: 2px solid #333; border-radius: 4px; background: #1a1a1a; color: #f0f0f0; font-size: 0.95rem; font-family: 'Rajdhani', sans-serif; outline: none; }
+    #scan-reader > div { border-radius: 8px !important; }
+    .scan-status { color: #2ecc71; font-size: 0.82rem; margin-top: 8px; font-family: 'Rajdhani', sans-serif; text-align: center; }
+    .scan-manual-wrap { display: flex; gap: 8px; margin-top: 10px; }
+    .scan-manual-wrap input { flex: 1; padding: 9px 12px; border: 2px solid #333; border-radius: 4px; background: #1a1a1a; color: #f0f0f0; font-size: 0.95rem; font-family: 'Rajdhani', sans-serif; outline: none; }
     .scan-manual-wrap input:focus { border-color: #2ecc71; }
-    .btn-fechar-scan { position: absolute; top: 14px; right: 16px; background: #333; border: none; color: #fff; padding: 6px 13px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-family: 'Rajdhani', sans-serif; }
 
     /* ── FAB ── */
     #fab {
@@ -606,13 +615,18 @@
 </div>
 
 <!-- ═══════════════ SCANNER OVERLAY ═══════════════ -->
-<div class="scan-ov" id="scan-overlay">
-  <button class="btn-fechar-scan" onclick="fecharScan()">✕ Fechar</button>
-  <div id="scan-reader" style="width:100%;max-width:480px;border-radius:8px;overflow:hidden;"></div>
-  <div class="scan-status" id="scan-status">Aponte a câmera para o código de barras</div>
-  <div class="scan-manual-wrap">
-    <input type="text" id="scan-manual-input" placeholder="Ou digite o código..." onkeydown="if(event.key==='Enter')usarManual()">
-    <button class="btn-g btn-green" onclick="usarManual()">OK</button>
+<div class="scan-ov" id="scan-overlay" onclick="fecharScanFundo(event)">
+  <div class="scan-panel" id="scan-panel">
+    <div class="scan-panel-header">
+      <span>📷 ESCANEAR CÓDIGO</span>
+      <button class="btn-fechar-scan" onclick="fecharScan()">✕ Fechar</button>
+    </div>
+    <div id="scan-reader"></div>
+    <div class="scan-status" id="scan-status">Aponte a câmera para o código de barras</div>
+    <div class="scan-manual-wrap">
+      <input type="text" id="scan-manual-input" placeholder="Ou digite o código manualmente..." onkeydown="if(event.key==='Enter')usarManual()">
+      <button class="btn-g btn-green" onclick="usarManual()">OK</button>
+    </div>
   </div>
 </div>
 
@@ -1163,6 +1177,10 @@ function abrirScan(alvo) {
 function fecharScan() {
   document.getElementById('scan-overlay').classList.remove('open');
   pararScanner();
+}
+
+function fecharScanFundo(e) {
+  if (e.target === document.getElementById('scan-overlay')) fecharScan();
 }
 
 function usarManual() {
